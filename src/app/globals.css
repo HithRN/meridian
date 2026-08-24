@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+/*
+ * Meridian design system — strict monochrome, Times New Roman throughout.
+ *
+ * The entire interface is black on white with a neutral grey ramp for
+ * structure. No hue is used anywhere; hierarchy is carried by type, weight,
+ * rule-lines and whitespace in the manner of a printed research journal.
+ */
+
+@theme {
+  --color-paper: #ffffff;
+  --color-ink: #0a0a0a;
+  --color-muted: #595959;
+  --color-faint: #8c8c8c;
+  --color-line: #e2e2e2;
+  --color-line-strong: #c8c8c8;
+  --color-subtle: #f7f7f7;
+  --color-panel: #fbfbfb;
+  --color-inverse: #0a0a0a;
+
+  --font-sans: "Times New Roman", Times, Georgia, serif;
+  --font-serif: "Times New Roman", Times, Georgia, serif;
+  --font-mono: "Times New Roman", Times, Georgia, serif;
+
+  --radius-none: 0px;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #0a0a0a;
+  color-scheme: light;
+}
+
+* {
+  border-color: var(--color-line);
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: "Times New Roman", Times, Georgia, serif;
+  font-size: 17px;
+  line-height: 1.55;
+  letter-spacing: 0.005em;
+}
+
+/* Tabular figures keep numeric columns aligned even in a proportional serif. */
+.tnum {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* Editorial eyebrow label: small, uppercase, letter-spaced. */
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.7rem;
+  color: var(--color-faint);
+}
+
+.rule {
+  border-top: 1px solid var(--color-line);
+}
+.rule-strong {
+  border-top: 2px solid var(--color-ink);
+}
+
+/* Links inside prose get a classic underline. */
+.prose-serif a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Thin custom scrollbar in greyscale. */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-line-strong);
+}
+::-webkit-scrollbar-track {
+  background: var(--color-paper);
+}
+
+::selection {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}

@@ -8,6 +8,7 @@ import { useExperiments } from "@/store/experiments";
 import type { ExperimentSummary } from "@/core/experiments/store";
 import { summarise } from "@/core/experiments/store";
 import { num, dateShort } from "@/lib/format";
+import { datasetLabel, modelLabelShort } from "@/lib/labels";
 
 interface Row extends ExperimentSummary {
   source: "local" | "seed";
@@ -66,7 +67,7 @@ export default function ExperimentsPage() {
             <table className="w-full border-collapse text-sm">
               <thead>
                 <tr className="border-b border-ink">
-                  {["", "Date", "Question", "Dataset", "Best", "AUC", "Sharpe", "Critique", "Source"].map((h) => (
+                  {["Experiment", "Date", "Dataset", "Best model", "AUC", "Sharpe", "Critique", "Source"].map((h) => (
                     <th key={h} className="px-3 py-3 text-left font-normal uppercase tracking-[0.1em] text-faint">{h}</th>
                   ))}
                 </tr>
@@ -74,19 +75,15 @@ export default function ExperimentsPage() {
               <tbody>
                 {rows.map((r) => (
                   <tr key={r.id} className="group border-b border-line last:border-b-0 hover:bg-subtle">
-                    <td className="px-3 py-3">
-                      <Link href={`/experiments/${r.id}`} className="tnum text-faint underline-offset-2 hover:underline">
-                        {r.id.replace("exp_", "")}
+                    <td className="max-w-md px-3 py-3">
+                      <Link href={`/experiments/${r.id}`} className="block leading-tight hover:underline">
+                        {r.title}
                       </Link>
+                      <span className="mt-1 line-clamp-1 block text-[0.78rem] text-faint">{r.question}</span>
                     </td>
                     <td className="tnum px-3 py-3 text-muted">{dateShort(r.createdAt)}</td>
-                    <td className="max-w-md px-3 py-3">
-                      <Link href={`/experiments/${r.id}`} className="line-clamp-2 hover:underline">
-                        {r.question}
-                      </Link>
-                    </td>
-                    <td className="px-3 py-3 text-muted">{r.datasetId.replace("synthetic-", "").replace("-hourly", "")}</td>
-                    <td className="px-3 py-3">{r.bestModelType}</td>
+                    <td className="px-3 py-3 text-muted">{datasetLabel(r.datasetId)}</td>
+                    <td className="px-3 py-3">{modelLabelShort(r.bestModelType)}</td>
                     <td className="tnum px-3 py-3 text-muted">{num(r.bestAuc)}</td>
                     <td className="tnum px-3 py-3 text-muted">{r.bestSharpe === null ? "—" : num(r.bestSharpe, 2)}</td>
                     <td className="px-3 py-3"><Severity level={r.critiqueSeverity} /></td>

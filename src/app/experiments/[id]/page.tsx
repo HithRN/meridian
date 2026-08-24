@@ -18,6 +18,7 @@ import { useExperiments } from "@/store/experiments";
 import type { ExperimentRecord, Critique } from "@/core/schemas/experiment";
 import type { TraceEvent } from "@/core/orchestrator/types";
 import { dateTime } from "@/lib/format";
+import { experimentTitle, modelLabel } from "@/lib/labels";
 
 interface Detail {
   record: ExperimentRecord;
@@ -106,7 +107,7 @@ export default function ExperimentDetailPage() {
     <>
       <PageHeader
         index="02"
-        title={record.id}
+        title={experimentTitle(record)}
         lede={record.question}
         actions={
           <div className="flex items-center gap-2">
@@ -119,6 +120,7 @@ export default function ExperimentDetailPage() {
         <div className="mb-8">
           <MetaStrip
             items={[
+              { k: "ID", v: record.id },
               { k: "Created", v: dateTime(record.createdAt) },
               { k: "Dataset", v: `${record.dataset.datasetId}@${record.dataset.version}` },
               { k: "Content hash", v: record.dataset.contentHash.slice(0, 12) },
@@ -138,7 +140,7 @@ export default function ExperimentDetailPage() {
         </Section>
 
         {best ? (
-          <Section eyebrow="Best model" title={`Equity curve — ${best.modelType}`}>
+          <Section eyebrow="Best model" title={`Equity curve — ${modelLabel(best.modelType)}`}>
             <Card>
               <CardHeader
                 title="Out-of-sample equity"

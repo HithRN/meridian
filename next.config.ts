@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Do not emit AI-agent scaffolding files (AGENTS.md / CLAUDE.md).
+  agentRules: false,
 };
 
 export default nextConfig;

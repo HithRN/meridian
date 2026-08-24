@@ -5,6 +5,7 @@ import { Badge, Stat } from "@/components/ui/primitives";
 import { getSeedResults } from "@/core/experiments/seed";
 import { featureSetId } from "@/core/ml/pipeline";
 import { num, pct, dateShort } from "@/lib/format";
+import { modelLabelShort, datasetLabel } from "@/lib/labels";
 
 export const metadata: Metadata = {
   title: "Models",
@@ -82,11 +83,11 @@ export default async function ModelsPage() {
                     </td>
                     <td className="px-3 py-3">
                       <span className="flex items-center gap-2">
-                        {r.type}
+                        {modelLabelShort(r.type)}
                         {r.isBest ? <Badge variant="solid">best</Badge> : null}
                       </span>
                     </td>
-                    <td className="px-3 py-3 text-muted">{r.dataset}</td>
+                    <td className="px-3 py-3 text-muted">{datasetLabel(r.dataset)}</td>
                     <td className="tnum px-3 py-3 text-muted">{r.featureSet}</td>
                     <td className="tnum px-3 py-3 text-muted">{num(r.auc)}</td>
                     <td className="tnum px-3 py-3 text-muted">{r.sharpe === null ? "—" : num(r.sharpe, 2)}</td>
@@ -109,7 +110,7 @@ export default async function ModelsPage() {
                 <li key={r.modelId} className="flex items-center justify-between border-b border-line px-4 py-3 last:border-b-0">
                   <span className="flex items-center gap-3">
                     <code className="text-sm">{r.modelId}</code>
-                    <span className="text-sm text-muted">{r.type} · {r.dataset}</span>
+                    <span className="text-sm text-muted">{modelLabelShort(r.type)} · {datasetLabel(r.dataset)}</span>
                   </span>
                   <span className="tnum text-sm text-muted">AUC {num(r.auc)} · commit {r.gitCommit.slice(0, 8)}</span>
                 </li>

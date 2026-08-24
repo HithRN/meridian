@@ -83,6 +83,9 @@ export function Sidebar() {
             Public demo · <span className="tnum">$0</span> stack. No paid model or
             market-data APIs. Results are computed on synthetic data.
           </p>
+          <p className="mt-3 border-t border-line pt-3 uppercase tracking-[0.14em] text-[0.62rem] text-faint">
+            Created by Sanyam
+          </p>
         </div>
       </aside>
     </>

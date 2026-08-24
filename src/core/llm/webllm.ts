@@ -31,6 +31,27 @@ import { z } from "zod";
 /** Default model: small, fast to load, reliable at short JSON extraction. */
 export const DEFAULT_WEBLLM_MODEL = "Llama-3.2-1B-Instruct-q4f16_1-MLC";
 
+/** Reject a promise if it does not settle within `ms`, so a hung model call
+ *  cannot stall a run — the caller falls back to the deterministic path. */
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+    promise.then(
+      (v) => {
+        clearTimeout(timer);
+        resolve(v);
+      },
+      (e) => {
+        clearTimeout(timer);
+        reject(e);
+      },
+    );
+  });
+}
+
+const CALL_TIMEOUT_MS = 25_000;
+const LOAD_TIMEOUT_MS = 180_000;
+
 export interface WebLlmProgress {
   progress: number; // 0..1
   text: string;
@@ -74,15 +95,19 @@ export class WebLlmReasoner implements Reasoner {
     const user = `Available datasets: ${ids}\n\nQuestion: ${question}`;
 
     try {
-      const reply = await this.engine.chat.completions.create({
-        messages: [
-          { role: "system", content: system },
-          { role: "user", content: user },
-        ],
-        temperature: 0,
-        max_tokens: 300,
-        response_format: { type: "json_object" },
-      });
+      const reply = await withTimeout(
+        this.engine.chat.completions.create({
+          messages: [
+            { role: "system", content: system },
+            { role: "user", content: user },
+          ],
+          temperature: 0,
+          max_tokens: 300,
+          response_format: { type: "json_object" },
+        }),
+        CALL_TIMEOUT_MS,
+        "WebLLM plan",
+      );
       const content = reply.choices?.[0]?.message?.content ?? "";
       const parsed = PlanExtractionSchema.parse(JSON.parse(extractJson(content)));
 
@@ -138,21 +163,25 @@ export class WebLlmReasoner implements Reasoner {
   async narrate(context: NarrationContext): Promise<string> {
     const { agentId, plan } = context;
     try {
-      const reply = await this.engine.chat.completions.create({
-        messages: [
-          {
-            role: "system",
-            content:
-              "You are the " +
-              agentId +
-              " in a quant research pipeline. In ONE concise sentence, state what you are about to do. " +
-              "Do not invent any numbers, metrics or results.",
-          },
-          { role: "user", content: `Hypothesis: ${plan.hypothesis}` },
-        ],
-        temperature: 0.2,
-        max_tokens: 60,
-      });
+      const reply = await withTimeout(
+        this.engine.chat.completions.create({
+          messages: [
+            {
+              role: "system",
+              content:
+                "You are the " +
+                agentId +
+                " in a quant research pipeline. In ONE concise sentence, state what you are about to do. " +
+                "Do not invent any numbers, metrics or results.",
+            },
+            { role: "user", content: `Hypothesis: ${plan.hypothesis}` },
+          ],
+          temperature: 0.2,
+          max_tokens: 60,
+        }),
+        CALL_TIMEOUT_MS,
+        "WebLLM narration",
+      );
       const text = reply.choices?.[0]?.message?.content?.trim();
       if (text && text.length > 8) return text.replace(/\s+/g, " ");
     } catch {
@@ -174,9 +203,13 @@ export async function createWebLlmReasoner(
   modelId: string = DEFAULT_WEBLLM_MODEL,
 ): Promise<WebLlmReasoner> {
   const { CreateMLCEngine } = await import("@mlc-ai/web-llm");
-  const engine = await CreateMLCEngine(modelId, {
-    initProgressCallback: (report: { progress: number; text: string }) =>
-      onProgress({ progress: report.progress, text: report.text }),
-  });
+  const engine = await withTimeout(
+    CreateMLCEngine(modelId, {
+      initProgressCallback: (report: { progress: number; text: string }) =>
+        onProgress({ progress: report.progress, text: report.text }),
+    }),
+    LOAD_TIMEOUT_MS,
+    "WebLLM model download",
+  );
   return new WebLlmReasoner(engine, modelId);
 }

@@ -4,6 +4,7 @@ import { Card, CardHeader, CardBody, Stat, Severity, Badge } from "@/components/
 import { HistoryChart } from "@/components/charts/HistoryChart";
 import { getMonitoringSnapshot } from "@/core/monitoring/metrics";
 import { num, pct } from "@/lib/format";
+import { modelLabelShort } from "@/lib/labels";
 
 export const metadata: Metadata = {
   title: "Monitoring",
@@ -96,7 +97,7 @@ export default async function MonitoringPage() {
                 {snap.performance.map((p, i) => (
                   <tr key={i} className="border-b border-line last:border-b-0">
                     <td className="tnum px-4 py-3 text-muted">{p.experimentId}</td>
-                    <td className="px-4 py-3">{p.modelType}</td>
+                    <td className="px-4 py-3">{modelLabelShort(p.modelType)}</td>
                     <td className="tnum px-4 py-3 text-muted">{num(p.auc)}</td>
                     <td className="tnum px-4 py-3 text-muted">{p.sharpe === null ? "—" : num(p.sharpe, 2)}</td>
                     <td className="px-4 py-3"><Badge variant="muted">{p.status}</Badge></td>

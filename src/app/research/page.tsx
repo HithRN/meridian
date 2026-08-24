@@ -16,6 +16,7 @@ import { useResearchRunner } from "@/hooks/useResearchRunner";
 import { useSession } from "@/store/session";
 import { type WorkflowState } from "@/core/orchestrator/states";
 import { duration } from "@/lib/format";
+import { modelLabel } from "@/lib/labels";
 
 const EXAMPLES = [
   "Test whether a 20-period momentum signal contains predictive value on the bundled hourly dataset, compare three models, use walk-forward validation, include transaction costs, and produce an evidence report.",
@@ -134,6 +135,13 @@ export default function ResearchPage() {
           </Card>
         </Section>
 
+        {/* Non-fatal notice (e.g. WebLLM fell back to deterministic) */}
+        {runner.notice ? (
+          <div className="mb-8 border border-line bg-subtle px-4 py-3 text-sm text-muted">
+            {runner.notice}
+          </div>
+        ) : null}
+
         {/* Live workflow */}
         {runner.status !== "idle" ? (
           <Section eyebrow="Workflow" title="State machine">
@@ -251,7 +259,7 @@ function Results({ result }: { result: import("@/core/orchestrator/types").Orche
       </Section>
 
       {best ? (
-        <Section eyebrow="Best model" title={`Equity curve — ${best.modelType}`}>
+        <Section eyebrow="Best model" title={`Equity curve — ${modelLabel(best.modelType)}`}>
           <Card>
             <CardHeader
               title="Out-of-sample equity (net of costs)"

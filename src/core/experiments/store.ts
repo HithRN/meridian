@@ -13,9 +13,12 @@
  */
 
 import { ExperimentRecordSchema, type ExperimentRecord } from "@/core/schemas/experiment";
+import { experimentTitle } from "@/lib/labels";
 
 export interface ExperimentSummary {
   id: string;
+  /** Plain-English title derived from the plan. */
+  title: string;
   createdAt: number;
   question: string;
   status: ExperimentRecord["status"];
@@ -38,6 +41,7 @@ export function summarise(r: ExperimentRecord): ExperimentSummary {
   const best = r.models.find((m) => m.modelId === r.bestModelId) ?? r.models[0];
   return {
     id: r.id,
+    title: experimentTitle(r),
     createdAt: r.createdAt,
     question: r.question,
     status: r.status,

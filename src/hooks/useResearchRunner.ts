@@ -14,6 +14,8 @@ export interface RunnerState {
   trace: TraceEvent[];
   result: OrchestrationResult | null;
   error: string | null;
+  /** Non-fatal notice, e.g. when WebLLM was unavailable and we fell back. */
+  notice: string | null;
 }
 
 let cachedReasoner: Reasoner | null = null;
@@ -24,28 +26,44 @@ export function useResearchRunner() {
     trace: [],
     result: null,
     error: null,
+    notice: null,
   });
   const workerRef = useRef<Worker | null>(null);
   const addResult = useExperiments((s) => s.add);
   const setModelStatus = useSession((s) => s.setModelStatus);
   const setModelProgress = useSession((s) => s.setModelProgress);
+  const setMode = useSession((s) => s.setMode);
 
   const reset = useCallback(() => {
     workerRef.current?.terminate();
     workerRef.current = null;
-    setState({ status: "idle", trace: [], result: null, error: null });
+    setState({ status: "idle", trace: [], result: null, error: null, notice: null });
   }, []);
 
   const run = useCallback(
     async (question: string, seed: number, mode: ReasonerMode, maxModels?: number) => {
-      setState({ status: "running", trace: [], result: null, error: null });
+      setState({ status: "running", trace: [], result: null, error: null, notice: null });
 
       if (mode === "deterministic") {
         runInWorker(question, seed, maxModels, workerRef, setState, addResult);
         return;
       }
 
-      // WebLLM path (main thread).
+      // WebLLM path (main thread). Any failure — no WebGPU, a failed/blocked
+      // model download, or a hung generation — falls back to the deterministic
+      // engine so the user always gets a result.
+      const fallback = (reason: string) => {
+        setMode("deterministic");
+        setModelStatus("error", 0, reason);
+        setState((s) => ({
+          ...s,
+          status: "running",
+          trace: [],
+          notice: `Browser-local model unavailable — completed with the deterministic engine. (${reason})`,
+        }));
+        runInWorker(question, seed, maxModels, workerRef, setState, addResult, true);
+      };
+
       try {
         if (!cachedReasoner) {
           setState((s) => ({ ...s, status: "loading-model" }));
@@ -69,15 +87,11 @@ export function useResearchRunner() {
         addResult(result);
         setState((s) => ({ ...s, status: "done", result }));
       } catch (err) {
-        setModelStatus("error", 0, err instanceof Error ? err.message : String(err));
-        setState((s) => ({
-          ...s,
-          status: "error",
-          error: err instanceof Error ? err.message : String(err),
-        }));
+        cachedReasoner = null; // do not cache a broken engine
+        fallback(err instanceof Error ? err.message : String(err));
       }
     },
-    [addResult, setModelStatus, setModelProgress],
+    [addResult, setModelStatus, setModelProgress, setMode],
   );
 
   return { ...state, run, reset };
@@ -90,7 +104,11 @@ function runInWorker(
   workerRef: React.MutableRefObject<Worker | null>,
   setState: React.Dispatch<React.SetStateAction<RunnerState>>,
   addResult: (r: OrchestrationResult) => void,
+  // Reserved: true when invoked as a fallback from the WebLLM path. The notice
+  // is already set by the caller and preserved by the message handlers below.
+  _isFallback = false,
 ) {
+  void _isFallback;
   workerRef.current?.terminate();
   const worker = new Worker(new URL("../workers/research.worker.ts", import.meta.url), {
     type: "module",

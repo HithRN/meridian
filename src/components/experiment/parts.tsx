@@ -4,6 +4,7 @@ import { useState } from "react";
 import { cn } from "@/lib/cn";
 import { Badge, Severity } from "@/components/ui/primitives";
 import { pct, num, duration, dateTime } from "@/lib/format";
+import { modelLabel } from "@/lib/labels";
 import type { ModelResult, Critique } from "@/core/schemas/experiment";
 import type { TraceEvent } from "@/core/orchestrator/types";
 import { WORKFLOW_STATES, stateIndex, type WorkflowState } from "@/core/orchestrator/states";
@@ -78,7 +79,7 @@ export function MetricsTable({
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
                     <span aria-hidden className="w-3 text-ink">{isBest ? "▶" : ""}</span>
-                    <span className={cn(isBest && "font-semibold")}>{m.modelType}</span>
+                    <span className={cn(isBest && "font-semibold")}>{modelLabel(m.modelType)}</span>
                     {m.modelId === baselineModelId ? <Badge variant="muted">baseline</Badge> : null}
                     {isBest ? <Badge variant="solid">best</Badge> : null}
                   </div>

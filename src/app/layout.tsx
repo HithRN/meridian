@@ -25,7 +25,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="antialiased">
         <div className="md:flex md:items-start">
           <Sidebar />
-          <main className="min-w-0 flex-1">{children}</main>
+          <main className="min-w-0 flex-1">
+            {children}
+            <footer className="mt-16 border-t border-line px-6 py-8 md:px-10">
+              <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 text-[0.72rem] uppercase tracking-[0.14em] text-faint">
+                <span>Meridian · Quant Research &amp; ML Ops</span>
+                <span>Created by Sanyam</span>
+                <span>Synthetic data · not investment advice</span>
+              </div>
+            </footer>
+          </main>
         </div>
       </body>
     </html>

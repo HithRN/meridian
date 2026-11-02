@@ -13,6 +13,41 @@ infrastructure APIs are required.
 > All results are computed on **bundled synthetic market data** for demonstration only.
 > Nothing here is investment advice or evidence about any real market.
 
+## New: Solana · Jito vertical + AI copilot
+
+| Page | What it does |
+| --- | --- |
+| **Jito Lab** (`/jito`) | Live tip floor from Jito's block engine; a **conformal bundle-tip advisor** ("what tip outbids p95 next hour with 90% confidence?") validated walk-forward; JitoSOL APY, estimated MEV share and position projections from the live stake-pool API. |
+| **AI Copilot** (`/copilot`) | Claude (`claude-opus-5-5`) answers questions in English or Japanese by calling Meridian's audited tools: tip floor, tip advisor, JitoSOL stats, yield projection, and full multi-agent research runs. Every answer shows the tool calls behind it. |
+
+| **Explainable AI** (`/ai`) | Predicts whether a Jito bundle lands with **logistic regression, gradient-boosted trees and a neural network written from scratch in TypeScript**, then explains each prediction with **exact Shapley values**, partial dependence, calibration and a **counterfactual minimum tip**. The explanations are checked against the simulator's known mechanism. |
+
+**Explainable AI results** (held-out test set, 2,000 bundles):
+
+| Model | AUC | Log loss | ECE | Explanation faithfulness (cosine to truth) |
+| --- | --- | --- | --- | --- |
+| Logistic regression | 0.887 | 0.430 | 3.2% | 0.92 |
+| Neural network (8→24→1, Adam) | 0.895 | 0.414 | 3.0% | 0.97 |
+| Gradient-boosted trees (Newton, depth 3) | 0.900 | 0.399 | 2.8% | 0.98 |
+| Oracle (true probabilities) | 0.908 | 0.383 | 1.5% | — |
+
+Shapley values are computed exactly over all 2⁸ coalitions (no sampling), so base + Σφ equals the model's
+log-odds. The copilot exposes the model as the `predict_bundle_landing` tool, so Claude can explain a
+prediction in English or Japanese without inventing numbers. The simulator stands in for the block engine's
+landed/dropped labels, which are what the same pipeline would train on in production.
+
+**Tip advisor method.** Mondrian split-conformal forecasting of log-tip residuals around an EMA anchor,
+conditioned on a congestion regime. Walk-forward over 2,880 hours it hits its target coverage at every
+level (for example 80.0% at a 80% target), while the naive "tip last hour's p95" rule is right ~53% of the time
+and a single global quantile drops to ~65% during congestion. The calibration history is synthetic and
+shaped on the live API's percentile spreads; recalibrate on a recorded mainnet feed before production use.
+
+**Enabling Claude.** Copy `.env.example` to `.env.local` and set `ANTHROPIC_API_KEY`. Without it the copilot
+uses a bilingual deterministic router over the same tools — still free, still fully traced.
+
+Live data comes from Jito's public, keyless endpoints (`bundles.jito.wtf` tip floor,
+`kobe.mainnet.jito.network` stake-pool stats), cached for 60 s, with bundled snapshots as fallback.
+
 ---
 
 ## Table of contents
@@ -92,7 +127,8 @@ stateless HTTP layer. Discovery: `GET /api/tools`. Execution: `POST /api/tool/{n
 
 `list_datasets` · `load_dataset` · `profile_dataset` · `create_features` ·
 `walk_forward_split` · `train_model` · `evaluate_model` · `backtest` · `drift_check` ·
-`record_experiment` · `inspect_repo` · `propose_patch` · `run_tests`
+`record_experiment` · `inspect_repo` · `propose_patch` · `run_tests` ·
+`jito_tip_floor` · `recommend_bundle_tip` · `jitosol_stats` · `project_jitosol_yield` · `predict_bundle_landing`
 
 Each tool declares a permission class (`read-data`, `experiment`, `backtest`, `monitoring`,
 `coding-readonly`, `coding-restricted`) and is deterministic given its input and seed.
@@ -173,6 +209,9 @@ identical guarantees, no download.
 | `/api/experiments/{id}` | GET | Experiment record, trace and audit |
 | `/api/monitoring` | GET | Drift, latency, performance history |
 | `/api/research` | POST | Run a full deterministic research session server-side |
+| `/api/jito` | GET | Live tip floor + JitoSOL stake-pool stats (with fallback) |
+| `/api/ai` | GET | Trained landing models, metrics, Shapley importances, PDPs (prerendered) |
+| `/api/copilot` | GET/POST | Copilot engine status / ask a question (Claude or deterministic) |
 
 ## Project layout
 

@@ -35,6 +35,7 @@ export function modelLabelShort(type: string): string {
 export function datasetLabel(id: string): string {
   if (id.includes("equity")) return "Synthetic Equity";
   if (id.includes("fx")) return "Synthetic FX";
+  if (id.includes("sol")) return "Synthetic SOL/USDC";
   if (id.includes("leakage")) return "Leakage Trap";
   return id
     .replace(/^synthetic-/, "")

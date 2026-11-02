@@ -44,7 +44,7 @@ export default function ExperimentsPage() {
   return (
     <>
       <PageHeader
-        index="02"
+        index="05"
         title="Experiments"
         lede="Every research run is a reproducible, versioned record. Your own runs persist in this browser; seeded reference runs are computed deterministically on the server."
         actions={

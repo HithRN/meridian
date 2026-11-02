@@ -85,7 +85,7 @@ export default function ExperimentDetailPage() {
   if (status === "loading") {
     return (
       <>
-        <PageHeader index="02" title="Experiment" />
+        <PageHeader index="05" title="Experiment" />
         <PageBody><div className="h-48 border border-dashed border-line" /></PageBody>
       </>
     );
@@ -93,7 +93,7 @@ export default function ExperimentDetailPage() {
   if (status === "missing" || !detail) {
     return (
       <>
-        <PageHeader index="02" title="Experiment not found" lede={`No experiment with id ${id}.`} actions={<Link href="/experiments"><Button variant="secondary">Back to experiments</Button></Link>} />
+        <PageHeader index="05" title="Experiment not found" lede={`No experiment with id ${id}.`} actions={<Link href="/experiments"><Button variant="secondary">Back to experiments</Button></Link>} />
         <PageBody><div /></PageBody>
       </>
     );
@@ -106,7 +106,7 @@ export default function ExperimentDetailPage() {
   return (
     <>
       <PageHeader
-        index="02"
+        index="05"
         title={experimentTitle(record)}
         lede={record.question}
         actions={

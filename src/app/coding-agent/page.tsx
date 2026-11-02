@@ -76,7 +76,7 @@ export default function CodingAgentPage() {
   return (
     <>
       <PageHeader
-        index="06"
+        index="09"
         title="Coding agent"
         lede="A safe agentic-coding demonstration. The agent inspects a whitelisted in-memory repository, runs its tests, proposes a bounded patch, and re-runs the tests — with no shell, no network, and no write path to disk."
         actions={<Button onClick={run} disabled={running}>{running ? "Running…" : done ? "Run again" : "Run coding agent →"}</Button>}

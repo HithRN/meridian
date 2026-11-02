@@ -23,6 +23,7 @@ export type ToolPermission =
   | "experiment" // feature/train/evaluate; produces records
   | "backtest" // trading simulation
   | "monitoring" // drift / performance
+  | "network-read" // read-only public Solana / Jito endpoints, with bundled fallback
   | "coding-readonly" // read a whitelisted repo area
   | "coding-restricted"; // propose patch / run sandboxed tests, never destructive
 

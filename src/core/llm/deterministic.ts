@@ -22,6 +22,10 @@ import {
 
 function pickDataset(question: string, datasets: DatasetMeta[]): DatasetMeta {
   const q = question.toLowerCase();
+  if (/\bsol\b|solana|sol\/usdc/.test(q)) {
+    const sol = datasets.find((d) => d.id.includes("sol"));
+    if (sol) return sol;
+  }
   if (/\bfx\b|forex|currency/.test(q)) {
     const fx = datasets.find((d) => d.id.includes("fx"));
     if (fx) return fx;

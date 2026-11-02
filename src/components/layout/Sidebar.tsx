@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { cn } from "@/lib/cn";
-import { NAV_ITEMS } from "@/components/layout/nav";
+import { NAV_GROUPS } from "@/components/layout/nav";
 import { ReasonerBadge } from "@/components/layout/ReasonerBadge";
 
 export function Sidebar() {
@@ -39,41 +39,48 @@ export function Sidebar() {
             <Wordmark />
           </div>
 
-          <nav className="px-3 py-4">
-            {NAV_ITEMS.map((item) => {
-              const active = isActive(item.href);
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setOpen(false)}
-                  className={cn(
-                    "group flex items-baseline gap-3 px-3 py-2 transition-colors",
-                    active ? "bg-ink text-paper" : "text-ink hover:bg-subtle",
-                  )}
-                >
-                  <span
-                    className={cn(
-                      "tnum text-[0.68rem] tracking-widest",
-                      active ? "text-paper/70" : "text-faint",
-                    )}
-                  >
-                    {item.index}
-                  </span>
-                  <span className="flex-1">
-                    <span className="block text-[0.95rem] leading-tight">{item.label}</span>
-                    <span
+          <nav className="px-3 py-3">
+            {NAV_GROUPS.map((group) => (
+              <div key={group.label} className="mb-2">
+                <div className="px-3 pb-1 pt-2 text-[0.6rem] uppercase tracking-[0.2em] text-faint">
+                  {group.label}
+                </div>
+                {group.items.map((item) => {
+                  const active = isActive(item.href);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setOpen(false)}
                       className={cn(
-                        "block text-[0.72rem] leading-tight",
-                        active ? "text-paper/70" : "text-faint",
+                        "group flex items-baseline gap-3 px-3 py-[6px] transition-colors",
+                        active ? "bg-ink text-paper" : "text-ink hover:bg-subtle",
                       )}
                     >
-                      {item.description}
-                    </span>
-                  </span>
-                </Link>
-              );
-            })}
+                      <span
+                        className={cn(
+                          "tnum text-[0.68rem] tracking-widest",
+                          active ? "text-paper/70" : "text-faint",
+                        )}
+                      >
+                        {item.index}
+                      </span>
+                      <span className="flex-1">
+                        <span className="block text-[0.95rem] leading-tight">{item.label}</span>
+                        <span
+                          className={cn(
+                            "block text-[0.72rem] leading-tight",
+                            active ? "text-paper/70" : "text-faint",
+                          )}
+                        >
+                          {item.description}
+                        </span>
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+            ))}
           </nav>
         </div>
 

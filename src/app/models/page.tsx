@@ -44,7 +44,7 @@ export default async function ModelsPage() {
   return (
     <>
       <PageHeader
-        index="03"
+        index="06"
         title="Model registry"
         lede="Each trained model is a versioned artifact identified by a content hash and pinned to a dataset version, feature-set version, seed and build commit — the minimum needed to reproduce it."
       />

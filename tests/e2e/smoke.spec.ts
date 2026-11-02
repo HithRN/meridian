@@ -3,8 +3,29 @@ import { test, expect } from "@playwright/test";
 test.describe("public routes", () => {
   test("overview renders", async ({ page }) => {
     await page.goto("/");
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("Auditable research");
-    await expect(page.getByRole("link", { name: /Start a research run/i })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("MEV economy");
+    await expect(page.getByRole("link", { name: /Ask the AI copilot/i })).toBeVisible();
+  });
+
+  test("jito lab recommends a tip and shows validation", async ({ page }) => {
+    await page.goto("/jito");
+    await expect(page.getByText("Recommended tip")).toBeVisible();
+    await expect(page.getByText(/Walk-forward validation/)).toBeVisible();
+  });
+
+  test("explainable AI predicts and explains a bundle", async ({ page }) => {
+    await page.goto("/ai");
+    await expect(page.getByText("Why — exact Shapley values")).toBeVisible({ timeout: 60_000 });
+    await expect(page.getByText("What would change the outcome?")).toBeVisible();
+  });
+
+  test("copilot answers with tool evidence", async ({ request }) => {
+    const res = await request.post("/api/copilot", {
+      data: { engine: "deterministic", messages: [{ role: "user", content: "What tip outbids p95?" }] },
+    });
+    const body = await res.json();
+    expect(body.toolCalls[0].name).toBe("recommend_bundle_tip");
+    expect(body.reply).toContain("lamports");
   });
 
   test("tools page lists MCP-compatible tools", async ({ page }) => {
@@ -37,8 +58,8 @@ test.describe("deterministic research (no-WebGPU fallback path)", () => {
 
     // The workflow reaches REPORT_READY and results render.
     await expect(page.getByText("Model comparison")).toBeVisible({ timeout: 60_000 });
-    await expect(page.getByText("Evidence report")).toBeVisible();
-    // A model row and the export controls exist.
+    await page.getByRole("tab", { name: "Evidence report" }).click();
+    // The export controls live on the report tab.
     await expect(page.getByRole("button", { name: /Export Markdown/i })).toBeVisible();
   });
 });

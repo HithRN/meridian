@@ -13,6 +13,7 @@ const PERMISSION_LABEL: Record<string, string> = {
   experiment: "Experiment",
   backtest: "Backtest",
   monitoring: "Monitoring",
+  "network-read": "Solana · Jito network",
   "coding-readonly": "Coding · read-only",
   "coding-restricted": "Coding · restricted",
 };
@@ -24,7 +25,7 @@ export default function ToolsPage() {
   return (
     <>
       <PageHeader
-        index="05"
+        index="08"
         title="Tool catalog"
         lede={
           <>

@@ -17,7 +17,7 @@ export default async function MonitoringPage() {
   return (
     <>
       <PageHeader
-        index="04"
+        index="07"
         title="Monitoring"
         lede="Distributional drift on the live feature space, model-performance history, and system health derived from the audited tool calls."
         actions={<Badge variant="muted">generated {new Date(snap.generatedAt).toISOString().slice(11, 16)}Z</Badge>}

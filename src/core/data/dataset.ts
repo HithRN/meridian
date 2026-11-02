@@ -117,6 +117,23 @@ const SPECS: DatasetSpec[] = [
     leakageFixture: false,
   },
   {
+    id: "synthetic-sol-hourly",
+    version: "1.0.0",
+    name: "Synthetic SOL/USDC — Hourly",
+    symbol: "SYN-SOL",
+    description:
+      "Synthetic SOL/USDC-like hourly series: high volatility, 24/7 trading, a " +
+      "moderate trend component and heavier regime swings — a crypto-native " +
+      "stress test for momentum signals.",
+    seed: 20260701,
+    bars: 4320,
+    trendStrength: 0.12,
+    meanRevert: 0.02,
+    volatility: 0.011,
+    startPrice: 150,
+    leakageFixture: false,
+  },
+  {
     id: "leakage-trap-hourly",
     version: "1.0.0",
     name: "Leakage Trap — Hourly",

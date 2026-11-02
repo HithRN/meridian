@@ -7,6 +7,7 @@
  */
 
 import "@/core/tools/catalog";
+import "@/core/tools/solana-catalog";
 
 export {
   getTool,

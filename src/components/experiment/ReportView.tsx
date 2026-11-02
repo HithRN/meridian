@@ -16,7 +16,10 @@ export function ReportView({ markdown }: { markdown: string }) {
           ),
           h3: ({ children }) => <h3 className="mb-2 mt-6 text-lg">{children}</h3>,
           p: ({ children }) => <p className="my-3 text-muted">{children}</p>,
-          ul: ({ children }) => <ul className="my-3 list-inside space-y-1 text-muted">{children}</ul>,
+          ul: ({ children }) => (
+            <ul className="my-3 list-[square] space-y-1 pl-5 text-muted marker:text-faint">{children}</ul>
+          ),
+          ol: ({ children }) => <ol className="my-3 list-decimal space-y-1 pl-5 text-muted">{children}</ol>,
           li: ({ children }) => <li className="leading-relaxed">{children}</li>,
           strong: ({ children }) => <strong className="text-ink">{children}</strong>,
           code: ({ children }) => (

@@ -6,6 +6,7 @@ import { PageHeader, PageBody, Section } from "@/components/layout/PageHeader";
 import { Badge, Card, CardBody, CardHeader, Eyebrow, KeyValue } from "@/components/ui/primitives";
 import { Tabs } from "@/components/ui/Tabs";
 import { MultiLineChart, ReliabilityChart, SERIES_STYLE } from "@/components/charts/AiCharts";
+import { ProbabilityGauge, TipResponseCurve } from "@/components/charts/PlainCharts";
 import { FEATURES, SCENARIOS, TIP_FEATURE } from "@/core/ai/bundles";
 import { MODEL_IDS, MODEL_NAMES, logit, type ModelId } from "@/core/ai/models";
 import { minTipForTarget, shapExact } from "@/core/ai/explain";
@@ -81,6 +82,15 @@ function ExplainTab({ lab, p50Sol }: { lab: LabReport; p50Sol: number | null }) 
   }, [lab, modelId]);
   const exp = useMemo(() => shapExact(f, x, lab.background), [f, x, lab.background]);
   const minTip = useMemo(() => minTipForTarget(f, x, target), [f, x, target]);
+  const tipCurve = useMemo(
+    () =>
+      Array.from({ length: 46 }, (_, i) => -2 + i * 0.18).map((v) => {
+        const z = [...x];
+        z[TIP_FEATURE] = v;
+        return { multiple: Math.pow(2, v), p: sigmoid(f(z)) * 100 };
+      }),
+    [f, x],
+  );
   const prob = sigmoid(exp.value);
   const base = sigmoid(exp.base);
 
@@ -158,10 +168,13 @@ function ExplainTab({ lab, p50Sol }: { lab: LabReport; p50Sol: number | null }) 
               }
             />
             <CardBody>
-              <div className="flex flex-wrap items-end gap-x-8 gap-y-2">
-                <div className="tnum text-6xl leading-none">{pct(prob, 0)}</div>
-                <div className="pb-1 text-sm text-muted">
-                  vs {pct(base, 0)} for an average bundle · {MODEL_NAMES[modelId]}
+              <div className="flex flex-wrap items-center gap-x-8 gap-y-2">
+                <ProbabilityGauge p={prob} label="Landing probability" />
+                <div className="text-[0.95rem] text-muted">
+                  Chance this bundle lands
+                  <div className="mt-1 text-[0.85rem] text-faint">
+                    An average bundle: {pct(base, 0)} · {MODEL_NAMES[modelId]}
+                  </div>
                 </div>
               </div>
               <p className="mt-4 text-[0.95rem]">
@@ -236,6 +249,14 @@ function ExplainTab({ lab, p50Sol }: { lab: LabReport; p50Sol: number | null }) 
                   </p>
                 )}
               </div>
+              <div className="mt-5">
+                <TipResponseCurve
+                  points={tipCurve}
+                  currentTip={Math.pow(2, x[TIP_FEATURE])}
+                  target={target}
+                  minTip={minTip === null ? null : Math.pow(2, minTip)}
+                />
+              </div>
               <p className="mt-3 text-[0.78rem] text-faint">
                 Want this in words, or in Japanese? <Link href="/copilot" className="underline underline-offset-2">Ask the copilot</Link>. It calls the same
                 model through the <code>predict_bundle_landing</code> tool.
@@ -264,7 +285,7 @@ function ModelsTab({ lab }: { lab: LabReport }) {
             <thead>
               <tr className="border-b border-line-strong">
                 {["Model", "AUC", "Log loss", "Brier", "Accuracy", "ECE", "Gap to oracle closed"].map((h) => (
-                  <th key={h} className="px-4 py-3 font-normal uppercase tracking-[0.1em] text-[0.68rem] text-faint">{h}</th>
+                  <th key={h} className="px-4 py-3 font-normal text-[0.68rem] text-faint">{h}</th>
                 ))}
               </tr>
             </thead>

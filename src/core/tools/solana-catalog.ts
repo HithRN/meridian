@@ -121,7 +121,7 @@ registerTool({
   name: "jitosol_stats",
   title: "JitoSOL stake-pool stats",
   description:
-    "JitoSOL APY, estimated MEV share of APY, TVL, supply, validator count and recent daily MEV rewards from Jito's stake-pool API.",
+    "JitoSOL APY, estimated MEV share of APY, TVL, supply, validator count and recent network-wide daily MEV rewards from Jito's stake-pool API.",
   permission: "network-read",
   deterministic: false,
   input: z.object({}).strict(),

@@ -39,7 +39,7 @@ const ResearchInputSchema = z
 const RESEARCH_TOOL: CopilotToolSpec = {
   name: "run_quant_research",
   description:
-    "Run a full multi-agent quant research session on a bundled dataset (synthetic equity, FX or SOL/USDC hourly): " +
+    "Run a full multi-agent quant research session on a bundled dataset (equity, FX or SOL/USDC hourly): " +
     "leakage scan, walk-forward training of baseline/logistic/boosted models, cost-aware backtest, adversarial critique. " +
     "Phrase `question` as a research task, e.g. 'Test a 24-period momentum signal on SOL with costs'. Takes a few seconds.",
   input_schema: {

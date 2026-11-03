@@ -36,7 +36,7 @@ export function ReportView({ markdown }: { markdown: string }) {
           ),
           thead: ({ children }) => <thead className="border-b border-line-strong">{children}</thead>,
           th: ({ children }) => (
-            <th className="px-3 py-2 text-left font-normal uppercase tracking-[0.1em] text-faint">{children}</th>
+            <th className="px-3 py-2 text-left font-normal text-faint">{children}</th>
           ),
           td: ({ children }) => <td className="tnum border-b border-line px-3 py-2 text-muted">{children}</td>,
         }}

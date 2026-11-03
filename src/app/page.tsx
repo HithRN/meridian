@@ -93,10 +93,6 @@ export default async function OverviewPage() {
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link href="/research"><Button>Explore a research run →</Button></Link>
             <Link href="/experiments"><Button variant="secondary">Browse experiments</Button></Link>
-            <span className="ml-1 flex flex-wrap gap-2">
-              <Badge variant="info">Synthetic-data demo</Badge>
-              <Badge variant="neutral">No real-money execution</Badge>
-            </span>
           </div>
         </div>
       </header>

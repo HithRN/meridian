@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { PageHeader, PageBody, Section } from "@/components/layout/PageHeader";
-import { Button, Badge, Card, CardHeader, CardBody, Eyebrow } from "@/components/ui/primitives";
+import { Button, Card, CardHeader, CardBody, Eyebrow } from "@/components/ui/primitives";
 import {
   StateStepper,
   TraceViewer,
@@ -11,9 +11,8 @@ import {
   MetaStrip,
 } from "@/components/experiment/parts";
 import { ReportView } from "@/components/experiment/ReportView";
-import { EquityChart } from "@/components/charts/EquityChart";
 import { Tabs } from "@/components/ui/Tabs";
-import { SyntheticNotice } from "@/components/experiment/SyntheticNotice";
+import { AccuracyBars, DrawdownChart, GrowthChart, MonthlyReturns } from "@/components/charts/PlainCharts";
 import { BacktestContext } from "@/components/experiment/BacktestContext";
 import { useResearchRunner } from "@/hooks/useResearchRunner";
 import { useSession } from "@/store/session";
@@ -263,6 +262,18 @@ function Results({
           ]}
         />
       </div>
+      <Card className="mb-6">
+        <CardHeader title="How often is each model right?" eyebrow="Direction of the next hour, on data the models never saw" />
+        <CardBody>
+          <AccuracyBars
+            models={result.record.models.map((m) => ({
+              label: modelLabel(m.modelType),
+              accuracy: m.metrics.accuracy,
+              best: m.modelId === result.record.bestModelId,
+            }))}
+          />
+        </CardBody>
+      </Card>
       <MetricsTable
         models={result.record.models}
         bestModelId={result.record.bestModelId}
@@ -273,18 +284,30 @@ function Results({
   );
 
   const equityPanel = best ? (
-    <Card>
-      <CardHeader
-        title={`Out-of-sample equity: ${modelLabel(best.modelType)}`}
-        eyebrow={`Net of costs · Sharpe ${best.backtest?.sharpe.toFixed(2)} · Max DD ${((best.backtest?.maxDrawdown ?? 0) * 100).toFixed(1)}%`}
-        right={<Badge variant="muted">{equity.length} points</Badge>}
-      />
-      <CardBody>
-        <EquityChart data={equity} />
-      </CardBody>
-    </Card>
+    <div className="space-y-6">
+      <Card>
+        <CardHeader title="Would it have made money?" eyebrow={`${modelLabel(best.modelType)} · growth of 1,000, after costs`} />
+        <CardBody>
+          <GrowthChart equity={equity} datasetId={result.record.dataset.datasetId} version={result.record.dataset.version} />
+        </CardBody>
+      </Card>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader title="Month by month" eyebrow="Gain or loss in each month" />
+          <CardBody>
+            <MonthlyReturns equity={equity} />
+          </CardBody>
+        </Card>
+        <Card>
+          <CardHeader title="Worst dips" eyebrow="Distance below the previous high" />
+          <CardBody>
+            <DrawdownChart equity={equity} />
+          </CardBody>
+        </Card>
+      </div>
+    </div>
   ) : (
-    <p className="text-sm text-muted">No model beat the baseline, so there is no equity curve to show.</p>
+    <p className="text-sm text-muted">No model beat the baseline, so there is no strategy to chart.</p>
   );
 
   const report = (
@@ -307,11 +330,10 @@ function Results({
 
   return (
     <Section eyebrow="Results" title="Run complete" right={`${result.reasoner} · seed ${result.seed}`}>
-      <SyntheticNotice />
       <Tabs
         tabs={[
           { id: "comparison", label: "Model comparison", content: comparison },
-          { id: "equity", label: "Equity curve", content: equityPanel },
+          { id: "equity", label: "Performance", content: equityPanel },
           { id: "critic", label: "Critic findings", content: <CritiqueList critique={result.critique} /> },
           { id: "report", label: "Evidence report", content: report },
           { id: "trace", label: `Agent trace (${trace.length})`, content: <TraceViewer trace={trace} /> },

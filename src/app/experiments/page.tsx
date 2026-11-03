@@ -68,7 +68,7 @@ export default function ExperimentsPage() {
               <thead>
                 <tr className="border-b border-line-strong">
                   {["Experiment", "Date", "Dataset", "Best model", "AUC", "Sharpe", "Critique", "Source"].map((h) => (
-                    <th key={h} className="px-3 py-3 text-left font-normal uppercase tracking-[0.1em] text-faint">{h}</th>
+                    <th key={h} className="px-3 py-3 text-left font-normal text-faint">{h}</th>
                   ))}
                 </tr>
               </thead>

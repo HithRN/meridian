@@ -72,9 +72,9 @@ export function MetricsTable({
       <table className="w-full border-collapse text-sm">
         <thead>
           <tr className="border-b border-line-strong">
-            <th className="px-4 py-3 text-left font-normal uppercase tracking-[0.1em] text-faint">Model</th>
+            <th className="px-4 py-3 text-left font-normal text-faint">Model</th>
             {COLS.map((c) => (
-              <th key={c.key} className="px-3 py-3 text-right font-normal uppercase tracking-[0.1em] text-faint">
+              <th key={c.key} className="px-3 py-3 text-right font-normal text-faint">
                 {c.label}
               </th>
             ))}
@@ -183,7 +183,7 @@ function TraceRow({ event }: { event: TraceEvent }) {
         </span>
         <span className="min-w-0 flex-1">
           <span className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-            <span className="text-[0.7rem] uppercase tracking-[0.12em] text-faint">{agent}</span>
+            <span className="text-[0.7rem] text-faint">{agent}</span>
             <span className="text-sm">{event.title}</span>
             {event.tool ? (
               <span className={cn("tnum text-[0.72rem]", event.kind === "error" ? "text-on-accent/75" : "text-faint")}>

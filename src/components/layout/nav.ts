@@ -26,6 +26,7 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     label: "Solana · Jito",
     items: [
+      { href: "/intel", label: "Market intelligence", description: "Live auction, MEV flow, validators", accent: "var(--color-mod-jito)" },
       { href: "/jito", label: "Jito Lab", description: "Tip floor, tip advisor, JitoSOL", accent: "var(--color-mod-jito)" },
       { href: "/ai", label: "Explainable AI", description: "Will a bundle land, and why?", accent: "var(--color-mod-agents)" },
       { href: "/copilot", label: "AI Copilot", description: "Ask in English or 日本語", accent: "var(--color-mod-agents)" },

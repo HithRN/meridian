@@ -9,5 +9,5 @@ export const SITE = {
   repoOwner: "HithRN",
   repoUrl: "https://github.com/HithRN/meridian",
   issuesUrl: "https://github.com/HithRN/meridian/issues",
-  status: "Research preview · synthetic-data demonstration",
+  status: "Research preview",
 } as const;

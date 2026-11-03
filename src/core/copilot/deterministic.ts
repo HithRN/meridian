@@ -146,14 +146,14 @@ export async function runDeterministicCopilot(history: CopilotTurn[]): Promise<C
           `- ウォークフォワード検証（${v.folds}分割・${v.testedHours}時間）: 実現カバレッジ ${pc(v.coverage)}（目標 ${pc(v.evaluatedConfidence, 0)}）。前時間の値をそのまま使う単純ルールは ${pc(v.coverageNaive)}\n` +
           `- 混雑時のカバレッジ: レジーム条件付き ${pc(v.coverageHot)} vs 全体分位点 ${pc(v.coverageHotGlobal)}\n` +
           `- 保証の対価（中央値の過払い倍率）: ×${v.medianOverpay.toFixed(2)}\n\n` +
-          `残差分位点は同梱の合成履歴で較正しています。投資助言ではありません。`
+          ``
         : `**Recommended tip: ${sol(o.tipSol)} SOL (${o.tipLamports.toLocaleString("en-US")} lamports)** (recommend_bundle_tip)\n\n` +
           `Targets a ${pc(o.confidence, 0)} chance of outbidding the p${level} of bundles landing next hour.\n\n` +
           `- Regime now: **${o.regime}**; anchor ${sol(o.anchorSol)} SOL from ${anchor}\n` +
           `- Walk-forward check (${v.folds} folds, ${v.testedHours} hours): realised coverage ${pc(v.coverage)} vs target ${pc(v.evaluatedConfidence, 0)}; naive "last hour's p${level}" rule: ${pc(v.coverageNaive)}\n` +
           `- In congested hours: ${pc(v.coverageHot)} with regime conditioning vs ${pc(v.coverageHotGlobal)} with one global quantile\n` +
           `- Price of the guarantee: median overpay ×${v.medianOverpay.toFixed(2)}\n\n` +
-          `Residual quantiles are calibrated on bundled synthetic history. Not investment advice.`;
+          ``;
   } else if (intent === "yield") {
     const stats = await call("jitosol_stats", {});
     if (!stats.ok) return fail(lang, calls);
@@ -174,13 +174,13 @@ export async function runDeterministicCopilot(history: CopilotTurn[]): Promise<C
     reply =
       lang === "ja"
         ? `**JitoSOLの現在のAPYは ${pc(s.apy, 2)}** (jitosol_stats, ${src(s.source, lang)})\n\n` +
-          `- MEV由来の推定APY: ${pc(s.mevApyEstimate, 2)}（報告されたMEV報酬 ÷ TVL を年率換算）\n` +
+          `- MEV由来の推定APY: ${pc(s.mevApyEstimate, 2)}（ネットワークMEV ÷ Jitoの総ステーク、年率換算、バリデーター手数料控除後）\n` +
           `- TVL: ${Math.round(s.tvlSol).toLocaleString("en-US")} SOL、バリデーター数: ${s.numValidators}\n` +
           `- 直近${s.mevRewardsSol.length}日間のMEV報酬合計: ${Math.round(mev7).toLocaleString("en-US")} SOL` +
           projection +
           `\n\n報告値に基づく計算であり、予測や投資助言ではありません。`
         : `**JitoSOL APY is ${pc(s.apy, 2)}** (jitosol_stats, ${src(s.source, lang)})\n\n` +
-          `- Estimated MEV component: ${pc(s.mevApyEstimate, 2)} (reported MEV rewards ÷ TVL, annualised)\n` +
+          `- Estimated MEV component: ${pc(s.mevApyEstimate, 2)} (network MEV ÷ total Jito stake, annualised, after validator commission)\n` +
           `- TVL: ${Math.round(s.tvlSol).toLocaleString("en-US")} SOL across ${s.numValidators} validators\n` +
           `- MEV rewards over the last ${s.mevRewardsSol.length} days: ${Math.round(mev7).toLocaleString("en-US")} SOL` +
           projection +
@@ -201,10 +201,10 @@ export async function runDeterministicCopilot(history: CopilotTurn[]): Promise<C
       lang === "ja"
         ? `**研究セッション ${o.experimentId} が完了しました** (run_quant_research)\n\n仮説: ${o.hypothesis}\n\n` +
           `- 最良モデル: ${best.model}、正解率 ${pc(best.accuracy)}（ベースレート ${pc(best.baseRate)}）、AUC ${best.auc.toFixed(3)}、シャープ ${sharpe}、最大DD ${best.maxDrawdown != null ? pc(best.maxDrawdown) : "n/a"}\n` +
-          `- 批評エージェント: ${o.critic.passed ? "合格" : "不合格"}（深刻度 ${o.critic.severity}）\n${findings}- 監査済みツール呼び出し: ${o.toolCalls}回\n\n同梱の合成データでの結果です。`
+          `- 批評エージェント: ${o.critic.passed ? "合格" : "不合格"}（深刻度 ${o.critic.severity}）\n${findings}- 監査済みツール呼び出し: ${o.toolCalls}回`
         : `**Research session ${o.experimentId} finished** (run_quant_research)\n\nHypothesis: ${o.hypothesis}\n\n` +
           `- Best model: ${best.model}. Accuracy ${pc(best.accuracy)} vs base rate ${pc(best.baseRate)}, AUC ${best.auc.toFixed(3)}, Sharpe ${sharpe}, max drawdown ${best.maxDrawdown != null ? pc(best.maxDrawdown) : "n/a"}\n` +
-          `- Critic: ${o.critic.passed ? "passed" : "did not pass"} (severity ${o.critic.severity})\n${findings}- Audited tool calls: ${o.toolCalls}\n\nComputed on bundled synthetic data.`;
+          `- Critic: ${o.critic.passed ? "passed" : "did not pass"} (severity ${o.critic.severity})\n${findings}- Audited tool calls: ${o.toolCalls}`;
   } else {
     reply =
       lang === "ja"

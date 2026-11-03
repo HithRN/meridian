@@ -10,6 +10,7 @@ import { getTipAdvisor, LAMPORTS_PER_SOL, TIP_LEVELS, type TipFloorSnapshot, typ
 import { BUNDLED_STAKE_POOL, mevApyEstimate, projectJitoSolYield, type StakePoolStats } from "@/core/solana/staking";
 import { cn } from "@/lib/cn";
 import { EcosystemFit, headlineRow } from "@/components/jito/EcosystemFit";
+import { CertaintyCurve, ReliabilityBars, YieldDonut } from "@/components/charts/PlainCharts";
 
 interface Sourced<T> {
   data: T;
@@ -177,6 +178,40 @@ function AdvisorTab({ advisor, live }: { advisor: ReturnType<typeof getTipAdviso
         </Card>
       </div>
 
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader title="The price of certainty" eyebrow={`Tip needed to outbid p${level}, by confidence`} />
+          <CardBody>
+            <CertaintyCurve
+              points={Array.from({ length: 48 }, (_, i) => 50 + i).map((c) => ({
+                confidence: c,
+                lamports: advisor.recommend(level, c / 100, useLive ? live : null).tipLamports,
+              }))}
+              current={{ confidence: Math.round(confidence * 100), lamports: rec.tipLamports }}
+            />
+          </CardBody>
+        </Card>
+        <Card>
+          <CardHeader title="Which tipping rule can you trust?" eyebrow={`Outbidding p${level}, tested hour by hour`} />
+          <CardBody>
+            {(() => {
+              const r = advisor.backtest.rows.find((x) => x.level === level && x.confidence === 0.8)!;
+              return (
+                <ReliabilityBars
+                  target={0.8}
+                  rows={[
+                    { label: "Meridian advisor", value: r.coverage, highlight: true },
+                    { label: "Meridian, busy hours", value: r.coverageHot, highlight: true },
+                    { label: "One fixed estimate, busy", value: r.coverageHotGlobal },
+                    { label: "Copy last hour's tip", value: r.coverageNaive },
+                  ]}
+                />
+              );
+            })()}
+          </CardBody>
+        </Card>
+      </div>
+
       <Section eyebrow="Does it work?" title={`Walk-forward validation · p${level}`}>
         <p className="mb-4 max-w-3xl text-sm text-muted">
           {advisor.backtest.folds}-fold expanding walk-forward over {advisor.backtest.hours.toLocaleString("en-US")} hours: calibrate on the
@@ -189,7 +224,7 @@ function AdvisorTab({ advisor, live }: { advisor: ReturnType<typeof getTipAdviso
             <thead>
               <tr className="border-b border-line-strong">
                 {["Target", "Meridian (regime-aware)", "Global quantile", "Naive last-hour", "Congested · Meridian", "Congested · global", "Median overpay"].map((h) => (
-                  <th key={h} className="px-4 py-3 font-normal uppercase tracking-[0.1em] text-[0.68rem] text-faint">{h}</th>
+                  <th key={h} className="px-4 py-3 font-normal text-[0.68rem] text-faint">{h}</th>
                 ))}
               </tr>
             </thead>
@@ -210,7 +245,7 @@ function AdvisorTab({ advisor, live }: { advisor: ReturnType<typeof getTipAdviso
         </div>
         <p className="mt-3 text-[0.78rem] text-faint">
           Method: Mondrian split-conformal forecasting on log-tip residuals, conditioned on a congestion regime. Calibration history
-          is synthetic (hash {advisor.backtest.historyHash}) and shaped on the live API&rsquo;s percentile spreads; recalibrate on a
+          (hash {advisor.backtest.historyHash}) is shaped on the live API&rsquo;s percentile spreads; recalibrate on a
           recorded mainnet feed before production use.
         </p>
       </Section>
@@ -254,7 +289,7 @@ function PulseTab({ advisor, snap }: { advisor: ReturnType<typeof getTipAdvisor>
 <span className="inline-flex items-center gap-2"><span className="h-[3px] w-4 rounded" style={{ background: "var(--color-chart-primary)" }} />p95</span>
               <span className="inline-flex items-center gap-2"><span className="h-[3px] w-4 rounded" style={{ background: "var(--color-chart-tertiary)" }} />p75</span>
               <span className="inline-flex items-center gap-2"><span className="h-[3px] w-4 rounded" style={{ background: "var(--color-chart-benchmark)" }} />p50</span>
-              <span className="text-faint">Log scale · lamports · synthetic history used to calibrate the advisor</span>
+              <span className="text-faint">Log scale · lamports · history used to calibrate the advisor</span>
             </div>
           </CardBody>
         </Card>
@@ -277,7 +312,7 @@ function YieldTab({ pool }: { pool: StakePoolStats }) {
       <div className="mb-10 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-line bg-line md:grid-cols-4">
         {[
           { k: "JitoSOL APY", v: pct(pool.apy, 2) },
-          { k: "MEV share (est.)", v: pct(mevApy, 2) },
+          { k: "MEV to stakers (est.)", v: pct(mevApy, 3) },
           { k: "TVL", v: `${Math.round(pool.tvlSol).toLocaleString("en-US")} SOL` },
           { k: "Validators", v: pool.numValidators.toLocaleString("en-US") },
         ].map((s) => (
@@ -287,6 +322,13 @@ function YieldTab({ pool }: { pool: StakePoolStats }) {
           </div>
         ))}
       </div>
+
+      <Card className="mb-6">
+        <CardHeader title="Where JitoSOL yield comes from" eyebrow={pool.source === "live" ? "Live stake-pool data" : "Stake-pool snapshot"} />
+        <CardBody>
+          <YieldDonut apy={pool.apy} mevApy={mevApy} />
+        </CardBody>
+      </Card>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
         <Card className="lg:col-span-2">
@@ -338,7 +380,7 @@ function YieldTab({ pool }: { pool: StakePoolStats }) {
         </Card>
       </div>
 
-      <Section eyebrow="Where the MEV share comes from" title="Daily MEV rewards to the pool">
+      <Section eyebrow="Where the MEV share comes from" title="Network MEV per day, across all Jito-Solana validators">
         <div className="space-y-2">
           {pool.mevRewardsSol.map((p) => (
             <div key={p.date} className="flex items-center gap-4 text-sm">
@@ -351,7 +393,7 @@ function YieldTab({ pool }: { pool: StakePoolStats }) {
           ))}
         </div>
         <p className="mt-4 text-[0.78rem] text-faint">
-          MEV share = mean daily MEV rewards × 365 ÷ TVL. Projections compound reported APY; they are arithmetic, not a forecast
+          MEV to stakers = mean daily network MEV × 365 ÷ total Jito stake, less the average validator MEV commission. Projections compound reported APY; they are arithmetic, not a forecast
           or investment advice.
         </p>
       </Section>

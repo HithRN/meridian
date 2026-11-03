@@ -32,7 +32,7 @@ export default function SecurityPage() {
               <thead>
                 <tr className="border-b border-line-strong">
                   {["Threat", "Control", "Status"].map((h) => (
-                    <th key={h} className="px-4 py-3 text-[0.68rem] font-medium uppercase tracking-[0.08em] text-faint">{h}</th>
+                    <th key={h} className="px-4 py-3 text-[0.82rem] font-semibold text-faint">{h}</th>
                   ))}
                 </tr>
               </thead>

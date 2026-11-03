@@ -89,7 +89,7 @@ export default function AboutPage() {
         <div key={a.name} className="bg-paper px-5 py-5">
           <h3 className="text-lg">{a.name}</h3>
           <p className="mt-1 text-sm text-muted">{a.role}</p>
-          <p className="mt-3 text-[0.8rem] uppercase tracking-[0.1em] text-faint">Must not: {a.guard}</p>
+          <p className="mt-3 text-[0.8rem] text-faint">Must not: {a.guard}</p>
         </div>
       ))}
     </div>
@@ -112,7 +112,7 @@ export default function AboutPage() {
         <thead>
           <tr className="border-b border-line-strong">
             {["Layer", "Technology", "Purpose"].map((h) => (
-              <th key={h} className="px-4 py-3 font-normal uppercase tracking-[0.12em] text-faint">{h}</th>
+              <th key={h} className="px-4 py-3 font-normal text-faint">{h}</th>
             ))}
           </tr>
         </thead>
@@ -141,7 +141,7 @@ export default function AboutPage() {
           <thead>
             <tr className="border-b border-line-strong">
               {["Dataset", "Symbol", "Rows", "Span", "Content hash", "Role"].map((h) => (
-                <th key={h} className="px-4 py-3 font-normal uppercase tracking-[0.12em] text-faint">{h}</th>
+                <th key={h} className="px-4 py-3 font-normal text-faint">{h}</th>
               ))}
             </tr>
           </thead>
@@ -178,7 +178,7 @@ export default function AboutPage() {
         <ul className="list-disc space-y-3 pl-5 text-sm text-muted marker:text-faint">
           <li>The tip advisor&rsquo;s residuals are calibrated on synthetic history; on mainnet it should be recalibrated on a recorded tip-floor feed.</li>
           <li>&ldquo;Outbid p95&rdquo; is relative to the landed-tip distribution, not a guarantee that a bundle lands.</li>
-          <li>The MEV share of APY is an estimate: reported MEV rewards ÷ TVL, annualised.</li>
+          <li>The MEV share of APY is an estimate: network MEV ÷ total Jito stake, annualised, after the average validator MEV commission.</li>
           <li>Research models are compact TypeScript learners; backtests omit market impact and liquidity limits.</li>
         </ul>
       </div>

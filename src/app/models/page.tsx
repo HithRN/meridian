@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader, PageBody, Section } from "@/components/layout/PageHeader";
 import { Badge, Stat } from "@/components/ui/primitives";
-import { SyntheticNotice } from "@/components/experiment/SyntheticNotice";
 import { getSeedResults } from "@/core/experiments/seed";
 import { MODEL_STATUSES, STATUS_MEANING, acceptanceCriteria, modelStatus, type ModelStatus } from "@/core/experiments/lifecycle";
 import { featureSetId } from "@/core/ml/pipeline";
 import { num, pct, dateShort } from "@/lib/format";
 import { modelLabelShort, datasetLabel } from "@/lib/labels";
 import { cn } from "@/lib/cn";
+import { RangeChart } from "@/components/charts/PlainCharts";
 
 export const metadata: Metadata = {
   title: "Models",
@@ -47,8 +47,7 @@ export default async function ModelsPage() {
         lede="Every trained model is pinned to a dataset version, feature-set hash, seed and build commit. Status is derived from explicit acceptance criteria in one place, so every count and list agrees."
       />
       <PageBody>
-        <SyntheticNotice />
-
+  
         <Section eyebrow="Lifecycle" title="Status distribution">
           <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-5">
             {counts.map((c) => (
@@ -65,6 +64,24 @@ export default async function ModelsPage() {
             The best model of each experiment is approved only if it passes all four criteria. Predictive quality (AUC) and portfolio
             performance (Sharpe) are judged separately: a small AUC edge can produce a large but statistically fragile Sharpe.
           </p>
+          <div className="mb-6 rounded-lg border border-line bg-paper p-5">
+            <h3 className="text-[1.05rem] font-semibold">Risk-adjusted return, with its plausible range</h3>
+            <p className="mb-4 mt-1 text-[0.9rem] text-muted">Net Sharpe ratio of each selected model, after trading costs, with a 95% interval.</p>
+            <RangeChart
+              rows={selected
+                .filter((r) => r.model.backtest)
+                .map((r) => {
+                  const bt = r.model.backtest!;
+                  const se = bt.sharpeStdErr ?? 0;
+                  return {
+                    label: `${modelLabelShort(r.model.modelType)} · ${datasetLabel(r.record.dataset.datasetId)}`,
+                    value: bt.sharpe,
+                    low: bt.sharpe - 1.96 * se,
+                    high: bt.sharpe + 1.96 * se,
+                  };
+                })}
+            />
+          </div>
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             {selected.map((r) => (
               <div key={r.model.modelId + r.record.id} className="rounded-lg border border-line bg-paper p-5">
@@ -102,7 +119,7 @@ export default async function ModelsPage() {
               <thead>
                 <tr className="border-b border-line-strong">
                   {["Model", "Dataset", "Feature set", "OOS n", "AUC", "Net Sharpe ± SE", "Trades", "Max DD", "Status", "Built"].map((h) => (
-                    <th key={h} className="whitespace-nowrap px-3 py-3 text-left text-[0.68rem] font-medium uppercase tracking-[0.08em] text-faint">{h}</th>
+                    <th key={h} className="whitespace-nowrap px-3 py-3 text-left text-[0.82rem] font-semibold text-faint">{h}</th>
                   ))}
                 </tr>
               </thead>

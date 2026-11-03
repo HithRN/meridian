@@ -17,12 +17,11 @@ export function PageHeader({
   actions?: React.ReactNode;
 }) {
   return (
-    <header className="border-b border-line bg-paper px-6 pb-6 pt-8 md:px-10" style={{ boxShadow: `inset 0 3px 0 ${accent}` }}>
+    <header className="border-b border-line bg-paper px-6 pb-6 pt-8 md:px-10" data-section={eyebrow} style={{ boxShadow: `inset 0 3px 0 ${accent}` }}>
       <div className="mx-auto max-w-6xl">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="max-w-3xl">
-            <Eyebrow className="flex items-center gap-2"><span aria-hidden className="h-[7px] w-[7px] rounded-full" style={{ background: accent }} />{eyebrow}</Eyebrow>
-            <h1 className="mt-2 text-[2.1rem] font-semibold leading-tight tracking-tight md:text-[2.5rem]">{title}</h1>
+            <h1 className="text-[2.1rem] font-semibold leading-tight tracking-tight md:text-[2.5rem]">{title}</h1>
             {lede ? <p className="mt-3 text-[1.02rem] leading-relaxed text-muted">{lede}</p> : null}
           </div>
           {actions ? <div className="flex items-center gap-3">{actions}</div> : null}

@@ -3,8 +3,13 @@
  *
  * JitoSOL is a liquid staking token whose exchange rate accrues both protocol
  * staking rewards and MEV tips redistributed by Jito-Solana validators. This
- * module decomposes the pool's reported APY into an estimated MEV component
- * (reported MEV rewards ÷ TVL, annualised) and projects a position forward.
+ * module decomposes the pool's reported APY into an estimated MEV component and
+ * projects a position forward.
+ *
+ * The stake-pool API's `mev_rewards` series is network-wide daily MEV, not the
+ * pool's share. The MEV yield a staker earns is therefore estimated as
+ * network MEV ÷ total Jito stake, annualised, after the stake-weighted average
+ * MEV commission validators keep.
  *
  * Inputs come from Jito's public stake-pool stats API when reachable, otherwise
  * from the bundled snapshot below (captured from the same API on 2026-11-02),
@@ -25,8 +30,12 @@ export interface StakePoolStats {
   tvlSol: number;
   supplyJitoSol: number;
   numValidators: number;
-  /** Daily MEV rewards to the pool, in SOL. */
+  /** Network-wide daily MEV rewards across Jito-Solana validators, in SOL. */
   mevRewardsSol: DatedValue[];
+  /** Total stake on Jito-Solana validators (SOL). */
+  networkStakeSol?: number;
+  /** Stake-weighted share of MEV that validators keep as commission. */
+  avgMevCommission?: number;
   source: "live" | "snapshot";
   asOf: string;
 }
@@ -55,9 +64,15 @@ export const BUNDLED_STAKE_POOL: StakePoolStats = {
     { date: "2026-10-31", value: 643.31 },
     { date: "2026-11-01", value: 674.82 },
   ],
+  networkStakeSol: 426_497_145,
+  avgMevCommission: 0.3254,
   source: "snapshot",
   asOf: "2026-11-02T16:21:33Z",
 };
+
+/** Measured from Jito's validator and epoch MEV APIs (epoch 1074). */
+export const DEFAULT_NETWORK_STAKE_SOL = 426_497_145;
+export const DEFAULT_AVG_MEV_COMMISSION = 0.3254;
 
 /** Parse the raw stake_pool_stats payload (lamport-denominated) into SOL units. */
 export function parseStakePoolStats(raw: unknown): StakePoolStats | null {
@@ -81,11 +96,16 @@ export function parseStakePoolStats(raw: unknown): StakePoolStats | null {
   };
 }
 
-/** Annualised MEV contribution: mean daily MEV rewards × 365 ÷ TVL. */
+/**
+ * Annualised MEV yield to a staker: mean daily network MEV × 365 ÷ total Jito
+ * stake, less the average validator MEV commission.
+ */
 export function mevApyEstimate(stats: StakePoolStats): number {
-  if (!stats.mevRewardsSol.length || stats.tvlSol <= 0) return 0;
+  if (!stats.mevRewardsSol.length) return 0;
   const mean = stats.mevRewardsSol.reduce((s, p) => s + p.value, 0) / stats.mevRewardsSol.length;
-  return Math.min(stats.apy, (mean * 365) / stats.tvlSol);
+  const stake = stats.networkStakeSol ?? DEFAULT_NETWORK_STAKE_SOL;
+  const commission = stats.avgMevCommission ?? DEFAULT_AVG_MEV_COMMISSION;
+  return Math.min(stats.apy, ((mean * 365) / stake) * (1 - commission));
 }
 
 export interface YieldProjection {

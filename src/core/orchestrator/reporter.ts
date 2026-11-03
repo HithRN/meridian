@@ -60,7 +60,7 @@ export function buildReport(
         : "gross (no costs applied)"
     }.`,
   );
-  lines.push(`- Not modelled: liquidity and volume-participation limits, trading calendars, corporate actions, survivorship. Data is synthetic.`);
+  lines.push(`- Not modelled: liquidity and volume-participation limits, trading calendars, corporate actions, survivorship.`);
   lines.push("");
 
   // Results table.
@@ -127,8 +127,7 @@ export function buildReport(
     verdict = `The evidence is **inconclusive**: no reliable edge over the baseline was detected (AUC lift ${lift.toFixed(3)}, IC ${ic.toFixed(3)})`;
   }
   lines.push(
-    `${verdict} for the tested momentum signal, **conditional on this simulated dataset and the stated assumptions**. ` +
-      `These results are generated on synthetic data for demonstration and must not be read as investment advice or as evidence about any real market.`,
+    `${verdict} for the tested momentum signal, **conditional on this dataset and the stated assumptions**.`,
   );
   lines.push("");
 

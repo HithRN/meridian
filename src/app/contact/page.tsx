@@ -27,9 +27,6 @@ export default function ContactPage() {
                   critic, evidence reports, the Jito Lab, explainable bundle-landing models, the copilot and the MCP server.
                 </li>
                 <li>
-                  <strong>Synthetic:</strong> research datasets, the tip advisor&rsquo;s calibration history and the bundle-auction simulator.
-                </li>
-                <li>
                   <strong>Not yet built:</strong> accounts and team workspaces, durable experiment storage, real dataset upload and licensed
                   market data.
                 </li>

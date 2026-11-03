@@ -53,8 +53,8 @@ export function EcosystemFit({ data }: { data: EcosystemFitData }) {
         "Stake-pool data is decomposed into staking and MEV components, so a position can be projected with and without the MEV share.",
       evidence: (
         <>
-          {data.poolSource === "live" ? "Live" : "Snapshot"} pool data: {pct(data.apy, 2)} APY, of which about {pct(data.mevApy, 2)} is
-          estimated MEV, across {data.validators.toLocaleString("en-US")} validators.
+          {data.poolSource === "live" ? "Live" : "Snapshot"} pool data: {pct(data.apy, 2)} APY, of which about {pct(data.mevApy, 3)} comes
+          from MEV after validator commission. At today&rsquo;s activity the yield is almost entirely staking.
         </>
       ),
       href: "/jito#yield",
@@ -97,9 +97,12 @@ export function EcosystemFit({ data }: { data: EcosystemFitData }) {
           </div>
         ))}
       </div>
+      <a href="/intel" className="mt-5 inline-block text-[0.95rem] font-medium text-link underline-offset-2 hover:underline">
+        Open live market intelligence: the tip auction, MEV value flow and validator economics →
+      </a>
       <p className="mt-4 max-w-3xl text-[0.9rem] text-faint">
         On mainnet the same pipeline would calibrate on the block engine&rsquo;s landed and dropped bundle records instead of the bundled
-        simulator and synthetic tip history.
+        simulator and calibration history.
       </p>
     </div>
   );

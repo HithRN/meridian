@@ -13,10 +13,9 @@ import {
   MetaStrip,
 } from "@/components/experiment/parts";
 import { ReportView } from "@/components/experiment/ReportView";
-import { SyntheticNotice } from "@/components/experiment/SyntheticNotice";
 import { BacktestContext } from "@/components/experiment/BacktestContext";
 import { modelStatus } from "@/core/experiments/lifecycle";
-import { EquityChart } from "@/components/charts/EquityChart";
+import { DrawdownChart, GrowthChart, MonthlyReturns } from "@/components/charts/PlainCharts";
 import { useExperiments } from "@/store/experiments";
 import type { ExperimentRecord, Critique } from "@/core/schemas/experiment";
 import type { TraceEvent } from "@/core/orchestrator/types";
@@ -120,8 +119,7 @@ export default function ExperimentDetailPage() {
         }
       />
       <PageBody>
-        <SyntheticNotice />
-        <div className="mb-8">
+          <div className="mb-8">
           <MetaStrip
             items={[
               { k: "ID", v: record.id },
@@ -145,14 +143,25 @@ export default function ExperimentDetailPage() {
         </Section>
 
         {best ? (
-          <Section eyebrow="Best model" title={`Equity curve: ${modelLabel(best.modelType)}`}>
-            <Card>
-              <CardHeader
-                title="Out-of-sample equity"
-                eyebrow={`Sharpe ${best.backtest?.sharpe.toFixed(2)} · Max DD ${((best.backtest?.maxDrawdown ?? 0) * 100).toFixed(1)}%`}
-              />
-              <CardBody><EquityChart data={equity} /></CardBody>
-            </Card>
+          <Section eyebrow="Best model" title={`Performance: ${modelLabel(best.modelType)}`}>
+            <div className="space-y-6">
+              <Card>
+                <CardHeader title="Would it have made money?" eyebrow="Growth of 1,000, after costs" />
+                <CardBody>
+                  <GrowthChart equity={equity} datasetId={record.dataset.datasetId} version={record.dataset.version} />
+                </CardBody>
+              </Card>
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                <Card>
+                  <CardHeader title="Month by month" eyebrow="Gain or loss in each month" />
+                  <CardBody><MonthlyReturns equity={equity} /></CardBody>
+                </Card>
+                <Card>
+                  <CardHeader title="Worst dips" eyebrow="Distance below the previous high" />
+                  <CardBody><DrawdownChart equity={equity} /></CardBody>
+                </Card>
+              </div>
+            </div>
           </Section>
         ) : null}
 

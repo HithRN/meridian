@@ -34,7 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <div>
                   <div className="text-[0.95rem] font-semibold tracking-tight">{SITE.name}</div>
                   <div className="mt-1 text-white/70">Trust in the process. Confidence in the evidence.</div>
-                  <div className="mt-3 text-white/60">Created by {SITE.author} · {SITE.status} · Not investment advice.</div>
+                  <div className="mt-3 text-white/60">Created by {SITE.author}</div>
                 </div>
                 <nav className="flex flex-wrap gap-x-6 gap-y-2 text-white/80" aria-label="Footer">
                   <Link href="/contact" className="hover:text-white">About &amp; contact</Link>

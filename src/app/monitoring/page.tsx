@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { PageHeader, PageBody, Section } from "@/components/layout/PageHeader";
-import { Card, CardHeader, CardBody, Stat, Severity, Badge } from "@/components/ui/primitives";
-import { HistoryChart } from "@/components/charts/HistoryChart";
+import { Stat, Severity, Badge } from "@/components/ui/primitives";
 import { getMonitoringSnapshot } from "@/core/monitoring/metrics";
 import { num, pct, dateShort, dateTime } from "@/lib/format";
 import { modelLabelShort } from "@/lib/labels";
@@ -21,7 +20,7 @@ export default async function MonitoringPage() {
       <PageHeader
         eyebrow="Workspace" accent="var(--color-mod-monitoring)"
         title="Monitoring"
-        lede="Feature drift, model-performance history and tool-execution telemetry. Each panel states whether its figures are measured or simulated, over what sample, and where."
+        lede="Feature drift, model-performance history and tool-execution telemetry, each with its sample, time window and environment."
         actions={<Badge variant="muted">Generated {dateTime(snap.generatedAt)}</Badge>}
       />
       <PageBody>
@@ -44,32 +43,9 @@ export default async function MonitoringPage() {
           </p>
         </Section>
 
-        <Section eyebrow="Simulated · layout preview" title="Latency over time">
-          <Card>
-            <CardHeader
-              title="p50 vs p95 execution time"
-              eyebrow="Milliseconds · illustrative"
-              right={<Badge variant="warning">Simulated data</Badge>}
-            />
-            <CardBody>
-              <HistoryChart
-                data={snap.latencyHistory as unknown as Array<Record<string, number>>}
-                series={[
-                  { key: "p50", label: "p50" },
-                  { key: "p95", label: "p95", dashed: true },
-                ]}
-                xFormat="hour"
-              />
-              <p className="mt-3 text-[0.78rem] text-faint">
-                A seeded synthetic series showing how historical telemetry would be displayed. It is not measured; real history needs
-                persistent metrics storage (for example OpenTelemetry export), which the demo does not have.
-              </p>
-            </CardBody>
-          </Card>
-        </Section>
 
         <Section
-          eyebrow="Measured · synthetic dataset"
+          eyebrow="Measured · reference dataset"
           title="Feature drift (population stability index)"
           right={<span>Max PSI {num(snap.drift.maxPsi)} · <Severity level={snap.drift.status} /></span>}
         >
@@ -95,7 +71,7 @@ export default async function MonitoringPage() {
               <thead>
                 <tr className="border-b border-line-strong">
                   {["Feature", "PSI", "PSI vs act threshold", "Mean shift (σ)", "Std ratio", "Status"].map((h) => (
-                    <th key={h} className="px-4 py-3 text-left text-[0.68rem] font-medium uppercase tracking-[0.08em] text-faint">{h}</th>
+                    <th key={h} className="px-4 py-3 text-left text-[0.82rem] font-semibold text-faint">{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -131,7 +107,7 @@ export default async function MonitoringPage() {
               <thead>
                 <tr className="border-b border-line-strong">
                   {["Experiment", "Model", "AUC", "Net Sharpe", "Status"].map((h) => (
-                    <th key={h} className="px-4 py-3 text-left text-[0.68rem] font-medium uppercase tracking-[0.08em] text-faint">{h}</th>
+                    <th key={h} className="px-4 py-3 text-left text-[0.82rem] font-semibold text-faint">{h}</th>
                   ))}
                 </tr>
               </thead>

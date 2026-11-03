@@ -1,17 +1,36 @@
 # Meridian
 
-**A multi-agent quantitative research & ML-operations platform.**
+**Research with clarity. Decisions with confidence.** From research hypothesis to reproducible evidence.
 
-Meridian decomposes a natural-language research question into a plan, delegates it to
-specialised agents, and lets them investigate a quantitative hypothesis through
-deterministic, MCP-compatible tools — leakage-safe experiments, cost-aware backtests,
-an adversarial critique, and an auditable report in which **every number is traceable to a
-tool call**. It runs at **zero cost**: browser-local model inference where WebGPU is
-available, and a fully deterministic fallback everywhere else. No paid model, data, or
-infrastructure APIs are required.
+Meridian is an AI-assisted quantitative research platform. Agents propose and coordinate,
+deterministic tools calculate, an independent critic challenges the results, and every
+conclusion in the evidence report links to the tool call that produced it.
 
-> All results are computed on **bundled synthetic market data** for demonstration only.
-> Nothing here is investment advice or evidence about any real market.
+> **Synthetic-data demonstration.** Research results are computed on bundled synthetic market
+> data; they validate the method, reproducibility and leakage controls, and are not evidence
+> about any real market. No real-money execution. Not investment advice.
+
+Built and maintained by **Sanyam** · source: [HithRN/meridian](https://github.com/HithRN/meridian)
+(the single source of truth for attribution in the app is `src/lib/site.ts`).
+
+## Feature status
+
+| Feature | Status | Where |
+| --- | --- | --- |
+| Research runs: plan → agents → critic → evidence report | Working | `/research` |
+| Walk-forward evaluation, leakage scan, seeded reproducibility | Working | core |
+| Backtest with next-bar execution, fees, spread, vol slippage, √-impact, borrow, Sharpe SE | Working | core |
+| Model registry with explicit acceptance criteria | Working | `/models` |
+| Monitoring with measured vs simulated telemetry labelled | Working | `/monitoring` |
+| MCP server (Streamable HTTP, JSON-RPC 2.0) + REST API | Working, tested with the official MCP TypeScript SDK client | `/api/mcp`, `/developers` |
+| Solana · Jito vertical: Jito Lab, Explainable AI, Copilot | Working (Claude copilot needs `ANTHROPIC_API_KEY`) | `/jito`, `/ai`, `/copilot` |
+| Accounts, team workspaces, RBAC | Planned | — |
+| Durable experiment storage (PostgreSQL / object storage) | Planned | — |
+| Real dataset upload, licensed market data | Planned | — |
+
+**Deployment note:** the public deployment updates when this branch is merged into `main`.
+Until then the live site shows the earlier version without the Solana · Jito vertical,
+the MCP server or the redesigned interface.
 
 ## New: Solana · Jito vertical + AI copilot
 
@@ -55,7 +74,7 @@ Live data comes from Jito's public, keyless endpoints (`bundles.jito.wtf` tip fl
 - [Why this exists](#why-this-exists)
 - [Architecture](#architecture)
 - [The agent workflow](#the-agent-workflow)
-- [Tools (MCP-compatible)](#tools-mcp-compatible)
+- [Tools and MCP server](#tools-and-mcp-server)
 - [Reproducibility & guardrails](#reproducibility--guardrails)
 - [Local development](#local-development)
 - [Testing](#testing)
@@ -89,7 +108,7 @@ the tool call that produced each figure.
 | Interface | Next.js 16 · React 19 · TypeScript · Tailwind v4 | Research workspace, agent trace, comparison, reports |
 | Reasoning | WebLLM/WebGPU + deterministic fallback | Browser-local planning; deterministic policy when unsupported |
 | Orchestration | Typed state machine | `planner → workers → critic → reporter` |
-| Tools | MCP-compatible Zod/JSON-Schema contracts | Strictly typed, audited, deterministic execution |
+| Tools | Zod/JSON-Schema contracts, served over MCP and REST | Strictly typed, audited, deterministic execution |
 | Compute | Route Handlers · Web Workers | Bounded ML, backtest and profiling kernels (isomorphic TS) |
 | MLOps | JSON experiment store (+ MLflow-portable export) | Versioned records, evaluation, drift & health |
 | Hosting | Vercel | Public, serverless, zero-cost |
@@ -120,10 +139,18 @@ RECEIVED → PLAN_CREATED → DATA_VALIDATED → HYPOTHESIS_DEFINED → FEATURES
 | Reporter Agent | Evidence report strictly from tool outputs | Never invents citations/metrics/experiments |
 | Coding Agent | Inspect sandbox, propose patch, run tests | Never runs destructive/production commands |
 
-## Tools (MCP-compatible)
+## Tools and MCP server
 
-Tools are discovered by name with strict input/output JSON Schemas and executed over a
-stateless HTTP layer. Discovery: `GET /api/tools`. Execution: `POST /api/tool/{name}`.
+Tools are discovered by name with strict input/output JSON Schemas. They are served two ways:
+
+- **MCP server** at `POST /api/mcp` — Model Context Protocol over Streamable HTTP, stateless,
+  JSON responses. Implements `initialize` (version negotiation: 2025-11-25, 2025-06-18,
+  2025-03-26), `notifications/initialized`, `ping`, `tools/list` and `tools/call`, returns
+  `structuredContent` validated against each tool's output schema, marks every tool
+  read-only, checks `Origin` and `MCP-Protocol-Version`, and rate-limits per client.
+  Connect with `claude mcp add --transport http meridian https://<host>/api/mcp`.
+  Verified with raw JSON-RPC (curl) and the official `@modelcontextprotocol/sdk` client.
+- **REST**: discovery `GET /api/tools`, execution `POST /api/tool/{name}`.
 
 `list_datasets` · `load_dataset` · `profile_dataset` · `create_features` ·
 `walk_forward_split` · `train_model` · `evaluate_model` · `backtest` · `drift_check` ·
@@ -131,7 +158,8 @@ stateless HTTP layer. Discovery: `GET /api/tools`. Execution: `POST /api/tool/{n
 `jito_tip_floor` · `recommend_bundle_tip` · `jitosol_stats` · `project_jitosol_yield` · `predict_bundle_landing`
 
 Each tool declares a permission class (`read-data`, `experiment`, `backtest`, `monitoring`,
-`coding-readonly`, `coding-restricted`) and is deterministic given its input and seed.
+`network-read`, `coding-readonly`, `coding-restricted`). All are deterministic given input and
+seed except the `network-read` tools, which report whether their data is live or a snapshot.
 
 ## Reproducibility & guardrails
 
@@ -203,7 +231,8 @@ identical guarantees, no download.
 | Endpoint | Method | Purpose |
 | --- | --- | --- |
 | `/api/health` | GET | Deployment health + versions |
-| `/api/tools` | GET | MCP-compatible tool discovery + JSON Schemas |
+| `/api/mcp` | POST | MCP JSON-RPC endpoint (Streamable HTTP, stateless) |
+| `/api/tools` | GET | Tool discovery + JSON Schemas |
 | `/api/tool/{name}` | POST | Execute one bounded, deterministic tool |
 | `/api/experiments` | GET/POST | List / register experiment records |
 | `/api/experiments/{id}` | GET | Experiment record, trace and audit |
@@ -223,7 +252,9 @@ src/
     data/              # bundled synthetic datasets, profiling, leakage scan
     ml/                # seeded RNG, features, splits, models, metrics, pipeline
     backtest/          # cost-aware backtest engine
-    tools/             # tool registry + MCP-compatible catalog
+    tools/             # tool registry + catalogs
+    mcp/               # Model Context Protocol server (JSON-RPC)
+    ai/                # bundle simulator, from-scratch models, explainability
     orchestrator/      # state machine, agents, critic, reporter
     llm/               # reasoner interface, deterministic policy, WebLLM adapter
     experiments/       # experiment store + seed
@@ -240,12 +271,19 @@ tests/                 # unit (vitest) + e2e (playwright)
   They are not tuned production alpha models.
 - The serverless experiment store is **ephemeral per warm instance** by design; durable
   history lives in the browser (localStorage). An MLflow-portable export/import is provided.
-- Backtests assume fills at the modelled close and a linear turnover-cost model; they omit
-  market impact, borrow, and liquidity constraints.
+- Backtests execute one bar after the signal and charge fees, half-spread, volatility-scaled
+  slippage, square-root market impact and short borrow. They still omit liquidity and
+  volume-participation limits, trading calendars, corporate actions and survivorship controls,
+  so they are not institutional-grade.
+- Sharpe uncertainty uses the Lo (2002) i.i.d. standard error; fold-level and autocorrelation-
+  robust intervals are future work.
+- Monitoring latency quantiles are measured on the reference runs of the serving instance; the
+  latency history chart is simulated and labelled so. There is no uptime monitor.
 - Data is synthetic. Any "edge" shown is a property of the generator, stated conditionally.
 
-## Cost
+## Running cost
 
-**$0 for the required demo.** No paid model APIs, no market-data subscriptions, no vector
-database, no long-running servers. Vercel's free tier hosts the app; browser-local
-inference runs on the visitor's device; the deterministic path needs nothing at all.
+No external inference is required in deterministic mode, and browser-local reasoning is
+available through WebLLM. Market data is synthetic and the Jito endpoints are public and
+keyless, so the demo runs on a free hosting tier. The optional Claude copilot is billed to the
+operator's Anthropic account and is rate-limited per client.

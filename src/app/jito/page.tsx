@@ -57,7 +57,7 @@ export default function JitoLabPage() {
       <PageHeader
         eyebrow="Solana · Jito" accent="var(--color-mod-jito)"
         title="Jito Lab"
-        lede="Live signals from Jito's block engine and stake pool, turned into decisions: what to tip a bundle, and what JitoSOL actually earns."
+        lede="Live data from Jito's block engine and stake pool, used to answer two questions: what to tip a bundle, and what JitoSOL earns."
         actions={
           <>
             <Badge variant={snap?.tipFloor.source === "live" ? "solid" : "muted"}>
@@ -130,7 +130,7 @@ function AdvisorTab({ advisor, live }: { advisor: ReturnType<typeof getTipAdviso
             </div>
             <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" checked={useLive} onChange={(e) => setUseLive(e.target.checked)} className="" />
-              Anchor on live tip floor {live ? "" : <span className="text-faint">(unavailable — using bundled history)</span>}
+              Anchor on live tip floor {live ? "" : <span className="text-faint">(unavailable, using bundled history)</span>}
             </label>
           </CardBody>
         </Card>

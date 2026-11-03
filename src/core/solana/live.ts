@@ -2,8 +2,8 @@
  * Read-only access to Jito's public mainnet APIs.
  *
  * Both endpoints are free, keyless and rate-limited, so responses are cached for
- * a minute and every call has a short timeout. Any failure — offline, blocked,
- * malformed — degrades to bundled data and says so via `source`, so the demo
+ * a minute and every call has a short timeout. Any failure (offline, blocked,
+ * malformed) degrades to bundled data and says so via `source`, so the demo
  * never breaks in front of an audience.
  */
 

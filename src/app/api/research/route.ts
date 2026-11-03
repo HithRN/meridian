@@ -12,7 +12,7 @@ const BodySchema = z.object({
 /**
  * Run a full deterministic research session server-side. This is the always-on
  * fallback for the public demo (§17); the browser can also run the identical
- * pipeline in a Web Worker, and — where WebGPU is available — drive planning
+ * pipeline in a Web Worker, and, where WebGPU is available, drive planning
  * with a browser-local model. No paid API is involved on any path.
  */
 export async function POST(req: NextRequest) {

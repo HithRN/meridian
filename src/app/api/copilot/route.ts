@@ -17,7 +17,7 @@ const BodySchema = z.object({
   engine: z.enum(["auto", "deterministic"]).default("auto"),
 });
 
-/** Which engine will answer — lets the UI show the badge before the first message. */
+/** Which engine will answer; lets the UI show the badge before the first message. */
 export function GET() {
   return NextResponse.json({ claude: claudeConfigured() });
 }
@@ -25,13 +25,13 @@ export function GET() {
 /**
  * Conversational copilot over the audited tool surface. Uses Claude when the
  * server has Anthropic credentials, and the deterministic router otherwise or
- * on any Claude failure — a question always gets an evidence-backed answer.
+ * on any Claude failure, so a question always gets an evidence-backed answer.
  */
 export async function POST(req: NextRequest) {
   const limit = rateLimit(clientKey(req, "copilot"), 20, 60_000);
   if (!limit.ok) {
     return NextResponse.json(
-      { error: "Too many requests — please wait a moment." },
+      { error: "Too many requests. Please wait a moment." },
       { status: 429, headers: { "Retry-After": String(limit.retryAfterS) } },
     );
   }
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
               ? `Claude API error ${err.status ?? ""}`.trim()
               : "Claude was unreachable";
       const fallback = await runDeterministicCopilot(messages);
-      return NextResponse.json({ ...fallback, notice: `${reason} — answered by the deterministic engine.` });
+      return NextResponse.json({ ...fallback, notice: `${reason}, so the deterministic engine answered.` });
     }
   }
   return NextResponse.json(await runDeterministicCopilot(messages));

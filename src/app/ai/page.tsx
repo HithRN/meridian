@@ -36,7 +36,7 @@ export default function ExplainableAiPage() {
       <PageHeader
         eyebrow="Solana · Jito" accent="var(--color-mod-agents)"
         title="Explainable AI"
-        lede="Will this bundle land, and why? Three models trained from scratch on a Jito bundle-auction simulator, explained with exact Shapley values, partial dependence and counterfactual tips — then checked against the true mechanism."
+        lede="Will this bundle land, and why? Three models trained from scratch on a Jito bundle-auction simulator, explained with exact Shapley values, partial dependence and counterfactual tips, then checked against the true mechanism."
         actions={lab ? <Badge variant="muted">Trained in {(lab.builtMs / 1000).toFixed(1)}s</Badge> : null}
       />
       <PageBody>
@@ -172,7 +172,7 @@ function ExplainTab({ lab, p50Sol }: { lab: LabReport; p50Sol: number | null }) 
           </Card>
 
           <Card>
-            <CardHeader title="Why — exact Shapley values" eyebrow="Contribution to log-odds, relative to the average bundle" />
+            <CardHeader title="Why: exact Shapley values" eyebrow="Contribution to log-odds, relative to the average bundle" />
             <CardBody>
               <div className="space-y-[6px]">
                 {order.map((j) => {
@@ -198,7 +198,7 @@ function ExplainTab({ lab, p50Sol }: { lab: LabReport; p50Sol: number | null }) 
               </div>
               <p className="mt-4 text-[0.78rem] text-faint">
                 Green bars push toward landing, red bars away. Base {exp.base.toFixed(2)} + Σφ {exp.phi.reduce((a, b) => a + b, 0).toFixed(2)} ={" "}
-                {exp.value.toFixed(2)} log-odds = {pct(prob)} — exact, computed over all 256 feature coalitions.
+                {exp.value.toFixed(2)} log-odds = {pct(prob)}. Exact, computed over all 256 feature coalitions.
               </p>
             </CardBody>
           </Card>
@@ -237,7 +237,7 @@ function ExplainTab({ lab, p50Sol }: { lab: LabReport; p50Sol: number | null }) 
                 )}
               </div>
               <p className="mt-3 text-[0.78rem] text-faint">
-                Want this in words, or in Japanese? <Link href="/copilot" className="underline underline-offset-2">Ask the copilot</Link> — it calls the same
+                Want this in words, or in Japanese? <Link href="/copilot" className="underline underline-offset-2">Ask the copilot</Link>. It calls the same
                 model through the <code>predict_bundle_landing</code> tool.
               </p>
             </CardBody>
@@ -279,7 +279,7 @@ function ModelsTab({ lab }: { lab: LabReport }) {
                     <td className="px-4 py-3 tnum">{m.brier.toFixed(3)}</td>
                     <td className="px-4 py-3 tnum">{pct(m.accuracy)}</td>
                     <td className="px-4 py-3 tnum">{pct(m.ece)}</td>
-                    <td className="px-4 py-3 tnum text-muted">{id === "oracle" ? "—" : id === "logistic" ? "baseline" : pct(gap(id), 0)}</td>
+                    <td className="px-4 py-3 tnum text-muted">{id === "oracle" ? "n/a" : id === "logistic" ? "baseline" : pct(gap(id), 0)}</td>
                   </tr>
                 );
               })}
@@ -431,22 +431,22 @@ function MethodTab({ lab }: { lab: LabReport }) {
           </p>
         </div>
         <div>
-          <h3 className="mb-2 text-lg">Models — written from scratch, no ML libraries</h3>
-          <ul className="space-y-2 text-sm text-muted">
-            <li>— <strong className="text-ink">Logistic regression</strong>: standardised inputs, L2, full-batch gradient descent.</li>
-            <li>— <strong className="text-ink">Gradient-boosted trees</strong>: Newton leaf values, 32-bin histogram splits, depth 3, early stopping at {lab.training.gbt.bestStep} trees.</li>
-            <li>— <strong className="text-ink">Neural network</strong>: 8 → 24 ReLU → 1, He initialisation, Adam, mini-batches of 64, weight decay, early stopping at epoch {lab.training.mlp.bestStep}.</li>
+          <h3 className="mb-2 text-lg">Models written from scratch, without ML libraries</h3>
+          <ul className="list-disc space-y-2 pl-5 text-sm text-muted marker:text-faint">
+            <li><strong className="text-ink">Logistic regression</strong>: standardised inputs, L2, full-batch gradient descent.</li>
+            <li><strong className="text-ink">Gradient-boosted trees</strong>: Newton leaf values, 32-bin histogram splits, depth 3, early stopping at {lab.training.gbt.bestStep} trees.</li>
+            <li><strong className="text-ink">Neural network</strong>: 8 → 24 ReLU → 1, He initialisation, Adam, mini-batches of 64, weight decay, early stopping at epoch {lab.training.mlp.bestStep}.</li>
           </ul>
         </div>
         <div>
           <h3 className="mb-2 text-lg">Explainability</h3>
-          <ul className="space-y-2 text-sm text-muted">
-            <li>— <strong className="text-ink">Exact interventional Shapley values</strong>: all 2⁸ = 256 coalitions against a {lab.background.length}-bundle background. No sampling error; efficiency holds exactly.</li>
-            <li>— <strong className="text-ink">Partial dependence</strong> with the true response curve overlaid.</li>
-            <li>— <strong className="text-ink">Counterfactual recourse</strong>: the minimal tip change that reaches a target probability.</li>
-            <li>— <strong className="text-ink">Calibration</strong>: reliability diagrams and expected calibration error.</li>
-            <li>— <strong className="text-ink">Faithfulness</strong>: explanations scored against the known mechanism.</li>
-            <li>— <strong className="text-ink">LLM narration</strong>: the copilot turns Shapley values into plain English or Japanese, without inventing numbers.</li>
+          <ul className="list-disc space-y-2 pl-5 text-sm text-muted marker:text-faint">
+            <li><strong className="text-ink">Exact interventional Shapley values</strong>: all 2⁸ = 256 coalitions against a {lab.background.length}-bundle background. No sampling error; efficiency holds exactly.</li>
+            <li><strong className="text-ink">Partial dependence</strong> with the true response curve overlaid.</li>
+            <li><strong className="text-ink">Counterfactual recourse</strong>: the minimal tip change that reaches a target probability.</li>
+            <li><strong className="text-ink">Calibration</strong>: reliability diagrams and expected calibration error.</li>
+            <li><strong className="text-ink">Faithfulness</strong>: explanations scored against the known mechanism.</li>
+            <li><strong className="text-ink">LLM narration</strong>: the copilot turns Shapley values into plain English or Japanese, without inventing numbers.</li>
           </ul>
         </div>
       </div>
@@ -464,8 +464,8 @@ function MethodTab({ lab }: { lab: LabReport }) {
           </CardBody>
         </Card>
         <p className="text-[0.8rem] text-faint">
-          Honest boundary: these models learn a simulator, not mainnet. The numbers show the method works and can be verified. Real-world accuracy
-          depends on training with block-engine data.
+          Limitation: these models are trained on a simulator, not mainnet data. The results show that the method works and that its
+          explanations can be checked. Accuracy on real bundles depends on retraining with block-engine outcomes.
         </p>
       </div>
     </div>

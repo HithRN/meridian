@@ -4,12 +4,12 @@
  * A searcher attaching a tip to a Jito bundle faces a simple trade-off: tip too
  * little and the bundle loses the auction; tip too much and the edge is paid
  * away to the validator. Jito publishes the *landed* tip distribution (25th…99th
- * percentile) — this module turns that into a forward-looking recommendation:
+ * percentile). This module turns that into a forward-looking recommendation:
  *
  *   "What tip outbids k% of the bundles that will land next hour, with
  *    confidence c?"
  *
- * Method — Mondrian split-conformal quantile forecasting:
+ * Method: Mondrian split-conformal quantile forecasting:
  *   1. Anchor:   an EMA of log(p_k) up to hour t (the current "fair" level).
  *   2. Residual: r = log(p_k[t+1]) − anchor[t], the multiplicative surprise.
  *   3. Regime:   congestion = log(p50[t]) − log(EMA p50[t]), bucketed into
@@ -77,7 +77,7 @@ export function levelValue(bar: TipBar | TipFloorSnapshot, level: TipLevel): num
 /**
  * Seeded synthetic tip history. Features a diurnal cycle (US/Asia overlap),
  * an AR(1) congestion process, and occasional launch-driven spikes that decay
- * over a few hours — the regimes in which naive tipping fails.
+ * over a few hours: the regimes in which naive tipping fails.
  */
 export function generateTipHistory(hours = HISTORY_HOURS, seed = HISTORY_SEED): TipBar[] {
   const rng = new Rng(seed);
@@ -206,14 +206,14 @@ export interface CoverageRow {
   confidence: number;
   /** Realised share of hours where the tip ≥ next hour's p_k (target = confidence). */
   coverage: number;
-  /** Same for a global (non-regime) conformal quantile — the ablation. */
+  /** Same for a global (non-regime) conformal quantile (the ablation). */
   coverageGlobal: number;
   /** Same for the naive "tip last hour's p_k" rule. */
   coverageNaive: number;
   /** Coverage in hot-regime hours only, Mondrian vs global. */
   coverageHot: number;
   coverageHotGlobal: number;
-  /** Median of recommended / realised — the price of the guarantee. */
+  /** Median of recommended / realised: the price of the guarantee. */
   medianOverpay: number;
   tested: number;
 }

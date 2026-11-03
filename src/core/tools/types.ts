@@ -4,7 +4,7 @@
  * Every capability the agents can invoke is a `ToolDefinition` with a strict
  * Zod input and output schema, a permission class, and a pure-ish handler. This
  * is the MCP-compatible boundary: tools are discovered by name, called with
- * structured JSON, and return structured JSON. The registry — not the caller —
+ * structured JSON, and return structured JSON. The registry, not the caller,
  * validates inputs on the way in and outputs on the way out, so an agent (or an
  * LLM) can never smuggle an unsupported parameter through or fabricate a result
  * shape.

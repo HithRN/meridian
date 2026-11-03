@@ -1,7 +1,7 @@
 /**
  * Chronological and walk-forward validation splits.
  *
- * Random k-fold cross-validation is invalid for time series — it lets the model
+ * Random k-fold cross-validation is invalid for time series because it lets the model
  * train on the future and test on the past. Every split here preserves temporal
  * order and inserts an `embargo` gap between train and test so that the forward
  * label of the last training row cannot overlap the first test row (a classic
@@ -19,8 +19,8 @@ export interface WindowConfig {
    */
   embargo: number;
   /**
-   * "expanding" — training window grows each fold (anchored start).
-   * "rolling"   — training window is a fixed-size sliding block.
+   * "expanding": training window grows each fold (anchored start).
+   * "rolling":   training window is a fixed-size sliding block.
    */
   mode: "expanding" | "rolling";
 }

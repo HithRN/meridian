@@ -5,7 +5,7 @@
  * tools to call and writes the answer; the tools compute every number. The loop
  * is bounded, tool inputs are validated by the registry, and each call is
  * returned to the UI as evidence. Enabled only when Anthropic credentials are
- * configured — otherwise the deterministic router answers.
+ * configured; otherwise the deterministic router answers.
  */
 
 import Anthropic from "@anthropic-ai/sdk";

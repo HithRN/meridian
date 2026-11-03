@@ -3,7 +3,7 @@
  *
  * A `Reasoner` turns a natural-language research question into a *structured*
  * `ResearchPlan` and produces human-readable narration for the trace. It is the
- * ONLY place model inference is allowed — and it is deliberately kept away from
+ * ONLY place model inference is allowed, and it is deliberately kept away from
  * anything numeric. A reasoner never computes a metric, a return, or a p-value;
  * those come exclusively from deterministic tools. This boundary is what lets
  * us swap a real browser LLM (WebLLM) for a rule engine without weakening any

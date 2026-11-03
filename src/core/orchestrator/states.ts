@@ -3,7 +3,7 @@
  *
  * A research session advances through a fixed sequence of states; every
  * transition is recorded in the session trace so a reviewer can see exactly
- * what happened and in what order. Transitions are validated — the orchestrator
+ * what happened and in what order. Transitions are validated: the orchestrator
  * cannot skip DATA_VALIDATED or reach REPORT_READY without passing CRITIQUE.
  */
 

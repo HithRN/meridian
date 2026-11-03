@@ -1,7 +1,7 @@
 /**
  * WebLLM reasoner (browser-only).
  *
- * Runs a small quantised open model entirely in the browser via WebGPU — no
+ * Runs a small quantised open model entirely in the browser via WebGPU, with no
  * API key, no server inference, no data leaving the device (§17). It implements
  * the same `Reasoner` contract as the deterministic policy and is used only
  * where WebGPU is available.
@@ -10,7 +10,7 @@
  * strict JSON, which is then Zod-validated. If the model is unavailable or emits
  * unparseable output, the reasoner transparently falls back to the deterministic
  * interpreter, so a run always completes and the plan is always valid. The model
- * is never trusted with a number that matters — it only shapes the plan and
+ * is never trusted with a number that matters; it only shapes the plan and
  * writes narration; all metrics still come from deterministic tools.
  */
 
@@ -32,7 +32,7 @@ import { z } from "zod";
 export const DEFAULT_WEBLLM_MODEL = "Llama-3.2-1B-Instruct-q4f16_1-MLC";
 
 /** Reject a promise if it does not settle within `ms`, so a hung model call
- *  cannot stall a run — the caller falls back to the deterministic path. */
+ *  cannot stall a run; the caller falls back to the deterministic path. */
 function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     const timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);

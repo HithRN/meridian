@@ -1,5 +1,5 @@
 /**
- * Reporter agent — evidence report generation (§6, §15).
+ * Reporter agent: evidence report generation (§6, §15).
  *
  * Produces a concise Markdown report assembled *only* from recorded tool
  * outputs and the critic's findings. It never introduces a number that did not
@@ -72,18 +72,18 @@ export function buildReport(
     const bt = m.backtest;
     const star = m.modelId === record.bestModelId ? " ⭐" : "";
     lines.push(
-      `| ${m.modelType}${star} | ${m.metrics.auc.toFixed(3)} | ${m.metrics.accuracy.toFixed(3)} | ${m.metrics.informationCoefficient.toFixed(4)} | ${bt ? bt.sharpe.toFixed(2) : "—"} | ${bt ? pct(bt.maxDrawdown) : "—"} |`,
+      `| ${m.modelType}${star} | ${m.metrics.auc.toFixed(3)} | ${m.metrics.accuracy.toFixed(3)} | ${m.metrics.informationCoefficient.toFixed(4)} | ${bt ? bt.sharpe.toFixed(2) : "n/a"} | ${bt ? pct(bt.maxDrawdown) : "n/a"} |`,
     );
   }
   lines.push("");
 
   // Best model detail.
   if (best?.backtest) {
-    lines.push(`## Best model — ${best.modelType}`);
+    lines.push(`## Best model: ${best.modelType}`);
     lines.push("");
     lines.push(`- Out-of-sample AUC ${best.metrics.auc.toFixed(3)}, accuracy ${best.metrics.accuracy.toFixed(3)} vs base rate ${best.metrics.baseRate.toFixed(3)}.`);
     lines.push(`- Information coefficient ${best.metrics.informationCoefficient.toFixed(4)} over ${best.metrics.n} observations.`);
-    lines.push(`- Backtest: total return ${pct(best.backtest.totalReturn)} (buy-and-hold ${pct(best.backtest.benchmarkReturn)}), net Sharpe ${best.backtest.sharpe.toFixed(2)}${best.backtest.sharpeStdErr !== undefined ? ` ± ${best.backtest.sharpeStdErr.toFixed(2)} (Lo 2002 SE; 95% CI ${(best.backtest.sharpe - 1.96 * best.backtest.sharpeStdErr).toFixed(2)} to ${(best.backtest.sharpe + 1.96 * best.backtest.sharpeStdErr).toFixed(2)})` : ""}, max drawdown ${pct(best.backtest.maxDrawdown)}, ${best.backtest.trades ?? "—"} trades, turnover ${best.backtest.turnover.toFixed(1)}, exposure ${pct(best.backtest.exposure)}.`);
+    lines.push(`- Backtest: total return ${pct(best.backtest.totalReturn)} (buy-and-hold ${pct(best.backtest.benchmarkReturn)}), net Sharpe ${best.backtest.sharpe.toFixed(2)}${best.backtest.sharpeStdErr !== undefined ? ` ± ${best.backtest.sharpeStdErr.toFixed(2)} (Lo 2002 SE; 95% CI ${(best.backtest.sharpe - 1.96 * best.backtest.sharpeStdErr).toFixed(2)} to ${(best.backtest.sharpe + 1.96 * best.backtest.sharpeStdErr).toFixed(2)})` : ""}, max drawdown ${pct(best.backtest.maxDrawdown)}, ${best.backtest.trades ?? "n/a"} trades, turnover ${best.backtest.turnover.toFixed(1)}, exposure ${pct(best.backtest.exposure)}.`);
     if (best.backtest.periodsPerYear) {
       lines.push(`- Annualisation: ${best.backtest.periods ?? best.metrics.n} hourly out-of-sample bars, √${best.backtest.periodsPerYear} periods per year (24/7 series).`);
     }
@@ -92,7 +92,7 @@ export function buildReport(
       lines.push(`- Cost breakdown (bps of starting notional): fees ${c.fees.toFixed(0)}, spread ${c.spread.toFixed(0)}, slippage ${c.slippage.toFixed(0)}, impact ${c.impact.toFixed(0)}, borrow ${c.borrow.toFixed(0)}.`);
     }
     if (baseline) {
-      lines.push(`- Baseline (${baseline.modelType}) AUC ${baseline.metrics.auc.toFixed(3)} — lift of ${(best.metrics.auc - baseline.metrics.auc).toFixed(3)}.`);
+      lines.push(`- Baseline (${baseline.modelType}) AUC ${baseline.metrics.auc.toFixed(3)}, a lift of ${(best.metrics.auc - baseline.metrics.auc).toFixed(3)}.`);
     }
     lines.push("");
   }
@@ -106,12 +106,12 @@ export function buildReport(
     lines.push(`The critic raised ${critique.findings.length} finding(s) (max severity: **${critique.severity}**):`);
     lines.push("");
     for (const f of critique.findings) {
-      lines.push(`- **[${f.severity}] ${f.code}** — ${f.message}`);
+      lines.push(`- **[${f.severity}] ${f.code}**: ${f.message}`);
     }
   }
   lines.push("");
 
-  // Conclusion — grounded in the measured edge, not merely the absence of a
+  // Conclusion: grounded in the measured edge, not merely the absence of a
   // critical flaw. Requires a real lift over baseline and a non-trivial IC.
   lines.push(`## Conclusion`);
   lines.push("");
@@ -120,11 +120,11 @@ export function buildReport(
   const ic = best.metrics.informationCoefficient;
   let verdict: string;
   if (hasHigh) {
-    verdict = `The evidence **does not support a reliable edge** — a high-severity objection stands`;
+    verdict = `The evidence **does not support a reliable edge**: a high-severity objection stands`;
   } else if (lift > 0.01 && ic > 0.03) {
     verdict = `The evidence is **consistent with a modest, conditional edge** (AUC lift ${lift.toFixed(3)} over baseline, IC ${ic.toFixed(3)})`;
   } else {
-    verdict = `The evidence is **inconclusive** — no reliable edge over the baseline was detected (AUC lift ${lift.toFixed(3)}, IC ${ic.toFixed(3)})`;
+    verdict = `The evidence is **inconclusive**: no reliable edge over the baseline was detected (AUC lift ${lift.toFixed(3)}, IC ${ic.toFixed(3)})`;
   }
   lines.push(
     `${verdict} for the tested momentum signal, **conditional on this simulated dataset and the stated assumptions**. ` +

@@ -1,5 +1,5 @@
 /**
- * Critic agent — adversarial methodology review (§6, §10, §21).
+ * Critic agent: adversarial methodology review (§6, §10, §21).
  *
  * The critic's job is to *falsify*, not to celebrate. It inspects the validation
  * design and the measured results and raises findings for every weakness it can
@@ -10,7 +10,7 @@
  * run, so this gate is structural.
  *
  * Crucially, the critic operates only on numbers produced by deterministic
- * tools — it never invents a metric of its own.
+ * tools; it never invents a metric of its own.
  */
 
 import type { ResearchPlan } from "@/core/orchestrator/types";
@@ -53,7 +53,7 @@ export function critique(input: CriticInput): Critique {
     });
   }
 
-  // 2. Leakage (should already have been blocked upstream — defence in depth).
+  // 2. Leakage (should already have been blocked upstream; defence in depth).
   if (input.leakageCritical > 0) {
     findings.push({
       code: "LEAKAGE_DETECTED",
@@ -151,7 +151,7 @@ export function critique(input: CriticInput): Critique {
 
   return {
     // "passed" means the result is trustworthy enough to publish as a positive
-    // finding — i.e. no high-severity methodological objection stands.
+    // finding, i.e. no high-severity methodological objection stands.
     passed: !findings.some((f) => f.severity === "high"),
     severity: maxSeverity ?? "none",
     findings,

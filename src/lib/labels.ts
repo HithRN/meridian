@@ -46,7 +46,7 @@ export function datasetLabel(id: string): string {
 
 /**
  * A plain-English title for an experiment, derived from its plan. Not required
- * to be unique — the date and question disambiguate in the list.
+ * to be unique; the date and question disambiguate in the list.
  */
 export function experimentTitle(record: ExperimentRecord): string {
   const momentum = record.featureConfig.momentumPeriod;

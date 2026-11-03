@@ -4,12 +4,12 @@
  * Three model families, all pure-TypeScript so they run identically in a Vercel
  * route handler and a browser Web Worker with no native dependencies:
  *
- *   - `majority`  — predicts the training base rate. The mandatory baseline;
+ *   - `majority`:  predicts the training base rate. The mandatory baseline;
  *                   any "real" model must beat it to be interesting.
- *   - `logistic`  — L2-regularised logistic regression via full-batch gradient
+ *   - `logistic`:  L2-regularised logistic regression via full-batch gradient
  *                   descent on standardised features.
- *   - `gbt`       — gradient-boosted decision stumps (depth-1 trees) fit to the
- *                   logistic gradient — a small, honest non-linear learner.
+ *   - `gbt`:       gradient-boosted decision stumps (depth-1 trees) fit to the
+ *                   logistic gradient; a small, honest non-linear learner.
  *
  * Every trainer is seeded and records its hyperparameters so the experiment is
  * reproducible from the record alone.
@@ -29,7 +29,7 @@ export const MODEL_TYPES: ModelType[] = ["majority", "logistic", "gbt"];
 
 export interface ModelConfig {
   type: ModelType;
-  /** L2 penalty (logistic) — larger = stronger regularisation. */
+  /** L2 penalty (logistic); larger = stronger regularisation. */
   l2?: number;
   /** Gradient-descent learning rate (logistic). */
   learningRate?: number;

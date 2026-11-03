@@ -30,7 +30,7 @@ const GUARANTEES: Array<{ k: string; v: string }> = [
   { k: "Leakage-safe by construction", v: "Features use only information available at prediction time; walk-forward splits are embargoed; a scan flags future-derived columns." },
   { k: "Reproducible", v: "Every run pins dataset version, content hash, seed and kernel version. The same inputs yield byte-identical outputs." },
   { k: "A real MCP server", v: "Tools are served over the Model Context Protocol (JSON-RPC, Streamable HTTP) and REST, with strict JSON Schemas, for agents and Claude alike." },
-  { k: "Never breaks on stage", v: "Live Jito data degrades to bundled snapshots; Claude degrades to a deterministic engine. Every path is labelled." },
+  { k: "Graceful fallbacks", v: "Live Jito data degrades to bundled snapshots; Claude degrades to a deterministic engine. Every path is labelled." },
 ];
 
 const LAYERS: Array<[string, string, string]> = [
@@ -38,7 +38,7 @@ const LAYERS: Array<[string, string, string]> = [
   ["Machine learning", "Logistic · boosted trees · MLP (from scratch)", "Bundle-landing prediction, trained and evaluated in TypeScript"],
   ["Explainability", "Exact Shapley · PDP · counterfactuals", "Why a prediction was made, verified against ground truth"],
   ["LLM", "Claude (tool use) · WebLLM", "Copilot reasoning and tool selection; browser-local planning"],
-  ["Fallback", "Deterministic policies", "Bilingual intent router and rule-based planner — no external inference"],
+  ["Fallback", "Deterministic policies", "Bilingual intent router and rule-based planner, no external inference"],
   ["Network data", "Jito public APIs", "Tip floor and stake-pool stats, cached, with bundled fallback"],
   ["Orchestration", "Typed state machine", "Planner → workers → critic → reporter"],
   ["Tools", "MCP server + REST", "Strictly typed, audited, read-only execution"],
@@ -52,8 +52,8 @@ export default function AboutPage() {
   const principles = (
     <div className="max-w-3xl space-y-4 text-muted prose-serif">
       <p>
-        Meridian separates <em>reasoning</em> from <em>computation</em>. A reasoning layer — Claude in the
-        copilot, a browser-local model in the research workspace, or a transparent deterministic policy —
+        Meridian separates <em>reasoning</em> from <em>computation</em>. A reasoning layer (Claude in the
+        copilot, a browser-local model in the research workspace, or a transparent deterministic policy)
         decides what to investigate and explains the outcome. It never produces a metric, a tip, a yield or a
         p-value. Those come exclusively from tools that are validated on the way in and out and logged in an
         audit trail.
@@ -69,7 +69,7 @@ export default function AboutPage() {
     <>
       <p className="mb-6 max-w-3xl text-muted">
         Every research session advances through the same nine states. Each transition is persisted in the
-        trace, so a reviewer can see exactly what happened — and the reporter cannot mark an experiment complete
+        trace, so a reviewer can see exactly what happened, and the reporter cannot mark an experiment complete
         until the critic has run.
       </p>
       <ol className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-3 lg:grid-cols-9">
@@ -89,7 +89,7 @@ export default function AboutPage() {
         <div key={a.name} className="bg-paper px-5 py-5">
           <h3 className="text-lg">{a.name}</h3>
           <p className="mt-1 text-sm text-muted">{a.role}</p>
-          <p className="mt-3 text-[0.8rem] uppercase tracking-[0.1em] text-faint">Must not — {a.guard}</p>
+          <p className="mt-3 text-[0.8rem] uppercase tracking-[0.1em] text-faint">Must not: {a.guard}</p>
         </div>
       ))}
     </div>
@@ -166,20 +166,20 @@ export default function AboutPage() {
     <div className="grid grid-cols-1 gap-10 md:grid-cols-2">
       <div>
         <h3 className="mb-3 text-lg">What the demo will not do</h3>
-        <ul className="space-y-3 text-sm text-muted">
-          <li>— No wallets, signing, order routing or bundle submission. Network access is read-only.</li>
-          <li>— The copilot gives analysis, not investment advice, and refuses to recommend buying or selling.</li>
-          <li>— Tool inputs are schema-validated; unknown parameters are rejected and compute is bounded.</li>
-          <li>— The coding agent works on an in-memory sandbox with no shell, network or disk writes.</li>
+        <ul className="list-disc space-y-3 pl-5 text-sm text-muted marker:text-faint">
+          <li>No wallets, signing, order routing or bundle submission. Network access is read-only.</li>
+          <li>The copilot gives analysis, not investment advice, and refuses to recommend buying or selling.</li>
+          <li>Tool inputs are schema-validated; unknown parameters are rejected and compute is bounded.</li>
+          <li>The coding agent works on an in-memory sandbox with no shell, network or disk writes.</li>
         </ul>
       </div>
       <div>
-        <h3 className="mb-3 text-lg">Honest boundaries</h3>
-        <ul className="space-y-3 text-sm text-muted">
-          <li>— The tip advisor&rsquo;s residuals are calibrated on synthetic history; on mainnet it should be recalibrated on a recorded tip-floor feed.</li>
-          <li>— &ldquo;Outbid p95&rdquo; is relative to the landed-tip distribution, not a guarantee that a bundle lands.</li>
-          <li>— The MEV share of APY is an estimate: reported MEV rewards ÷ TVL, annualised.</li>
-          <li>— Research models are compact TypeScript learners; backtests omit market impact and liquidity limits.</li>
+        <h3 className="mb-3 text-lg">Known limitations</h3>
+        <ul className="list-disc space-y-3 pl-5 text-sm text-muted marker:text-faint">
+          <li>The tip advisor&rsquo;s residuals are calibrated on synthetic history; on mainnet it should be recalibrated on a recorded tip-floor feed.</li>
+          <li>&ldquo;Outbid p95&rdquo; is relative to the landed-tip distribution, not a guarantee that a bundle lands.</li>
+          <li>The MEV share of APY is an estimate: reported MEV rewards ÷ TVL, annualised.</li>
+          <li>Research models are compact TypeScript learners; backtests omit market impact and liquidity limits.</li>
         </ul>
       </div>
     </div>
@@ -200,7 +200,7 @@ export default function AboutPage() {
       <PageHeader
         eyebrow="Resources" accent="var(--color-mod-resources)"
         title="How it works"
-        lede="The agents, the guardrails, where the data comes from — and what the platform deliberately refuses to do."
+        lede="The agents, the guardrails and the data sources, plus what the platform does not do."
       />
       <PageBody>
         <Tabs

@@ -37,7 +37,7 @@ export function EndpointSnippets() {
     <div className="space-y-4">
       <div className="rounded-lg border border-line bg-paper p-4">
         <Eyebrow>Endpoint</Eyebrow>
-        <code className="mt-1 block break-all text-[0.95rem] text-accent-strong">{endpoint}</code>
+        <code className="mt-1 block break-all text-[0.95rem] text-link">{endpoint}</code>
       </div>
       {blocks.map(([label, code]) => (
         <div key={label}>
@@ -127,7 +127,7 @@ export function McpPlayground({ tools }: { tools: Array<{ name: string; title: s
           <Eyebrow>JSON-RPC response</Eyebrow>
           <span className="tnum text-[0.75rem] text-faint">{meta}</span>
         </div>
-        <pre className="mt-2 max-h-[420px] overflow-auto rounded-md bg-subtle p-3 text-[0.75rem] leading-snug">{out || "—"}</pre>
+        <pre className="mt-2 max-h-[420px] overflow-auto rounded-md bg-subtle p-3 text-[0.75rem] leading-snug">{out || "n/a"}</pre>
       </div>
     </div>
   );

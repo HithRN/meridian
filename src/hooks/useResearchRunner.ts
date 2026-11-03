@@ -49,8 +49,8 @@ export function useResearchRunner() {
         return;
       }
 
-      // WebLLM path (main thread). Any failure — no WebGPU, a failed/blocked
-      // model download, or a hung generation — falls back to the deterministic
+      // WebLLM path (main thread). Any failure (no WebGPU, a failed/blocked
+      // model download, or a hung generation) falls back to the deterministic
       // engine so the user always gets a result.
       const fallback = (reason: string) => {
         setMode("deterministic");
@@ -59,7 +59,7 @@ export function useResearchRunner() {
           ...s,
           status: "running",
           trace: [],
-          notice: `Browser-local model unavailable — completed with the deterministic engine. Select WebLLM again to retry. (${reason})`,
+          notice: `The browser-local model was unavailable, so the run completed with the deterministic engine. Select WebLLM again to retry. (${reason})`,
         }));
         runInWorker(question, seed, maxModels, workerRef, setState, addResult, true);
       };

@@ -3,7 +3,7 @@
  *
  * Determinism is a hard requirement of this platform: every experiment records
  * its seed, and re-running with that seed must reproduce the result exactly.
- * `Math.random()` is therefore banned from all numerical code — use a `Rng`.
+ * `Math.random()` is therefore banned from all numerical code; use a `Rng`.
  *
  * Implementation: mulberry32, a small, fast, well-distributed 32-bit generator
  * that produces identical sequences in Node and the browser.

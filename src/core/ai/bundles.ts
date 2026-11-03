@@ -1,8 +1,8 @@
 /**
  * Jito bundle-auction simulator.
  *
- * Generates labelled bundles — features a searcher knows at submission time and
- * whether the bundle landed — from an explicit, documented mechanism:
+ * Generates labelled bundles (features a searcher knows at submission time and
+ * whether the bundle landed) from an explicit, documented mechanism:
  *
  *   bid edge   = tip multiple − 0.9·log(1+competing bundles) − 1.4·congestion
  *   log-odds   = 1.6 + 3·tanh(0.75·bid edge)              (auction, saturating)
@@ -12,7 +12,7 @@
  *              + 0.35·cos(2π(hour − 3)/24)                 (daily cycle)
  *
  * Because the true mechanism is known, the platform can check not only how
- * accurate a model is, but whether its *explanations* are faithful — something
+ * accurate a model is, but whether its *explanations* are faithful, something
  * impossible on real data alone. On mainnet the same pipeline would train on
  * the block engine's landed/dropped outcomes.
  */
@@ -94,7 +94,7 @@ function round3(v: number): number {
   return Math.round(v * 1000) / 1000;
 }
 
-/** A typical bundle — the default for unspecified features. */
+/** A typical bundle, used as the default for unspecified features. */
 export const DEFAULT_BUNDLE: number[] = [2, 0.55, 3, 7, 2, 1, 12, 0.2];
 
 /** Named scenarios for the what-if explorer. */

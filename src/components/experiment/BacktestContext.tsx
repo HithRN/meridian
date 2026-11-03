@@ -13,11 +13,11 @@ export function BacktestContext({ model }: { model: ModelResult }) {
   const c = bt.costBreakdownBps;
   const rows: Array<[string, string]> = [
     ["Out-of-sample bars", `${(bt.periods ?? model.metrics.n).toLocaleString("en-US")} hourly`],
-    ["Annualisation", bt.periodsPerYear ? `√${bt.periodsPerYear.toLocaleString("en-US")} periods/yr (24/7)` : "—"],
+    ["Annualisation", bt.periodsPerYear ? `√${bt.periodsPerYear.toLocaleString("en-US")} periods/yr (24/7)` : "n/a"],
     ["Execution", bt.executionLag !== undefined ? `Signal at T, filled at T+${bt.executionLag}` : "Same-bar (legacy record)"],
-    ["Trades", bt.trades !== undefined ? bt.trades.toLocaleString("en-US") : "—"],
+    ["Trades", bt.trades !== undefined ? bt.trades.toLocaleString("en-US") : "n/a"],
     ["Turnover · exposure", `${bt.turnover.toFixed(1)} · ${pct(bt.exposure)}`],
-    ["Net Sharpe 95% CI", se !== undefined ? `${(bt.sharpe - 1.96 * se).toFixed(2)} to ${(bt.sharpe + 1.96 * se).toFixed(2)}` : "—"],
+    ["Net Sharpe 95% CI", se !== undefined ? `${(bt.sharpe - 1.96 * se).toFixed(2)} to ${(bt.sharpe + 1.96 * se).toFixed(2)}` : "n/a"],
     ["Return vs buy-and-hold", `${pct(bt.totalReturn)} vs ${pct(bt.benchmarkReturn)}`],
     ["Max drawdown", pct(bt.maxDrawdown)],
     ["Costs (bps)", c ? `fees ${c.fees.toFixed(0)} · spread ${c.spread.toFixed(0)} · slip ${c.slippage.toFixed(0)} · impact ${c.impact.toFixed(0)} · borrow ${c.borrow.toFixed(0)}` : `${bt.totalCostBps.toFixed(0)} total`],

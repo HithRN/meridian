@@ -34,7 +34,7 @@ export default function ToolsPage() {
             served over the Model Context Protocol at{" "}
             <code className="rounded border border-line px-1">/api/mcp</code> and over REST at{" "}
             <code className="rounded border border-line px-1">POST /api/tool/&#123;name&#125;</code>. See{" "}
-            <Link href="/developers" className="text-accent-strong underline underline-offset-2">MCP &amp; API</Link> to connect a client.
+            <Link href="/developers" className="text-link underline underline-offset-2">MCP &amp; API</Link> to connect a client.
           </>
         }
         actions={<Badge variant="outline">{tools.length} tools</Badge>}

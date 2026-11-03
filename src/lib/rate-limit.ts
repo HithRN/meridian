@@ -2,7 +2,7 @@
  * Best-effort fixed-window rate limiter, per server instance and client IP.
  *
  * Serverless platforms run several instances, so this caps abuse per instance
- * rather than globally — enough to stop one client hammering the copilot
+ * rather than globally. That is enough to stop one client hammering the copilot
  * (which may call a paid model) without adding infrastructure. A shared store
  * such as Redis is the production replacement.
  */

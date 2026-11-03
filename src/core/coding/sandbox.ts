@@ -10,7 +10,7 @@
  *   - run a deterministic test suite that evaluates the *proposed* content.
  *
  * There is no `exec`, no shell, no network, and no write path to disk anywhere
- * in this module — the safety guarantee is structural.
+ * in this module, so the safety guarantee is structural.
  */
 
 export interface VirtualFile {

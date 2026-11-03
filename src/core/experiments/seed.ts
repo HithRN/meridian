@@ -3,7 +3,7 @@
  *
  * Runs a small, fixed set of research sessions once per process (memoised) so
  * the /experiments, /experiment/[id], /models and /monitoring pages have real,
- * reproducible content on first load — without shipping stale hand-written
+ * reproducible content on first load, without shipping stale hand-written
  * fixtures. Because the pipeline is deterministic, these records are identical
  * on every machine.
  */
@@ -54,7 +54,7 @@ export function getSeedResults(): Promise<OrchestrationResult[]> {
 /**
  * Process-wide store used by serverless route handlers. It is seeded with the
  * canonical experiments and accepts posted records within a single warm
- * instance (ephemeral by design — see store.ts docstring).
+ * instance (ephemeral by design; see the store.ts docstring).
  */
 let storePromise: Promise<ExperimentStore> | null = null;
 

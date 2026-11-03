@@ -9,7 +9,7 @@
  * Inputs come from Jito's public stake-pool stats API when reachable, otherwise
  * from the bundled snapshot below (captured from the same API on 2026-11-02),
  * and every output carries its source. Projections are arithmetic on reported
- * figures — not a forecast, and not investment advice.
+ * figures. They are not a forecast or investment advice.
  */
 
 import { LAMPORTS_PER_SOL } from "@/core/solana/tips";

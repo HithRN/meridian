@@ -28,7 +28,7 @@ export default function DevelopersPage() {
       <PageHeader
         eyebrow="Developer" accent="var(--color-mod-tools)"
         title="MCP & API"
-        lede="Meridian runs a Model Context Protocol server. Any MCP client — Claude, the MCP Inspector, or your own agent — can discover and call the same audited, read-only tools the research agents use."
+        lede="Meridian runs a Model Context Protocol server. Any MCP client (Claude, the MCP Inspector or your own agent) can discover and call the same audited, read-only tools the research agents use."
       />
       <PageBody>
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-5">
@@ -41,13 +41,13 @@ export default function DevelopersPage() {
             <Section eyebrow="Server" title="Protocol details">
               <div className="rounded-lg border border-line bg-paper p-4">
                 <KeyValue k="Transport" v="Streamable HTTP (POST, JSON responses)" />
-                <KeyValue k="Sessions" v="Stateless — no Mcp-Session-Id" />
+                <KeyValue k="Sessions" v="Stateless, no Mcp-Session-Id" />
                 <KeyValue k="Protocol versions" v={<span className="text-right">{SUPPORTED_PROTOCOL_VERSIONS.join(", ")}</span>} />
                 <KeyValue k="Default version" v={LATEST_PROTOCOL_VERSION} />
                 <KeyValue k="Methods" v="initialize, ping, tools/list, tools/call" />
                 <KeyValue k="Capabilities" v="tools" />
                 <KeyValue k="Tools" v={`${tools.length}, all read-only`} />
-                <KeyValue k="Authentication" v="None — public, read-only demo" />
+                <KeyValue k="Authentication" v="None (public, read-only demo)" />
                 <KeyValue k="Rate limit" v="120 requests / min / client (per instance)" />
               </div>
               <p className="mt-3 text-[0.8rem] text-faint">
@@ -84,7 +84,7 @@ export default function DevelopersPage() {
             </table>
           </div>
           <p className="mt-3 text-sm text-muted">
-            Full input and output schemas are in the <Link href="/tools" className="text-accent-strong underline underline-offset-2">tool registry</Link>.
+            Full input and output schemas are in the <Link href="/tools" className="text-link underline underline-offset-2">tool registry</Link>.
           </p>
         </Section>
       </PageBody>

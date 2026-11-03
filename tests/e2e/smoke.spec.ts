@@ -15,7 +15,7 @@ test.describe("public routes", () => {
 
   test("explainable AI predicts and explains a bundle", async ({ page }) => {
     await page.goto("/ai");
-    await expect(page.getByText("Why — exact Shapley values")).toBeVisible({ timeout: 60_000 });
+    await expect(page.getByText("Why: exact Shapley values")).toBeVisible({ timeout: 60_000 });
     await expect(page.getByText("What would change the outcome?")).toBeVisible();
   });
 
@@ -53,7 +53,7 @@ test.describe("public routes", () => {
 test.describe("deterministic research (no-WebGPU fallback path)", () => {
   test("runs a full session to a report", async ({ page }) => {
     await page.goto("/research");
-    // Deterministic is the default reasoner — this is the always-on fallback.
+    // Deterministic is the default reasoner; this is the always-on fallback.
     await page.getByRole("button", { name: /Run research/i }).click();
 
     // The workflow reaches REPORT_READY and results render.

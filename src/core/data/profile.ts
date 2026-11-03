@@ -3,7 +3,7 @@
  *
  * Profiling answers the Data Agent's job: is this series clean enough to model,
  * and does it hide any lookahead traps? The leakage scan is a real detector,
- * not a rubber stamp — it builds a candidate feature set and flags any feature
+ * not a rubber stamp: it builds a candidate feature set and flags any feature
  * whose correlation with the *future* target is implausibly high (the signature
  * of a column that encodes information unavailable at prediction time). The
  * bundled leakage fixture deliberately injects such a column so the detector is
@@ -179,7 +179,7 @@ export function profileDataset(
  * Build a candidate feature set and correlate each feature with the future
  * target. Anything near ±1 is treated as leakage. Fixture datasets inject a
  * deliberately leaky "future_close_ret" column so the detector has something
- * to catch — proving the mechanism, not faking it.
+ * to catch, which proves the mechanism works.
  */
 export function scanLeakage(
   dataset: Dataset,
@@ -191,7 +191,7 @@ export function scanLeakage(
   const targets = fs.rows.map((r) => r.forwardReturn);
   const findings: LeakageFinding[] = [];
 
-  // Legitimate features — these should NOT be flagged (validates specificity).
+  // Legitimate features: these should NOT be flagged (validates specificity).
   fs.featureNames.forEach((name, j) => {
     const col = fs.rows.map((r) => r.features[j]);
     const corr = Math.abs(correlation(col, targets));

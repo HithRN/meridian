@@ -4,7 +4,7 @@
  * Per §5/§12 the deployed demo must not depend on a paid database or a
  * long-running MLflow server. The store is therefore a small, portable
  * abstraction with two concrete backings:
- *   - `InMemoryExperimentStore` — used by serverless route handlers (ephemeral,
+ *   - `InMemoryExperimentStore`: used by serverless route handlers (ephemeral,
  *     seeded with canonical examples so GET always returns content),
  *   - the client persists its own runs in the browser (see `src/store`).
  *
@@ -46,7 +46,7 @@ export function summarise(r: ExperimentRecord): ExperimentSummary {
     question: r.question,
     status: r.status,
     datasetId: r.dataset.datasetId,
-    bestModelType: best?.modelType ?? "—",
+    bestModelType: best?.modelType ?? "n/a",
     bestAuc: best?.metrics.auc ?? 0,
     bestSharpe: best?.backtest?.sharpe ?? null,
     modelCount: r.models.length,

@@ -52,7 +52,7 @@ export default function ResearchPage() {
       <PageHeader
         eyebrow="Workspace" accent="var(--color-mod-research)"
         title="Research workspace"
-        lede="Pose a quantitative hypothesis. The orchestrator plans it, specialised agents execute it through deterministic tools, a critic tries to break it, and a reporter writes it up — live."
+        lede="Pose a quantitative hypothesis. The orchestrator plans it, specialised agents execute it through deterministic tools, a critic tries to break it, and a reporter writes it up while you watch."
         actions={
           runner.status !== "idle" ? (
             <Button variant="secondary" onClick={runner.reset} disabled={busy}>
@@ -123,8 +123,8 @@ export default function ResearchPage() {
 
               {mode === "webllm" && webgpuSupported === false ? (
                 <p className="text-sm text-muted">
-                  No usable WebGPU adapter in this browser. The run will use the deterministic reasoner —
-                  identical guarantees, no model download.
+                  No usable WebGPU adapter in this browser. The run will use the deterministic reasoner,
+                  with identical guarantees and no model download.
                 </p>
               ) : null}
               {mode === "webllm" && webgpuSupported ? (
@@ -275,7 +275,7 @@ function Results({
   const equityPanel = best ? (
     <Card>
       <CardHeader
-        title={`Out-of-sample equity — ${modelLabel(best.modelType)}`}
+        title={`Out-of-sample equity: ${modelLabel(best.modelType)}`}
         eyebrow={`Net of costs · Sharpe ${best.backtest?.sharpe.toFixed(2)} · Max DD ${((best.backtest?.maxDrawdown ?? 0) * 100).toFixed(1)}%`}
         right={<Badge variant="muted">{equity.length} points</Badge>}
       />

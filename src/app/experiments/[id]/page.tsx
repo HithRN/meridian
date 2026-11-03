@@ -36,7 +36,7 @@ export default function ExperimentDetailPage() {
   const id = params.id;
   const localGet = useExperiments((s) => s.get);
 
-  // Derive the local (browser-persisted) run during render — no effect needed.
+  // Derive the local (browser-persisted) run during render; no effect needed.
   const local = useMemo<Detail | null>(() => {
     const r = localGet(id);
     return r
@@ -145,7 +145,7 @@ export default function ExperimentDetailPage() {
         </Section>
 
         {best ? (
-          <Section eyebrow="Best model" title={`Equity curve — ${modelLabel(best.modelType)}`}>
+          <Section eyebrow="Best model" title={`Equity curve: ${modelLabel(best.modelType)}`}>
             <Card>
               <CardHeader
                 title="Out-of-sample equity"

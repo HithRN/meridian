@@ -78,7 +78,7 @@ export default function CopilotPage() {
       <PageHeader
         eyebrow="Solana · Jito" accent="var(--color-mod-agents)"
         title="AI Copilot"
-        lede="Ask about Jito tips, JitoSOL yield or a trading hypothesis, in English or 日本語. The model chooses the tools; the tools compute every number; you see the evidence under each answer."
+        lede="Ask about Jito tips, JitoSOL yield or a trading hypothesis, in English or 日本語. Claude decides which tools to call, the tools compute the figures, and every call is listed under the answer."
         actions={
           entries.length ? (
             <Button variant="secondary" onClick={() => setEntries([])} disabled={busy}>

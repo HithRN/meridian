@@ -22,8 +22,8 @@ const OUTCOMES: Array<{ k: string; title: string; body: string; accent: string }
   },
   {
     k: "What you get",
-    title: "An evidence report, not a chat log",
-    body: "Methodology and data provenance, performance with risk and confidence intervals, an independent critic's objections, and every figure linked to the tool call behind it.",
+    title: "A report you can audit",
+    body: "Methodology and data provenance, performance with risk and confidence intervals, the critic's objections, and each figure linked to the tool call that produced it.",
     accent: "var(--color-mod-models)",
   },
 ];
@@ -65,7 +65,7 @@ export default async function OverviewPage() {
 
   return (
     <>
-      {/* Hero — white, deep navy heading, subtle blue glow */}
+      {/* Hero: white, deep navy heading, subtle blue glow */}
       <header
         className="border-b border-line px-6 pb-14 pt-14 md:px-10 md:pt-20"
         style={{
@@ -75,13 +75,13 @@ export default async function OverviewPage() {
       >
         <div className="mx-auto max-w-6xl">
           <Eyebrow>Meridian · Quantitative research platform</Eyebrow>
-          <h1 className="mt-4 max-w-3xl text-[2.5rem] font-semibold leading-[1.1] tracking-tight md:text-[2.9rem]">
+          <h1 className="mt-4 max-w-3xl text-[2.5rem] font-semibold leading-[1.1] tracking-tight md:text-[2.875rem]">
             Research with clarity. Decisions with confidence.
           </h1>
           <p className="mt-5 max-w-2xl text-[1.05rem] leading-relaxed text-muted">
-            From research hypothesis to reproducible evidence. An intelligent, transparent quantitative research workspace that coordinates
-            specialised agents, runs deterministic experiments, evaluates strategies under explicit execution and cost assumptions, and
-            produces fully traceable research reports.
+            Meridian turns a research hypothesis into reproducible evidence. Agents plan the work, deterministic tools run the
+            experiments and backtests under stated execution and cost assumptions, and an independent critic reviews the result before
+            the report is written.
           </p>
           <ul className="mt-6 flex flex-wrap gap-2">
             {CAPABILITIES.map((c) => (
@@ -101,7 +101,7 @@ export default async function OverviewPage() {
         </div>
       </header>
 
-      {/* Features — blue-white background, white cards */}
+      {/* Features: blue-white background, white cards */}
       <Band bg="var(--color-canvas)">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {OUTCOMES.map((o) => (
@@ -115,9 +115,9 @@ export default async function OverviewPage() {
         </div>
       </Band>
 
-      {/* Principles — light blue-grey, navy and teal */}
+      {/* Principles: light blue-grey, navy and teal */}
       <Band bg="var(--color-sidebar)" className="border-y border-line">
-        <Eyebrow>How Meridian earns trust</Eyebrow>
+        <Eyebrow>Principles</Eyebrow>
         <ol className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {PRINCIPLES.map((p, i) => (
             <li key={p} className="flex gap-3">
@@ -130,12 +130,12 @@ export default async function OverviewPage() {
         </ol>
       </Band>
 
-      {/* Research workflow — white, muted blue/teal */}
+      {/* Research workflow: white, muted blue/teal */}
       <Band bg="#ffffff">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <Eyebrow>Research workflow</Eyebrow>
-            <h2 className="mt-1 text-[1.6rem] font-semibold tracking-tight">Follow one run from plan to evidence</h2>
+            <h2 className="mt-1 text-[1.75rem] font-semibold tracking-tight">Follow one run from plan to evidence</h2>
           </div>
           <Link href="/research" className="text-sm font-medium text-link underline-offset-2 hover:underline">Start with a sample hypothesis →</Link>
         </div>
@@ -149,12 +149,12 @@ export default async function OverviewPage() {
         </ol>
       </Band>
 
-      {/* Specialised vertical — blue-white, white analytical cards */}
+      {/* Specialised vertical: blue-white, white analytical cards */}
       <Band bg="var(--color-canvas)" className="border-t border-line">
         <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
           <div>
             <Eyebrow>Specialised vertical</Eyebrow>
-            <h2 className="mt-1 text-[1.6rem] font-semibold tracking-tight">Solana · Jito research</h2>
+            <h2 className="mt-1 text-[1.75rem] font-semibold tracking-tight">Solana · Jito research</h2>
           </div>
           <Badge variant={live ? "success" : "neutral"}>{live ? "Live · Jito public mainnet APIs" : "Bundled snapshot"}</Badge>
         </div>
@@ -182,7 +182,7 @@ export default async function OverviewPage() {
         </div>
       </Band>
 
-      {/* Trust & developers — light blue-grey, navy and sage */}
+      {/* Trust & developers: light blue-grey, navy and sage */}
       <Band bg="var(--color-sidebar)" className="border-t border-line">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div className="rounded-lg border border-line bg-paper p-6">

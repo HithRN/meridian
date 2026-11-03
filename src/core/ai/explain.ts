@@ -3,13 +3,13 @@
  *
  *  - Exact interventional Shapley values. With 8 features there are only
  *    2⁸ = 256 coalitions, so every coalition value is computed directly against
- *    a background sample — no KernelSHAP sampling error. The efficiency axiom
+ *    a background sample, so there is no KernelSHAP sampling error. The efficiency axiom
  *    holds to floating point: base + Σφ = model log-odds.
  *  - Partial dependence: the average predicted probability as one feature
  *    sweeps its range, with the rest held at background values.
  *  - Calibration: reliability bins and expected calibration error (ECE).
  *  - Counterfactual recourse: the smallest tip that reaches a target landing
- *    probability, everything else unchanged — an explanation a searcher can act on.
+ *    probability, everything else unchanged. A searcher can act on this directly.
  *  - Faithfulness: agreement between a model's explanations and the ground-truth
  *    mechanism's explanations (rank correlation and cosine similarity).
  */
@@ -46,7 +46,7 @@ export interface ShapExplanation {
   base: number;
   /** One value per feature, in log-odds. */
   phi: number[];
-  /** f(x) in log-odds — equals base + Σφ. */
+  /** f(x) in log-odds; equals base + Σφ. */
   value: number;
 }
 
@@ -75,7 +75,7 @@ export function shapExact(f: LogitFn, x: readonly number[], background: readonly
   return { base: v[0], phi, value: v[nMasks - 1] };
 }
 
-/** Mean |φ| per feature over a set of rows — global importance. */
+/** Mean |φ| per feature over a set of rows (global importance). */
 export function globalImportance(f: LogitFn, rows: number[][], background: number[][]): number[] {
   const acc = new Array(rows[0].length).fill(0);
   for (const r of rows) {

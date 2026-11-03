@@ -88,7 +88,7 @@ export default async function ModelsPage() {
                     </li>
                   ))}
                 </ul>
-                <Link href={`/experiments/${r.record.id}`} className="mt-4 inline-block text-sm text-accent-strong underline-offset-2 hover:underline">
+                <Link href={`/experiments/${r.record.id}`} className="mt-4 inline-block text-sm text-link underline-offset-2 hover:underline">
                   Experiment detail →
                 </Link>
               </div>
@@ -124,10 +124,10 @@ export default async function ModelsPage() {
                       <td className="tnum px-3 py-3 text-muted">{r.model.metrics.n.toLocaleString("en-US")}</td>
                       <td className="tnum px-3 py-3 text-muted">{num(r.model.metrics.auc)}</td>
                       <td className="tnum whitespace-nowrap px-3 py-3 text-muted">
-                        {bt ? `${num(bt.sharpe, 2)}${bt.sharpeStdErr !== undefined ? ` ± ${num(bt.sharpeStdErr, 2)}` : ""}` : "—"}
+                        {bt ? `${num(bt.sharpe, 2)}${bt.sharpeStdErr !== undefined ? ` ± ${num(bt.sharpeStdErr, 2)}` : ""}` : "n/a"}
                       </td>
-                      <td className="tnum px-3 py-3 text-muted">{bt?.trades?.toLocaleString("en-US") ?? "—"}</td>
-                      <td className="tnum px-3 py-3 text-muted">{bt ? pct(bt.maxDrawdown) : "—"}</td>
+                      <td className="tnum px-3 py-3 text-muted">{bt?.trades?.toLocaleString("en-US") ?? "n/a"}</td>
+                      <td className="tnum px-3 py-3 text-muted">{bt ? pct(bt.maxDrawdown) : "n/a"}</td>
                       <td className="px-3 py-3"><Badge variant={STATUS_BADGE[r.status]}>{r.status}</Badge></td>
                       <td className="tnum px-3 py-3 text-muted">{dateShort(r.record.createdAt)}</td>
                     </tr>
@@ -138,7 +138,7 @@ export default async function ModelsPage() {
           </div>
           <p className="mt-3 max-w-3xl text-[0.8rem] text-faint">
             OOS n = out-of-sample hourly predictions pooled across walk-forward folds. Sharpe is net of costs, executed one bar after the
-            signal and annualised with √(periods per year) — 8,766 for a 24/7 hourly series. ± is the Lo (2002) standard error.
+            signal and annualised with √(periods per year), which is 8,766 for a 24/7 hourly series. ± is the Lo (2002) standard error.
           </p>
         </Section>
       </PageBody>

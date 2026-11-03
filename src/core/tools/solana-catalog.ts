@@ -2,8 +2,8 @@
  * Solana · Jito tool catalog.
  *
  * Read-only tools over Jito's public mainnet APIs plus the conformal tip
- * advisor and JitoSOL yield maths. They share the registry's contract — strict
- * Zod schemas, audit trail, structured errors — so the AI copilot can call them
+ * advisor and JitoSOL yield maths. They share the registry's contract (strict
+ * Zod schemas, audit trail, structured errors), so the AI copilot can call them
  * exactly like the research tools. Network-backed tools are marked
  * non-deterministic and report whether their figures are live or bundled.
  */

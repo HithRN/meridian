@@ -1,10 +1,10 @@
 /**
  * Landing-probability models, implemented from scratch in TypeScript.
  *
- *   logistic — L2-regularised logistic regression (the interpretable baseline)
- *   gbt      — gradient-boosted trees: Newton (XGBoost-style) leaf values,
+ *   logistic: L2-regularised logistic regression (the interpretable baseline)
+ *   gbt:      gradient-boosted trees: Newton (XGBoost-style) leaf values,
  *              histogram split finding, depth-3 trees, early stopping
- *   mlp      — a neural network (8 → 24 ReLU → 1) trained with Adam,
+ *   mlp:      a neural network (8 → 24 ReLU → 1) trained with Adam,
  *              mini-batches, weight decay and early stopping
  *
  * Every model is plain JSON data, and `logit()` evaluates any of them, so the

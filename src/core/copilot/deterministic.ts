@@ -2,7 +2,7 @@
  * Deterministic copilot engine.
  *
  * The zero-cost fallback when no model credentials are configured (or Claude is
- * unreachable). A transparent intent router — English and Japanese keywords —
+ * unreachable). A transparent intent router (English and Japanese keywords)
  * maps the latest question to tool calls and fills a fixed template from their
  * outputs. Less fluent than Claude, but it calls the same tools and returns the
  * same evidence, so the guarantees are identical.
@@ -118,17 +118,17 @@ export async function runDeterministicCopilot(history: CopilotTurn[]): Promise<C
       o.minTipTimesP50 === null
         ? lang === "ja"
           ? `チップをいくら上げても90%には届きません。ボトルネックはチップ以外の「${blockers}」です。`
-          : `No tip in range reaches 90% — the bottleneck is not the tip but ${blockers}.`
+          : `No tip in range reaches 90%. The bottleneck is ${blockers}, not the tip.`
         : lang === "ja"
           ? `着地確率90%に必要な最小チップ: landed p50 の約 ×${o.minTipTimesP50.toFixed(1)}`
           : `Smallest tip for a 90% landing probability: ≈ ×${o.minTipTimesP50.toFixed(1)} the landed p50`;
     const quality = o.modelQuality;
     reply =
       lang === "ja"
-        ? `**着地確率: ${pc(o.probability)}**（勾配ブースティング木, predict_bundle_landing）${scenario ? ` — シナリオ「${scenario}」` : ""}\n\n` +
+        ? `**着地確率: ${pc(o.probability)}**（勾配ブースティング木, predict_bundle_landing）${scenario ? `、シナリオ「${scenario}」` : ""}\n\n` +
           `平均的なバンドルの ${pc(o.baseProbability)} から、各特徴量の厳密なShapley値で説明します:\n\n${lines}\n\n${cf}\n\n` +
           `モデル品質: AUC ${quality.auc.toFixed(3)}（理論上限 ${quality.oracleAuc.toFixed(3)}）、ECE ${pc(quality.ece)}、説明の忠実度 ${quality.explanationFaithfulness.toFixed(2)}。文書化されたオークションシミュレーターで学習しています。`
-        : `**Landing probability: ${pc(o.probability)}** (gradient-boosted trees, predict_bundle_landing)${scenario ? ` — scenario: ${scenario}` : ""}\n\n` +
+        : `**Landing probability: ${pc(o.probability)}** (gradient-boosted trees, predict_bundle_landing)${scenario ? `. Scenario: ${scenario}` : ""}\n\n` +
           `Starting from ${pc(o.baseProbability)} for an average bundle, exact Shapley values attribute the difference:\n\n${lines}\n\n${cf}\n\n` +
           `Model quality: AUC ${quality.auc.toFixed(3)} (oracle ceiling ${quality.oracleAuc.toFixed(3)}), ECE ${pc(quality.ece)}, explanation faithfulness ${quality.explanationFaithfulness.toFixed(2)}. Trained on a documented bundle-auction simulator.`;
   } else if (intent === "tip") {
@@ -166,8 +166,8 @@ export async function runDeterministicCopilot(history: CopilotTurn[]): Promise<C
         const o = p.output as any;
         projection =
           lang === "ja"
-            ? `\n\n**${o.amountSol} SOLを${o.days}日間**: JitoSOLで約 ${sol(o.jitoSolEnd)} SOL、MEV分を除くと ${sol(o.nativeStakeEnd)} SOL — MEVによる上乗せ ${sol(o.mevUpliftSol)} SOL (project_jitosol_yield)`
-            : `\n\n**${o.amountSol} SOL for ${o.days} days**: ≈ ${sol(o.jitoSolEnd)} SOL as JitoSOL vs ${sol(o.nativeStakeEnd)} SOL without the MEV component — an MEV uplift of ${sol(o.mevUpliftSol)} SOL (project_jitosol_yield)`;
+            ? `\n\n**${o.amountSol} SOLを${o.days}日間**: JitoSOLで約 ${sol(o.jitoSolEnd)} SOL、MEV分を除くと ${sol(o.nativeStakeEnd)} SOL。MEVによる上乗せは ${sol(o.mevUpliftSol)} SOL (project_jitosol_yield)`
+            : `\n\n**${o.amountSol} SOL for ${o.days} days**: ≈ ${sol(o.jitoSolEnd)} SOL as JitoSOL vs ${sol(o.nativeStakeEnd)} SOL without the MEV component, an MEV uplift of ${sol(o.mevUpliftSol)} SOL (project_jitosol_yield)`;
       }
     }
     const mev7 = s.mevRewardsSol.reduce((a: number, p: any) => a + p.value, 0);
@@ -184,7 +184,7 @@ export async function runDeterministicCopilot(history: CopilotTurn[]): Promise<C
           `- TVL: ${Math.round(s.tvlSol).toLocaleString("en-US")} SOL across ${s.numValidators} validators\n` +
           `- MEV rewards over the last ${s.mevRewardsSol.length} days: ${Math.round(mev7).toLocaleString("en-US")} SOL` +
           projection +
-          `\n\nArithmetic on reported figures — not a forecast or investment advice.`;
+          `\n\nThis is arithmetic on reported figures, not a forecast or investment advice.`;
   } else if (intent === "research") {
     const period = question.match(/(\d+)/)?.[1] ?? "24";
     const researchQ =
@@ -196,14 +196,14 @@ export async function runDeterministicCopilot(history: CopilotTurn[]): Promise<C
     const o = r.output as any;
     const best = o.models.find((m: any) => m.model === o.bestModel) ?? o.models[0];
     const findings = o.critic.findings.map((f: string) => `  - ${f}\n`).join("");
-    const sharpe = best.sharpe != null ? best.sharpe.toFixed(2) : "—";
+    const sharpe = best.sharpe != null ? best.sharpe.toFixed(2) : "n/a";
     reply =
       lang === "ja"
         ? `**研究セッション ${o.experimentId} が完了しました** (run_quant_research)\n\n仮説: ${o.hypothesis}\n\n` +
-          `- 最良モデル: ${best.model} — 正解率 ${pc(best.accuracy)}（ベースレート ${pc(best.baseRate)}）、AUC ${best.auc.toFixed(3)}、シャープ ${sharpe}、最大DD ${best.maxDrawdown != null ? pc(best.maxDrawdown) : "—"}\n` +
+          `- 最良モデル: ${best.model}、正解率 ${pc(best.accuracy)}（ベースレート ${pc(best.baseRate)}）、AUC ${best.auc.toFixed(3)}、シャープ ${sharpe}、最大DD ${best.maxDrawdown != null ? pc(best.maxDrawdown) : "n/a"}\n` +
           `- 批評エージェント: ${o.critic.passed ? "合格" : "不合格"}（深刻度 ${o.critic.severity}）\n${findings}- 監査済みツール呼び出し: ${o.toolCalls}回\n\n同梱の合成データでの結果です。`
         : `**Research session ${o.experimentId} finished** (run_quant_research)\n\nHypothesis: ${o.hypothesis}\n\n` +
-          `- Best model: ${best.model} — accuracy ${pc(best.accuracy)} vs base rate ${pc(best.baseRate)}, AUC ${best.auc.toFixed(3)}, Sharpe ${sharpe}, max drawdown ${best.maxDrawdown != null ? pc(best.maxDrawdown) : "—"}\n` +
+          `- Best model: ${best.model}. Accuracy ${pc(best.accuracy)} vs base rate ${pc(best.baseRate)}, AUC ${best.auc.toFixed(3)}, Sharpe ${sharpe}, max drawdown ${best.maxDrawdown != null ? pc(best.maxDrawdown) : "n/a"}\n` +
           `- Critic: ${o.critic.passed ? "passed" : "did not pass"} (severity ${o.critic.severity})\n${findings}- Audited tool calls: ${o.toolCalls}\n\nComputed on bundled synthetic data.`;
   } else {
     reply =

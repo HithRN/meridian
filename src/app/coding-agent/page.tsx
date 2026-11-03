@@ -78,7 +78,7 @@ export default function CodingAgentPage() {
       <PageHeader
         eyebrow="Developer" accent="var(--color-mod-tools)"
         title="Coding agent"
-        lede="A safe agentic-coding demonstration. The agent inspects a whitelisted in-memory repository, runs its tests, proposes a bounded patch, and re-runs the tests — with no shell, no network, and no write path to disk."
+        lede="A safe agentic-coding demonstration. The agent inspects a whitelisted in-memory repository, runs its tests, proposes a bounded patch, and re-runs the tests, with no shell, no network, and no write path to disk."
         actions={<Button onClick={run} disabled={running}>{running ? "Running…" : done ? "Run again" : "Run coding agent →"}</Button>}
       />
       <PageBody>
@@ -146,7 +146,7 @@ export default function CodingAgentPage() {
               <Eyebrow>Summary</Eyebrow>
               <p className="mt-2 text-lg">
                 {(afterStep.output as { allPassed: boolean }).allPassed
-                  ? "All tests pass with the proposed patch. The agent reports the diff and stops — it does not apply the change to disk or deploy."
+                  ? "All tests pass with the proposed patch. The agent reports the diff and stops. It does not apply the change to disk or deploy."
                   : "Tests still failing; the agent would iterate on a bounded correction."}
               </p>
               <p className="mt-2 tnum text-sm text-muted">

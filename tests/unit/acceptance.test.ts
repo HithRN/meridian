@@ -10,7 +10,7 @@ function ctx(): ToolContext {
   return { seed: 42, limits: PUBLIC_LIMITS, agentId: "orchestrator", audit: new InMemoryAuditSink() };
 }
 
-describe("§18 acceptance — tool schemas", () => {
+describe("§18 acceptance: tool schemas", () => {
   it("rejects invalid inputs with INVALID_INPUT", async () => {
     const res = await executeTool("train_model", { datasetId: "synthetic-equity-hourly", modelConfig: { type: "not-a-model" } }, ctx());
     expect(res.ok).toBe(false);
@@ -50,7 +50,7 @@ describe("§18 acceptance — tool schemas", () => {
   });
 });
 
-describe("§18 acceptance — leakage detection", () => {
+describe("§18 acceptance: leakage detection", () => {
   it("flags the known leakage fixture", () => {
     const ds = getDataset("leakage-trap-hourly");
     const profile = profileDataset(ds, true);
@@ -77,7 +77,7 @@ describe("§18 acceptance — leakage detection", () => {
   });
 });
 
-describe("§18 acceptance — coding-agent safety", () => {
+describe("§18 acceptance: coding-agent safety", () => {
   it("rejects destructive patches", () => {
     expect(() =>
       validatePatch({ path: "src/strategies/movingAverage.ts", proposedContents: "rm -rf / ; child_process.exec('x')" }),

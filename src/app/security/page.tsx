@@ -16,9 +16,9 @@ const THREATS: Array<[string, string, string]> = [
   ["Secret leakage", "The Anthropic API key is read only on the server and never sent to the browser.", "In place"],
   ["Coding agent abuse", "In-memory whitelisted repository; no shell, network or disk writes; destructive patterns rejected.", "In place"],
   ["Third-party data outage", "Jito API calls are time-limited and cached; failures fall back to labelled bundled snapshots.", "In place"],
-  ["Request flooding / cost abuse", "Per-instance rate limits on the copilot and MCP endpoints.", "Partial — best effort on serverless"],
-  ["Unauthenticated access", "Public demo with no accounts, so there is no user data to protect yet.", "Gap — auth and RBAC needed before multi-user use"],
-  ["Audit-log tampering", "The audit trail lives in memory per run and is exported with results.", "Gap — needs persistent append-only storage"],
+  ["Request flooding / cost abuse", "Per-instance rate limits on the copilot and MCP endpoints.", "Partial: best effort on serverless"],
+  ["Unauthenticated access", "Public demo with no accounts, so there is no user data to protect yet.", "Gap: auth and RBAC needed before multi-user use"],
+  ["Audit-log tampering", "The audit trail lives in memory per run and is exported with results.", "Gap: needs persistent append-only storage"],
 ];
 
 export default function SecurityPage() {
@@ -42,8 +42,8 @@ export default function SecurityPage() {
                     <td className="px-4 py-3 font-medium">{t}</td>
                     <td className="px-4 py-3 text-muted">{c}</td>
                     <td className="px-4 py-3">
-                      <Badge variant={s.startsWith("In place") ? "success" : s.startsWith("Gap") ? "danger" : "warning"}>{s.split(" — ")[0]}</Badge>
-                      {s.includes(" — ") ? <div className="mt-1 text-[0.75rem] text-faint">{s.split(" — ")[1]}</div> : null}
+                      <Badge variant={s.startsWith("In place") ? "success" : s.startsWith("Gap") ? "danger" : "warning"}>{s.split(": ")[0]}</Badge>
+                      {s.includes(": ") ? <div className="mt-1 text-[0.75rem] text-faint">{s.split(": ").slice(1).join(": ")}</div> : null}
                     </td>
                   </tr>
                 ))}

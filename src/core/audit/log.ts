@@ -15,7 +15,7 @@ export interface AuditEntry {
   tool: string;
   permission: string;
   inputHash: string;
-  /** Full structured input — enables deterministic replay. */
+  /** Full structured input, which enables deterministic replay. */
   input: unknown;
   outputHash?: string;
   /** Compact human-readable summary of the output. */

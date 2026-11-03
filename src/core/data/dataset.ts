@@ -5,13 +5,13 @@
  * synthetic-but-realistic hourly OHLCV series generated from a fixed seed.
  * Each series embeds:
  *   - a modest, genuine autocorrelated drift (so a momentum signal has *some*
- *     real predictive value — the demo is not rigged to always "win"),
+ *     real predictive value; the demo is not rigged to always "win"),
  *   - volatility clustering and occasional regime shifts (so naive models are
  *     punished and the critic agent has real weaknesses to surface),
  *   - a small amount of irreducible noise (so perfect prediction is impossible).
  *
  * Because generation is fully seeded, the content hash of a dataset version is
- * stable across machines and runs — the anchor for reproducibility.
+ * stable across machines and runs, which anchors reproducibility.
  */
 
 import { Rng } from "@/core/ml/rng";
@@ -34,7 +34,7 @@ export interface Dataset {
   symbol: string;
   frequency: "1h";
   description: string;
-  /** Content hash of the bars — identical inputs ⇒ identical hash. */
+  /** Content hash of the bars: identical inputs ⇒ identical hash. */
   contentHash: string;
   bars: OhlcvBar[];
 }
@@ -71,7 +71,7 @@ interface DatasetSpec {
    * that makes the demo honest: big enough to find, small enough to be fragile.
    */
   trendStrength: number;
-  /** Short-horizon mean reversion (returns partially reverse) — hurts momentum. */
+  /** Short-horizon mean reversion (returns partially reverse), which hurts momentum. */
   meanRevert: number;
   /** Base hourly volatility. */
   volatility: number;
@@ -86,7 +86,7 @@ const SPECS: DatasetSpec[] = [
   {
     id: "synthetic-equity-hourly",
     version: "1.0.0",
-    name: "Synthetic Equity — Hourly",
+    name: "Synthetic Equity (hourly)",
     symbol: "SYN-EQ",
     description:
       "Synthetic single-name hourly OHLCV with mild momentum autocorrelation, " +
@@ -103,7 +103,7 @@ const SPECS: DatasetSpec[] = [
   {
     id: "synthetic-fx-hourly",
     version: "1.0.0",
-    name: "Synthetic FX — Hourly",
+    name: "Synthetic FX (hourly)",
     symbol: "SYN-FX",
     description:
       "Synthetic FX-like hourly series: near-random-walk with short-horizon mean " +
@@ -119,11 +119,11 @@ const SPECS: DatasetSpec[] = [
   {
     id: "synthetic-sol-hourly",
     version: "1.0.0",
-    name: "Synthetic SOL/USDC — Hourly",
+    name: "Synthetic SOL/USDC (hourly)",
     symbol: "SYN-SOL",
     description:
       "Synthetic SOL/USDC-like hourly series: high volatility, 24/7 trading, a " +
-      "moderate trend component and heavier regime swings — a crypto-native " +
+      "moderate trend component and heavier regime swings: a crypto-native " +
       "stress test for momentum signals.",
     seed: 20260701,
     bars: 4320,
@@ -136,7 +136,7 @@ const SPECS: DatasetSpec[] = [
   {
     id: "leakage-trap-hourly",
     version: "1.0.0",
-    name: "Leakage Trap — Hourly",
+    name: "Leakage Trap (hourly)",
     symbol: "SYN-LK",
     description:
       "Fixture dataset used to verify leakage detection. Contains a column " +
@@ -156,7 +156,7 @@ function generateBars(spec: DatasetSpec): OhlcvBar[] {
   const bars: OhlcvBar[] = [];
   let price = spec.startPrice;
   // Persistent latent trend: an AR(0.97) process with unit stationary variance.
-  // Because it changes slowly, a momentum lookback can estimate it — that is the
+  // Because it changes slowly, a momentum lookback can estimate it. That is the
   // genuine, exploitable signal. Noise still dominates each individual bar.
   let trend = 0;
   const AR = 0.97;

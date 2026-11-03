@@ -4,7 +4,7 @@
  * A transparent, rule-based interpreter that maps a research question to a
  * `ResearchPlan` by extracting parameters with a small grammar of patterns.
  * It is the required fallback (§17) and the default on browsers without
- * WebGPU — and because it is fully deterministic, it is also what the
+ * WebGPU, and because it is fully deterministic, it is also what the
  * acceptance tests run against. Every plan it emits is validated by the same
  * Zod schemas the WebLLM reasoner must satisfy.
  */
@@ -148,7 +148,7 @@ export class DeterministicReasoner implements Reasoner {
       case "quant-agent":
         return (
           "Converting probabilities to positions with a dead-band, then booking " +
-          "realised forward returns net of turnover costs — no future information used."
+          "realised forward returns net of turnover costs, using no future information."
         );
       case "critic-agent":
         return (

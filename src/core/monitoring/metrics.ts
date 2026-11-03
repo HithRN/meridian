@@ -3,7 +3,7 @@
  *
  * Composes three views, each labelled with where its numbers come from:
  *   - drift: PSI computed on the bundled dataset (reference = first half of the
- *     feature rows, current = second half) — measured, on synthetic data;
+ *     feature rows, current = second half), measured on synthetic data;
  *   - system health: latency quantiles and error rate *measured* from the audit
  *     log of the seeded reference runs executed on this server instance;
  *   - latency history: a *simulated* 30-hour series, for layout only.

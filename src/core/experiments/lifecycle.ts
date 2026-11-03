@@ -1,5 +1,5 @@
 /**
- * Model lifecycle — the single source of truth for a model's registry status.
+ * Model lifecycle: the single source of truth for a model's registry status.
  *
  *   candidate  training finished, evaluation not complete
  *   evaluated  evaluated, not selected (or the reference baseline)

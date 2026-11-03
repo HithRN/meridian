@@ -1,8 +1,8 @@
 /**
  * The canonical training/evaluation pipeline.
  *
- * Composes the deterministic building blocks — features, walk-forward splits,
- * model training, out-of-sample prediction — into one reproducible unit keyed
+ * Composes the deterministic building blocks (features, walk-forward splits,
+ * model training, out-of-sample prediction) into one reproducible unit keyed
  * entirely by its inputs. Because it is a pure function of
  * (dataset, featureConfig, windowConfig, modelConfig), every tool that needs
  * model results can reconstruct them from the recorded inputs alone. That is
@@ -69,7 +69,7 @@ export interface PipelineInput {
   modelConfig: ModelConfig;
 }
 
-/** Stable id for a feature set — hash of the inputs that determine it. */
+/** Stable id for a feature set: a hash of the inputs that determine it. */
 export function featureSetId(
   datasetId: string,
   version: string,
@@ -95,7 +95,7 @@ export function modelId(input: PipelineInput): string {
  * Bounded memo cache. `runPipeline` is a pure function of its input, so caching
  * by a canonical content hash is safe and lets the orchestrator call
  * train/evaluate/backtest for the same model without recomputing the folds.
- * The cache is an optimisation only — determinism guarantees identical results
+ * The cache is an optimisation only; determinism guarantees identical results
  * with or without it.
  */
 const pipelineCache = new Map<string, PipelineResult>();

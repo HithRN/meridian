@@ -27,7 +27,7 @@ export const useSession = create<SessionState>((set) => ({
   modelError: null,
   detectWebGpu: () => {
     // `navigator.gpu` can exist without a usable adapter (blocklisted GPU,
-    // insufficient memory, disabled flag), so request one — with a timeout so
+    // insufficient memory, disabled flag), so request one, with a timeout so
     // the UI never stays on "checking…".
     const gpu =
       typeof navigator !== "undefined"

@@ -141,7 +141,7 @@ export default async function MonitoringPage() {
                     <td className="tnum px-4 py-3 text-muted"><code>{p.experimentId}</code></td>
                     <td className="px-4 py-3">{modelLabelShort(p.modelType)}</td>
                     <td className="tnum px-4 py-3 text-muted">{num(p.auc)}</td>
-                    <td className="tnum px-4 py-3 text-muted">{p.sharpe === null ? "—" : num(p.sharpe, 2)}</td>
+                    <td className="tnum px-4 py-3 text-muted">{p.sharpe === null ? "n/a" : num(p.sharpe, 2)}</td>
                     <td className="px-4 py-3 text-muted">{p.status}</td>
                   </tr>
                 ))}

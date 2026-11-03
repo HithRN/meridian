@@ -80,7 +80,7 @@ export function Sidebar() {
           <ReasonerBadge />
           <p>Synthetic-data demonstration. No real-money execution.</p>
           <p className="text-faint">
-            Built by {SITE.author} ·{" "}
+            Created by {SITE.author} ·{" "}
             <a href={SITE.repoUrl} className="underline underline-offset-2 hover:text-ink">
               source
             </a>

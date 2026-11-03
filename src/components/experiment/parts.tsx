@@ -50,12 +50,12 @@ const COLS: Array<{ key: string; label: string; get: (m: ModelResult) => string 
     get: (m) =>
       m.backtest
         ? `${num(m.backtest.sharpe, 2)}${m.backtest.sharpeStdErr !== undefined ? ` ± ${num(m.backtest.sharpeStdErr, 2)}` : ""}`
-        : "—",
+        : "n/a",
   },
-  { key: "tr", label: "Trades", get: (m) => (m.backtest?.trades !== undefined ? m.backtest.trades.toLocaleString("en-US") : "—") },
-  { key: "dd", label: "Max DD", get: (m) => (m.backtest ? pct(m.backtest.maxDrawdown) : "—") },
-  { key: "to", label: "Turnover", get: (m) => (m.backtest ? num(m.backtest.turnover, 1) : "—") },
-  { key: "ret", label: "Return", get: (m) => (m.backtest ? pct(m.backtest.totalReturn) : "—") },
+  { key: "tr", label: "Trades", get: (m) => (m.backtest?.trades !== undefined ? m.backtest.trades.toLocaleString("en-US") : "n/a") },
+  { key: "dd", label: "Max DD", get: (m) => (m.backtest ? pct(m.backtest.maxDrawdown) : "n/a") },
+  { key: "to", label: "Turnover", get: (m) => (m.backtest ? num(m.backtest.turnover, 1) : "n/a") },
+  { key: "ret", label: "Return", get: (m) => (m.backtest ? pct(m.backtest.totalReturn) : "n/a") },
 ];
 
 export function MetricsTable({

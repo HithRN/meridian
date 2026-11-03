@@ -85,7 +85,7 @@ export default function ExperimentsPage() {
                     <td className="px-3 py-3 text-muted">{datasetLabel(r.datasetId)}</td>
                     <td className="px-3 py-3">{modelLabelShort(r.bestModelType)}</td>
                     <td className="tnum px-3 py-3 text-muted">{num(r.bestAuc)}</td>
-                    <td className="tnum px-3 py-3 text-muted">{r.bestSharpe === null ? "—" : num(r.bestSharpe, 2)}</td>
+                    <td className="tnum px-3 py-3 text-muted">{r.bestSharpe === null ? "n/a" : num(r.bestSharpe, 2)}</td>
                     <td className="px-3 py-3"><Severity level={r.critiqueSeverity} /></td>
                     <td className="px-3 py-3">
                       <Badge variant={r.source === "local" ? "outline" : "muted"}>{r.source}</Badge>

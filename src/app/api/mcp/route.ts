@@ -6,7 +6,7 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 
 /**
- * MCP endpoint — Streamable HTTP transport, stateless, JSON responses.
+ * MCP endpoint: Streamable HTTP transport, stateless, JSON responses.
  * POST one JSON-RPC message; GET (server-initiated stream) is not offered.
  */
 export async function POST(req: NextRequest) {

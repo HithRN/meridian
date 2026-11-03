@@ -10,7 +10,7 @@ conclusion in the evidence report links to the tool call that produced it.
 > data; they validate the method, reproducibility and leakage controls, and are not evidence
 > about any real market. No real-money execution. Not investment advice.
 
-Built and maintained by **Sanyam** · source: [HithRN/meridian](https://github.com/HithRN/meridian)
+Created by the **SK-HRN team** · source: [HithRN/meridian](https://github.com/HithRN/meridian)
 (the single source of truth for attribution in the app is `src/lib/site.ts`).
 
 ## Feature status
@@ -24,9 +24,9 @@ Built and maintained by **Sanyam** · source: [HithRN/meridian](https://github.c
 | Monitoring with measured vs simulated telemetry labelled | Working | `/monitoring` |
 | MCP server (Streamable HTTP, JSON-RPC 2.0) + REST API | Working, tested with the official MCP TypeScript SDK client | `/api/mcp`, `/developers` |
 | Solana · Jito vertical: Jito Lab, Explainable AI, Copilot | Working (Claude copilot needs `ANTHROPIC_API_KEY`) | `/jito`, `/ai`, `/copilot` |
-| Accounts, team workspaces, RBAC | Planned | — |
-| Durable experiment storage (PostgreSQL / object storage) | Planned | — |
-| Real dataset upload, licensed market data | Planned | — |
+| Accounts, team workspaces, RBAC | Planned | n/a |
+| Durable experiment storage (PostgreSQL / object storage) | Planned | n/a |
+| Real dataset upload, licensed market data | Planned | n/a |
 
 **Deployment note:** the public deployment updates when this branch is merged into `main`.
 Until then the live site shows the earlier version without the Solana · Jito vertical,
@@ -48,7 +48,7 @@ the MCP server or the redesigned interface.
 | Logistic regression | 0.887 | 0.430 | 3.2% | 0.92 |
 | Neural network (8→24→1, Adam) | 0.895 | 0.414 | 3.0% | 0.97 |
 | Gradient-boosted trees (Newton, depth 3) | 0.900 | 0.399 | 2.8% | 0.98 |
-| Oracle (true probabilities) | 0.908 | 0.383 | 1.5% | — |
+| Oracle (true probabilities) | 0.908 | 0.383 | 1.5% | n/a |
 
 Shapley values are computed exactly over all 2⁸ coalitions (no sampling), so base + Σφ equals the model's
 log-odds. The copilot exposes the model as the `predict_bundle_landing` tool, so Claude can explain a
@@ -62,7 +62,7 @@ and a single global quantile drops to ~65% during congestion. The calibration hi
 shaped on the live API's percentile spreads; recalibrate on a recorded mainnet feed before production use.
 
 **Enabling Claude.** Copy `.env.example` to `.env.local` and set `ANTHROPIC_API_KEY`. Without it the copilot
-uses a bilingual deterministic router over the same tools — still free, still fully traced.
+uses a bilingual deterministic router over the same tools, and it stays free and fully traced.
 
 Live data comes from Jito's public, keyless endpoints (`bundles.jito.wtf` tip floor,
 `kobe.mainnet.jito.network` stake-pool stats), cached for 60 s, with bundled snapshots as fallback.
@@ -90,8 +90,8 @@ Live data comes from Jito's public, keyless endpoints (`bundles.jito.wtf` tip fl
 
 The platform separates **reasoning** from **computation**:
 
-- A **reasoning layer** — a browser-local language model (WebLLM/WebGPU) or a transparent
-  deterministic policy — interprets the question into a *structured, schema-validated plan*
+- A **reasoning layer** (a browser-local language model (WebLLM/WebGPU) or a transparent
+  deterministic policy) interprets the question into a *structured, schema-validated plan*
   and narrates the agents' intent. **It never produces a metric, a return, or a p-value.**
 - A set of **deterministic tools** performs every calculation. Inputs are validated on the
   way in and outputs on the way out; each call is logged to an audit trail with agent id,
@@ -115,7 +115,7 @@ the tool call that produced each figure.
 | CI | GitHub Actions | Typecheck, lint, unit tests, build |
 
 The numerical core (`src/core`) is **framework-agnostic, dependency-light TypeScript** so
-the *identical* code runs in a Vercel Route Handler and in a browser Web Worker — no native
+the *identical* code runs in a Vercel Route Handler and in a browser Web Worker: no native
 addons, no Python runtime, no paid workers.
 
 ## The agent workflow
@@ -143,7 +143,7 @@ RECEIVED → PLAN_CREATED → DATA_VALIDATED → HYPOTHESIS_DEFINED → FEATURES
 
 Tools are discovered by name with strict input/output JSON Schemas. They are served two ways:
 
-- **MCP server** at `POST /api/mcp` — Model Context Protocol over Streamable HTTP, stateless,
+- **MCP server** at `POST /api/mcp`: Model Context Protocol over Streamable HTTP, stateless,
   JSON responses. Implements `initialize` (version negotiation: 2025-11-25, 2025-06-18,
   2025-03-26), `notifications/initialized`, `ping`, `tools/list` and `tools/call`, returns
   `structuredContent` validated against each tool's output schema, marks every tool
@@ -163,15 +163,15 @@ seed except the `network-read` tools, which report whether their data is live or
 
 ## Reproducibility & guardrails
 
-- **Deterministic metrics** — no number reaches a report unless a tool produced it.
-- **Leakage-safe by construction** — features use only information available at prediction
+- **Deterministic metrics**: no number reaches a report unless a tool produced it.
+- **Leakage-safe by construction**: features use only information available at prediction
   time; walk-forward splits are embargoed; a correlation scan flags future-derived columns
   (verified against a bundled leakage fixture).
-- **Reproducible** — every run pins dataset version + content hash, seed, and kernel
+- **Reproducible**: every run pins dataset version + content hash, seed, and kernel
   version. A seeded RNG (mulberry32) replaces `Math.random()` throughout, so identical
   inputs yield byte-identical outputs.
-- **Bounded** — row, model, fold and epoch counts are capped for public requests.
-- **Auditable & replayable** — every tool call is logged; each tool is independently
+- **Bounded**: row, model, fold and epoch counts are capped for public requests.
+- **Auditable & replayable**: every tool call is logged; each tool is independently
   replayable from its recorded input.
 
 ## Local development
@@ -197,7 +197,7 @@ npm run verify       # typecheck + lint + test
 ## Testing
 
 - **Unit** (`vitest`, `tests/unit`): deterministic pipeline & reproducibility, end-to-end
-  orchestration through every workflow state, and the §18 acceptance criteria — schema
+  orchestration through every workflow state, and the §18 acceptance criteria: schema
   rejection of invalid/unknown inputs, leakage-fixture detection, and coding-sandbox safety.
 - **E2E** (`playwright`, `tests/e2e`): drives the public routes, runs a deterministic
   research session in the browser, and confirms the no-WebGPU fallback path.
@@ -223,8 +223,8 @@ verify + build gate passes.
 
 **WebLLM note:** the browser-local model (default `Llama-3.2-1B-Instruct-q4f16_1-MLC`) is
 downloaded on-device on first use in WebGPU-capable browsers; it never leaves the device
-and requires no key. Browsers without WebGPU automatically use the deterministic reasoner —
-identical guarantees, no download.
+and requires no key. Browsers without WebGPU automatically use the deterministic reasoner,
+with identical guarantees and no download.
 
 ## API reference
 

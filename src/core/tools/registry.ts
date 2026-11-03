@@ -1,5 +1,5 @@
 /**
- * Tool registry — the single execution path for every tool call.
+ * Tool registry: the single execution path for every tool call.
  *
  * Responsibilities:
  *   1. Discovery: expose stable names + JSON Schemas (MCP-compatible).
@@ -7,8 +7,8 @@
  *      validate the handler's output *before* it leaves the boundary.
  *   3. Audit: record agent id, input hash, output summary, timing and status.
  *
- * A handler therefore cannot receive malformed input or emit a malformed result
- * — the type system and the runtime schema agree.
+ * A handler therefore cannot receive malformed input or emit a malformed result:
+ * the type system and the runtime schema agree.
  */
 
 import { z } from "zod";
@@ -30,7 +30,7 @@ export function registerTool<I extends z.ZodType, O extends z.ZodType>(
   // Registration is idempotent: the catalog is defined once, but a module may
   // be re-evaluated (HMR in dev, or duplicate evaluation across runtime
   // contexts). Overwriting with the latest definition is safe because tools are
-  // pure and keyed by a stable name — and it avoids spurious "duplicate" errors.
+  // pure and keyed by a stable name, and it avoids spurious "duplicate" errors.
   // The registry is intentionally type-erased; validation happens at call time
   // via the stored Zod schemas.
   registry.set(def.name, def as unknown as ToolDefinition);
@@ -73,7 +73,7 @@ export class ToolNotFoundError extends Error {
 }
 
 /**
- * Execute a tool by name. Never throws for validation/handler errors — returns
+ * Execute a tool by name. Never throws for validation/handler errors; it returns
  * a structured `ToolCallResult` so agents can branch on `ok` and the audit
  * trail always captures the attempt.
  */
@@ -137,7 +137,7 @@ export async function executeTool<T = unknown>(
     const output = await tool.handler(parsed.data, ctx);
     const validated = tool.output.safeParse(output);
     if (!validated.success) {
-      // A handler produced a shape that violates its own contract — a bug we
+      // A handler produced a shape that violates its own contract: a bug we
       // surface loudly rather than leak downstream.
       throw new OutputContractError(name, validated.error.issues);
     }

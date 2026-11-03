@@ -140,7 +140,7 @@ export async function runResearch(opts: RunOptions): Promise<OrchestrationResult
       kind: "error",
       agentId: "data-agent",
       state,
-      title: "Critical leakage — modelling halted",
+      title: "Critical leakage: modelling halted",
       detail: `${leakageCritical} feature(s) encode future information.`,
     });
     throw new LeakageHalt(leakageCritical);

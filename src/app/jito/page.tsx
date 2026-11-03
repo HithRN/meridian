@@ -9,6 +9,7 @@ import { TipHistoryChart, YieldPathChart } from "@/components/charts/JitoCharts"
 import { getTipAdvisor, LAMPORTS_PER_SOL, TIP_LEVELS, type TipFloorSnapshot, type TipLevel } from "@/core/solana/tips";
 import { BUNDLED_STAKE_POOL, mevApyEstimate, projectJitoSolYield, type StakePoolStats } from "@/core/solana/staking";
 import { cn } from "@/lib/cn";
+import { EcosystemFit, headlineRow } from "@/components/jito/EcosystemFit";
 
 interface Sourced<T> {
   data: T;
@@ -73,6 +74,23 @@ export default function JitoLabPage() {
             { id: "advisor", label: "Tip advisor", content: <AdvisorTab advisor={advisor} live={live} /> },
             { id: "pulse", label: "Network pulse", content: <PulseTab advisor={advisor} snap={snap} /> },
             { id: "yield", label: "JitoSOL yield", content: <YieldTab pool={pool} /> },
+            {
+              id: "ecosystem",
+              label: "Ecosystem fit",
+              content: (
+                <EcosystemFit
+                  data={{
+                    advisor: headlineRow(advisor.backtest.rows),
+                    regime: advisor.recommend(95, 0.8, live).regime,
+                    regimeSource: live ? "live" : "bundled-history",
+                    apy: pool.apy,
+                    mevApy: mevApyEstimate(pool),
+                    validators: pool.numValidators,
+                    poolSource: pool.source,
+                  }}
+                />
+              ),
+            },
           ]}
         />
       </PageBody>

@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { Eyebrow, Badge, Button } from "@/components/ui/primitives";
 import { fetchStakePoolStats, fetchTipFloor } from "@/core/solana/live";
-import { LAMPORTS_PER_SOL } from "@/core/solana/tips";
+import { LAMPORTS_PER_SOL, getTipAdvisor } from "@/core/solana/tips";
+import { mevApyEstimate } from "@/core/solana/staking";
+import { mcpTools } from "@/core/mcp/server";
+import { EcosystemFit, headlineRow } from "@/components/jito/EcosystemFit";
 
 export const revalidate = 60;
 
@@ -37,11 +40,6 @@ const PRINCIPLES = [
 
 const WORKFLOW = ["Plan the research", "Validate the data", "Define features & hypothesis", "Train & evaluate walk-forward", "Independent critique", "Evidence report"];
 
-const VERTICAL: Array<{ href: string; title: string; body: string; accent: string }> = [
-  { href: "/jito", title: "Jito Lab", body: "Live tip floor and a calibrated bundle-tip advisor, validated walk-forward.", accent: "var(--color-mod-jito)" },
-  { href: "/ai", title: "Explainable AI", body: "Will a bundle land, and why? Exact Shapley values and counterfactual tips.", accent: "var(--color-mod-agents)" },
-  { href: "/copilot", title: "AI Copilot", body: "Ask in English or Japanese; every answer shows its tool calls.", accent: "var(--color-mod-agents)" },
-];
 
 function Band({ bg, children, className }: { bg: string; children: React.ReactNode; className?: string }) {
   return (
@@ -55,6 +53,8 @@ export default async function OverviewPage() {
   const [tip, pool] = await Promise.all([fetchTipFloor(), fetchStakePoolStats()]);
   const lamports = (sol: number) => Math.round(sol * LAMPORTS_PER_SOL).toLocaleString("en-US");
   const live = tip.source === "live" && pool.source === "live";
+  const advisor = getTipAdvisor();
+  const now = advisor.recommend(95, 0.8, tip.source === "live" ? tip.data : null);
 
   const pulse: Array<{ k: string; v: string }> = [
     { k: "JitoSOL APY", v: `${(pool.data.apy * 100).toFixed(2)}%` },
@@ -149,37 +149,38 @@ export default async function OverviewPage() {
         </ol>
       </Band>
 
-      {/* Specialised vertical: blue-white, white analytical cards */}
+      {/* Jito ecosystem: blue-white, white analytical cards */}
       <Band bg="var(--color-canvas)" className="border-t border-line">
         <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
           <div>
-            <Eyebrow>Specialised vertical</Eyebrow>
-            <h2 className="mt-1 text-[1.75rem] font-semibold tracking-tight">Solana · Jito research</h2>
+            <Eyebrow>Solana · Jito</Eyebrow>
+            <h2 className="mt-1 text-[1.75rem] font-semibold tracking-tight">Where it fits in the Jito ecosystem</h2>
+            <p className="mt-2 max-w-2xl text-[0.98rem] text-muted">
+              The same research discipline applied to the questions searchers, stakers and the community ask about MEV every day.
+            </p>
           </div>
           <Badge variant={live ? "success" : "neutral"}>{live ? "Live · Jito public mainnet APIs" : "Bundled snapshot"}</Badge>
         </div>
-        <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-line bg-line md:grid-cols-4">
+        <div className="mb-6 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-line bg-line md:grid-cols-4">
           {pulse.map((p) => (
             <div key={p.k} className="bg-paper px-5 py-4">
               <Eyebrow>{p.k}</Eyebrow>
-              <div className="tnum mt-1 text-[1.1rem] font-semibold text-heading">{p.v}</div>
+              <div className="tnum mt-1 text-[1.15rem] font-semibold text-heading">{p.v}</div>
             </div>
           ))}
         </div>
-        <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
-          {VERTICAL.map((v) => (
-            <Link key={v.href} href={v.href} className="group rounded-lg border border-line bg-paper p-5 transition-colors hover:border-line-strong hover:bg-selected">
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-2">
-                  <span className="h-[8px] w-[8px] rounded-full" style={{ background: v.accent }} />
-                  <h3 className="font-semibold">{v.title}</h3>
-                </span>
-                <span className="text-link transition-transform group-hover:translate-x-0.5">→</span>
-              </div>
-              <p className="mt-1 text-sm text-muted">{v.body}</p>
-            </Link>
-          ))}
-        </div>
+        <EcosystemFit
+          data={{
+            advisor: headlineRow(advisor.backtest.rows),
+            regime: now.regime,
+            regimeSource: now.anchorSource,
+            apy: pool.data.apy,
+            mevApy: mevApyEstimate(pool.data),
+            validators: pool.data.numValidators,
+            poolSource: pool.source,
+            toolCount: mcpTools().length,
+          }}
+        />
       </Band>
 
       {/* Trust & developers: light blue-grey, navy and sage */}

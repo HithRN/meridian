@@ -85,10 +85,11 @@
   --radius-lg: 11px;
 
   /* Type */
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-serif: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains), ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  --font-numeric: var(--font-plex-mono), ui-monospace, "SFMono-Regular", Menlo, monospace;
+  /* Times New Roman across the whole site: text, figures and code. */
+  --font-sans: "Times New Roman", Times, Georgia, serif;
+  --font-serif: "Times New Roman", Times, Georgia, serif;
+  --font-mono: "Times New Roman", Times, Georgia, serif;
+  --font-numeric: "Times New Roman", Times, Georgia, serif;
 }
 
 :root {
@@ -108,7 +109,7 @@ body {
   background: var(--color-canvas);
   color: var(--color-ink);
   font-family: var(--font-sans);
-  font-size: 14.5px;
+  font-size: 16.5px;
   line-height: 1.55;
 }
 
@@ -122,10 +123,10 @@ code,
 pre,
 kbd {
   font-family: var(--font-mono);
-  font-size: 0.88em;
+  font-size: 0.95em;
 }
 
-/* Numeric metrics: tabular IBM Plex Mono. Declared as a utility so size
+/* Numeric metrics: tabular lining figures. Declared as a utility so size
    utilities (text-6xl, …) on the same element still win. */
 @utility tnum {
   font-family: var(--font-numeric);

@@ -32,6 +32,18 @@ Created by the **SK-HRN team** · source: [HithRN/meridian](https://github.com/H
 Until then the live site shows the earlier version without the Solana · Jito vertical,
 the MCP server or the redesigned interface.
 
+## Where it fits in the Jito ecosystem
+
+| Who | Question | What Meridian answers |
+| --- | --- | --- |
+| Searchers | What should this bundle tip? | A calibrated next-hour tip forecast. Re-using last hour's p95 clears it about half the time; the advisor holds its 80% target, including in congested hours. |
+| Block engine and searcher support | Why did this bundle not land? | Exact Shapley explanations that separate the auction from state drift, account contention and leader distance, plus the smallest tip change that would help, or a note that no tip would. |
+| JitoSOL stakers and validators | How much of the yield is MEV? | APY decomposed into staking and estimated MEV components from live stake-pool data, with position projections. |
+| Foundation and community | How do new builders learn MEV without guesswork? | A bilingual (English and Japanese) copilot that cites the tool behind each figure, and read-only MCP tools any AI agent can use. |
+
+On mainnet the same pipeline would calibrate on the block engine's landed and dropped bundle
+records instead of the bundled simulator and synthetic tip history.
+
 ## New: Solana · Jito vertical + AI copilot
 
 | Page | What it does |

@@ -52,13 +52,23 @@ export const StrategyConfigSchema = z
     allowShort: z.boolean().default(true),
     maxPosition: z.number().min(0.1).max(3).default(1),
     sizing: z.enum(["binary", "proportional"]).default("proportional"),
+    /** Bars between signal and execution; 1 = trade at the next bar, never the signal bar. */
+    executionLag: z.number().int().min(0).max(24).default(1),
   })
   .strict();
 
 export const CostConfigSchema = z
   .object({
+    /** Fees and commissions per unit turnover, bps. */
     costBps: z.number().min(0).max(200).default(5),
+    /** Half-spread crossed per unit turnover, bps. */
     slippageBps: z.number().min(0).max(200).default(2),
+    /** Slippage as a multiple of trailing bar volatility. */
+    volSlippage: z.number().min(0).max(5).default(0.1),
+    /** Square-root market-impact coefficient. */
+    impactCoef: z.number().min(0).max(5).default(0.1),
+    /** Annual borrow fee on short notional, bps. */
+    borrowBpsAnnual: z.number().min(0).max(5000).default(100),
   })
   .strict();
 

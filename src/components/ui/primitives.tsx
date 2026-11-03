@@ -17,7 +17,7 @@ export function Card({
   as?: React.ElementType;
 }) {
   return (
-    <Tag className={cn("border border-line bg-paper", className)}>{children}</Tag>
+    <Tag className={cn("rounded-lg border border-line bg-paper shadow-[0_1px_2px_rgba(24,54,80,0.04)]", className)}>{children}</Tag>
   );
 }
 
@@ -36,7 +36,7 @@ export function CardHeader({
     <div className={cn("flex items-start justify-between gap-4 border-b border-line px-5 py-4", className)}>
       <div>
         {eyebrow ? <Eyebrow className="mb-1">{eyebrow}</Eyebrow> : null}
-        <h3 className="text-lg leading-tight">{title}</h3>
+        <h3 className="text-[1.05rem] font-semibold leading-tight tracking-tight">{title}</h3>
       </div>
       {right ? <div className="shrink-0 text-sm text-muted">{right}</div> : null}
     </div>
@@ -48,7 +48,7 @@ export function CardBody({ children, className }: { children: React.ReactNode; c
 }
 
 /* -------------------------------------------------------------------- Badge */
-type BadgeVariant = "outline" | "solid" | "muted";
+type BadgeVariant = "outline" | "solid" | "muted" | "success" | "running" | "warning" | "danger" | "info" | "neutral";
 export function Badge({
   children,
   variant = "outline",
@@ -61,10 +61,16 @@ export function Badge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 px-2 py-[2px] text-[0.68rem] uppercase tracking-[0.12em] leading-none",
-        variant === "outline" && "border border-ink text-ink",
-        variant === "solid" && "bg-ink text-paper",
-        variant === "muted" && "border border-line text-muted",
+        "inline-flex items-center gap-1 rounded px-2 py-[3px] text-[0.66rem] font-medium uppercase tracking-[0.08em] leading-none",
+        variant === "outline" && "border border-line-strong text-heading",
+        variant === "solid" && "bg-accent-soft text-heading",
+        variant === "muted" && "border border-line bg-panel text-muted",
+        variant === "success" && "bg-positive-bg text-positive",
+        variant === "running" && "bg-running-bg text-running",
+        variant === "warning" && "bg-warning-bg text-warning",
+        variant === "danger" && "bg-negative-bg text-negative",
+        variant === "info" && "bg-info-bg text-info",
+        variant === "neutral" && "bg-neutral-bg text-neutral",
         className,
       )}
     >
@@ -88,7 +94,7 @@ export function Stat({
   return (
     <div className={cn("flex flex-col gap-1", className)}>
       <Eyebrow>{label}</Eyebrow>
-      <div className="tnum text-3xl leading-none">{value}</div>
+      <div className="tnum text-[1.6rem] font-semibold leading-none tracking-tight text-heading">{value}</div>
       {sub ? <div className="text-sm text-muted">{sub}</div> : null}
     </div>
   );
@@ -104,10 +110,10 @@ export const Button = React.forwardRef<
     <button
       ref={ref}
       className={cn(
-        "inline-flex items-center justify-center gap-2 px-4 py-2 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-40",
-        variant === "primary" && "bg-ink text-paper hover:bg-paper hover:text-ink border border-ink",
-        variant === "secondary" && "border border-ink text-ink hover:bg-ink hover:text-paper",
-        variant === "ghost" && "border border-transparent text-ink hover:border-line",
+        "inline-flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-40",
+        variant === "primary" && "border border-accent bg-accent text-on-accent hover:border-accent-strong hover:bg-accent-strong",
+        variant === "secondary" && "border border-line bg-subtle text-heading hover:border-line-strong hover:bg-selected",
+        variant === "ghost" && "border border-transparent text-ink hover:bg-subtle",
         className,
       )}
       {...props}
@@ -133,24 +139,23 @@ export function KeyValue({ k, v, mono }: { k: React.ReactNode; v: React.ReactNod
 }
 
 /* ------------------------------------------------------------- Severity mark */
-/** Monochrome severity indicator — glyph + label, never colour. */
+const SEVERITY_VARIANT: Record<string, BadgeVariant> = {
+  high: "danger",
+  significant: "danger",
+  medium: "warning",
+  moderate: "warning",
+  low: "info",
+  none: "success",
+  stable: "success",
+};
+
+/** Severity as a muted status pill: pale background, dark label. */
 export function Severity({ level }: { level: string }) {
-  const glyph =
-    level === "high"
-      ? "▲▲▲"
-      : level === "medium"
-        ? "▲▲"
-        : level === "low"
-          ? "▲"
-          : level === "significant"
-            ? "▲▲▲"
-            : level === "moderate"
-              ? "▲▲"
-              : "—";
-  return (
-    <span className="inline-flex items-center gap-2">
-      <span aria-hidden className="text-[0.6rem] leading-none tracking-tight">{glyph}</span>
-      <span className="uppercase tracking-[0.12em] text-[0.68rem]">{level}</span>
-    </span>
-  );
+  return <Badge variant={SEVERITY_VARIANT[level] ?? "neutral"}>{level}</Badge>;
+}
+
+/* --------------------------------------------------------------- Signed text */
+/** Colour a signed quantity: positive / negative tones, neutral near zero. */
+export function signedTone(v: number, eps = 1e-9): string {
+  return v > eps ? "text-positive" : v < -eps ? "text-negative" : "text-muted";
 }

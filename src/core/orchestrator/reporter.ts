@@ -52,7 +52,15 @@ export function buildReport(
   lines.push("");
   lines.push(`- Features: ${record.models.length ? plan.featureConfig.momentumPeriod : 0}-period momentum plus return, RSI, realised volatility, range and volume z-score (leakage-safe, horizon ${plan.featureConfig.horizon}).`);
   lines.push(`- Validation: ${plan.windowConfig.folds}-fold ${plan.windowConfig.mode} walk-forward, embargo ${plan.windowConfig.embargo}.`);
-  lines.push(`- Costs: ${plan.includeCosts ? `${plan.costConfig.costBps}bps + ${plan.costConfig.slippageBps}bps slippage on turnover` : "gross (no costs applied)"}.`);
+  lines.push(`- Execution: signals computed at bar T's close are executed at bar T+${plan.strategyConfig.executionLag ?? 1}; positions are flattened across gaps between folds.`);
+  lines.push(
+    `- Costs: ${
+      plan.includeCosts
+        ? `${plan.costConfig.costBps}bps fees + ${plan.costConfig.slippageBps}bps half-spread per unit turnover, volatility-scaled slippage (${plan.costConfig.volSlippage ?? 0}×σ), square-root impact (${plan.costConfig.impactCoef ?? 0}×σ×√turnover) and ${plan.costConfig.borrowBpsAnnual ?? 0}bps/yr borrow on shorts`
+        : "gross (no costs applied)"
+    }.`,
+  );
+  lines.push(`- Not modelled: liquidity and volume-participation limits, trading calendars, corporate actions, survivorship. Data is synthetic.`);
   lines.push("");
 
   // Results table.
@@ -75,7 +83,14 @@ export function buildReport(
     lines.push("");
     lines.push(`- Out-of-sample AUC ${best.metrics.auc.toFixed(3)}, accuracy ${best.metrics.accuracy.toFixed(3)} vs base rate ${best.metrics.baseRate.toFixed(3)}.`);
     lines.push(`- Information coefficient ${best.metrics.informationCoefficient.toFixed(4)} over ${best.metrics.n} observations.`);
-    lines.push(`- Backtest: total return ${pct(best.backtest.totalReturn)} (benchmark ${pct(best.backtest.benchmarkReturn)}), Sharpe ${best.backtest.sharpe.toFixed(2)}, max drawdown ${pct(best.backtest.maxDrawdown)}, turnover ${best.backtest.turnover.toFixed(1)}, exposure ${pct(best.backtest.exposure)}.`);
+    lines.push(`- Backtest: total return ${pct(best.backtest.totalReturn)} (buy-and-hold ${pct(best.backtest.benchmarkReturn)}), net Sharpe ${best.backtest.sharpe.toFixed(2)}${best.backtest.sharpeStdErr !== undefined ? ` ± ${best.backtest.sharpeStdErr.toFixed(2)} (Lo 2002 SE; 95% CI ${(best.backtest.sharpe - 1.96 * best.backtest.sharpeStdErr).toFixed(2)} to ${(best.backtest.sharpe + 1.96 * best.backtest.sharpeStdErr).toFixed(2)})` : ""}, max drawdown ${pct(best.backtest.maxDrawdown)}, ${best.backtest.trades ?? "—"} trades, turnover ${best.backtest.turnover.toFixed(1)}, exposure ${pct(best.backtest.exposure)}.`);
+    if (best.backtest.periodsPerYear) {
+      lines.push(`- Annualisation: ${best.backtest.periods ?? best.metrics.n} hourly out-of-sample bars, √${best.backtest.periodsPerYear} periods per year (24/7 series).`);
+    }
+    if (best.backtest.costBreakdownBps) {
+      const c = best.backtest.costBreakdownBps;
+      lines.push(`- Cost breakdown (bps of starting notional): fees ${c.fees.toFixed(0)}, spread ${c.spread.toFixed(0)}, slippage ${c.slippage.toFixed(0)}, impact ${c.impact.toFixed(0)}, borrow ${c.borrow.toFixed(0)}.`);
+    }
     if (baseline) {
       lines.push(`- Baseline (${baseline.modelType}) AUC ${baseline.metrics.auc.toFixed(3)} — lift of ${(best.metrics.auc - baseline.metrics.auc).toFixed(3)}.`);
     }

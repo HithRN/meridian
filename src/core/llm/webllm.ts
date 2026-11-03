@@ -129,7 +129,7 @@ export class WebLlmReasoner implements Reasoner {
       });
       const strategyConfig = StrategyConfigSchema.parse({ allowShort: parsed.allowShort });
       const costConfig = CostConfigSchema.parse(
-        parsed.includeCosts ? {} : { costBps: 0, slippageBps: 0 },
+        parsed.includeCosts ? {} : { costBps: 0, slippageBps: 0, volSlippage: 0, impactCoef: 0, borrowBpsAnnual: 0 },
       );
 
       return {

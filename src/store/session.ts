@@ -26,9 +26,21 @@ export const useSession = create<SessionState>((set) => ({
   modelLabel: "",
   modelError: null,
   detectWebGpu: () => {
-    const supported =
-      typeof navigator !== "undefined" && "gpu" in navigator && Boolean((navigator as Navigator & { gpu?: unknown }).gpu);
-    set({ webgpuSupported: supported });
+    // `navigator.gpu` can exist without a usable adapter (blocklisted GPU,
+    // insufficient memory, disabled flag), so request one — with a timeout so
+    // the UI never stays on "checking…".
+    const gpu =
+      typeof navigator !== "undefined"
+        ? (navigator as Navigator & { gpu?: { requestAdapter: () => Promise<unknown> } }).gpu
+        : undefined;
+    if (!gpu) {
+      set({ webgpuSupported: false });
+      return;
+    }
+    const timeout = new Promise<null>((resolve) => setTimeout(() => resolve(null), 2500));
+    Promise.race([gpu.requestAdapter().catch(() => null), timeout]).then((adapter) =>
+      set({ webgpuSupported: Boolean(adapter) }),
+    );
   },
   setMode: (mode) => set({ mode }),
   setModelStatus: (status, progress, error) =>

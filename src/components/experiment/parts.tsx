@@ -13,7 +13,7 @@ import { WORKFLOW_STATES, stateIndex, type WorkflowState } from "@/core/orchestr
 export function StateStepper({ current }: { current: WorkflowState }) {
   const currentIdx = stateIndex(current);
   return (
-    <ol className="grid grid-cols-3 gap-px border border-line bg-line sm:grid-cols-9">
+    <ol className="grid grid-cols-3 gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-9">
       {WORKFLOW_STATES.map((s, i) => {
         const reached = i <= currentIdx;
         const active = i === currentIdx;
@@ -22,10 +22,10 @@ export function StateStepper({ current }: { current: WorkflowState }) {
             key={s}
             className={cn(
               "px-2 py-3",
-              active ? "bg-ink text-paper" : reached ? "bg-subtle" : "bg-paper",
+              active ? "bg-accent text-on-accent" : reached ? "bg-subtle" : "bg-paper",
             )}
           >
-            <div className={cn("tnum text-[0.62rem]", active ? "text-paper/70" : "text-faint")}>
+            <div className={cn("tnum text-[0.62rem]", active ? "text-on-accent/75" : "text-faint")}>
               {String(i + 1).padStart(2, "0")} {reached && !active ? "✓" : ""}
             </div>
             <div className="mt-1 text-[0.68rem] leading-tight">{s.replace(/_/g, " ")}</div>
@@ -43,7 +43,16 @@ const COLS: Array<{ key: string; label: string; get: (m: ModelResult) => string 
   { key: "f1", label: "F1", get: (m) => num(m.metrics.f1) },
   { key: "ll", label: "LogLoss", get: (m) => num(m.metrics.logLoss) },
   { key: "ic", label: "IC", get: (m) => num(m.metrics.informationCoefficient, 4) },
-  { key: "sh", label: "Sharpe", get: (m) => (m.backtest ? num(m.backtest.sharpe, 2) : "—") },
+  { key: "n", label: "OOS n", get: (m) => m.metrics.n.toLocaleString("en-US") },
+  {
+    key: "sh",
+    label: "Net Sharpe ± SE",
+    get: (m) =>
+      m.backtest
+        ? `${num(m.backtest.sharpe, 2)}${m.backtest.sharpeStdErr !== undefined ? ` ± ${num(m.backtest.sharpeStdErr, 2)}` : ""}`
+        : "—",
+  },
+  { key: "tr", label: "Trades", get: (m) => (m.backtest?.trades !== undefined ? m.backtest.trades.toLocaleString("en-US") : "—") },
   { key: "dd", label: "Max DD", get: (m) => (m.backtest ? pct(m.backtest.maxDrawdown) : "—") },
   { key: "to", label: "Turnover", get: (m) => (m.backtest ? num(m.backtest.turnover, 1) : "—") },
   { key: "ret", label: "Return", get: (m) => (m.backtest ? pct(m.backtest.totalReturn) : "—") },
@@ -62,7 +71,7 @@ export function MetricsTable({
     <div className="overflow-x-auto border border-line">
       <table className="w-full border-collapse text-sm">
         <thead>
-          <tr className="border-b border-ink">
+          <tr className="border-b border-line-strong">
             <th className="px-4 py-3 text-left font-normal uppercase tracking-[0.1em] text-faint">Model</th>
             {COLS.map((c) => (
               <th key={c.key} className="px-3 py-3 text-right font-normal uppercase tracking-[0.1em] text-faint">
@@ -166,7 +175,7 @@ function TraceRow({ event }: { event: TraceEvent }) {
           "flex w-full items-start gap-3 px-4 py-2.5 text-left",
           hasDetail ? "cursor-pointer hover:bg-subtle" : "cursor-default",
           event.kind === "warning" && "bg-subtle",
-          event.kind === "error" && "bg-ink text-paper",
+          event.kind === "error" && "bg-accent text-on-accent",
         )}
       >
         <span aria-hidden className="tnum mt-[2px] w-6 shrink-0 text-center text-xs text-faint">
@@ -177,7 +186,7 @@ function TraceRow({ event }: { event: TraceEvent }) {
             <span className="text-[0.7rem] uppercase tracking-[0.12em] text-faint">{agent}</span>
             <span className="text-sm">{event.title}</span>
             {event.tool ? (
-              <span className={cn("tnum text-[0.72rem]", event.kind === "error" ? "text-paper/70" : "text-faint")}>
+              <span className={cn("tnum text-[0.72rem]", event.kind === "error" ? "text-on-accent/75" : "text-faint")}>
                 {event.tool.inputHash}{event.tool.outputHash ? `→${event.tool.outputHash}` : ""} · {duration(event.tool.durationMs)}
               </span>
             ) : null}

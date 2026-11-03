@@ -76,7 +76,7 @@ export default function CopilotPage() {
   return (
     <>
       <PageHeader
-        index="03"
+        eyebrow="Solana · Jito" accent="var(--color-mod-agents)"
         title="AI Copilot"
         lede="Ask about Jito tips, JitoSOL yield or a trading hypothesis, in English or 日本語. The model chooses the tools; the tools compute every number; you see the evidence under each answer."
         actions={
@@ -91,7 +91,7 @@ export default function CopilotPage() {
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-line pb-4">
           <div className="flex items-center gap-3">
             <Eyebrow>Engine</Eyebrow>
-            <div className="flex border border-ink">
+            <div className="flex border border-accent">
               {(["auto", "deterministic"] as const).map((e) => (
                 <button
                   key={e}
@@ -99,7 +99,7 @@ export default function CopilotPage() {
                   disabled={busy || (e === "auto" && claude === false)}
                   className={cn(
                     "px-3 py-[5px] text-sm disabled:opacity-40",
-                    effectiveEngine === e ? "bg-ink text-paper" : "hover:bg-subtle",
+                    effectiveEngine === e ? "bg-accent text-on-accent" : "hover:bg-subtle",
                   )}
                 >
                   {e === "auto" ? "Claude" : "Deterministic"}
@@ -118,7 +118,7 @@ export default function CopilotPage() {
         {entries.length === 0 ? (
           <div className="mb-8">
             <Eyebrow className="mb-3">Try one</Eyebrow>
-            <div className="grid grid-cols-1 gap-px border border-line bg-line md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-line bg-line md:grid-cols-2 lg:grid-cols-3">
               {SUGGESTIONS.map((s) => (
                 <button key={s.label} onClick={() => send(s.q)} className="bg-paper px-5 py-4 text-left hover:bg-subtle">
                   <div className="text-[0.95rem]">{s.label}</div>
@@ -136,12 +136,12 @@ export default function CopilotPage() {
               Calling tools and composing an answer…
             </div>
           ) : null}
-          {error ? <div className="border border-ink px-4 py-3 text-sm">Request failed: {error}</div> : null}
+          {error ? <div className="border border-accent px-4 py-3 text-sm">Request failed: {error}</div> : null}
           <div ref={endRef} />
         </div>
 
         <form
-          className="sticky bottom-0 mt-8 border-t border-ink bg-paper py-4"
+          className="sticky bottom-0 mt-8 border-t border-line-strong bg-paper py-4"
           onSubmit={(ev) => {
             ev.preventDefault();
             send(draft);
@@ -160,7 +160,7 @@ export default function CopilotPage() {
               rows={2}
               disabled={busy}
               placeholder="Ask anything about Jito tips, JitoSOL or a strategy… / 日本語でもどうぞ"
-              className="min-w-0 flex-1 resize-none border border-line bg-paper px-4 py-3 text-[1rem] outline-none focus:border-ink disabled:opacity-60"
+              className="min-w-0 flex-1 resize-none border border-line bg-paper px-4 py-3 text-[1rem] outline-none focus:border-accent disabled:opacity-60"
             />
             <Button type="submit" disabled={busy || draft.trim().length < 2}>
               {busy ? "Thinking…" : "Send →"}

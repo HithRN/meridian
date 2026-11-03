@@ -10,7 +10,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const AXIS = { fontFamily: '"Times New Roman", Times, serif', fontSize: 11, fill: "#8c8c8c" };
+const AXIS = { fontFamily: '"Times New Roman", Times, serif', fontSize: 11, fill: "var(--color-muted)" };
 
 export type XFormat = "hour" | "date" | "index";
 
@@ -45,23 +45,23 @@ export function HistoryChart({
   return (
     <ResponsiveContainer width="100%" height={height}>
       <LineChart data={data} margin={{ top: 8, right: 8, bottom: 4, left: 4 }}>
-        <CartesianGrid stroke="#ececec" vertical={false} />
+        <CartesianGrid stroke="var(--color-chart-grid)" vertical={false} />
         <XAxis
           dataKey="t"
           tick={AXIS}
-          stroke="#c8c8c8"
+          stroke="var(--color-divider)"
           minTickGap={48}
           tickFormatter={(v: number) => formatX(xFormat, v)}
         />
-        <YAxis tick={AXIS} stroke="#c8c8c8" width={44} />
+        <YAxis tick={AXIS} stroke="var(--color-divider)" width={44} />
         <Tooltip content={<MonoTooltip series={series} xFormat={xFormat} />} />
         {series.map((s) => (
           <Line
             key={s.key}
             type="monotone"
             dataKey={s.key}
-            stroke="#0a0a0a"
-            strokeWidth={1.4}
+            stroke={s.dashed ? "var(--color-chart-benchmark)" : "var(--color-chart-primary)"}
+            strokeWidth={1.6}
             strokeDasharray={s.dashed ? "4 3" : undefined}
             dot={false}
             isAnimationActive={false}
@@ -83,7 +83,7 @@ interface TooltipProps {
 function MonoTooltip({ active, label, payload, series, xFormat }: TooltipProps) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="border border-ink bg-paper px-3 py-2 text-xs">
+    <div className="border border-accent bg-paper px-3 py-2 text-xs">
       {label !== undefined ? (
         <div className="tnum mb-1 text-muted">{formatX(xFormat, label)}</div>
       ) : null}
@@ -93,7 +93,7 @@ function MonoTooltip({ active, label, payload, series, xFormat }: TooltipProps) 
           <div key={p.dataKey} className="tnum flex items-center gap-2">
             <span
               aria-hidden
-              className="inline-block w-4 border-t border-ink"
+              className="inline-block w-4 border-t border-line-strong"
               style={{ borderStyle: s?.dashed ? "dashed" : "solid" }}
             />
             <span>

@@ -44,7 +44,7 @@ export default function ExperimentsPage() {
   return (
     <>
       <PageHeader
-        index="05"
+        eyebrow="Workspace" accent="var(--color-mod-experiments)"
         title="Experiments"
         lede="Every research run is a reproducible, versioned record. Your own runs persist in this browser; seeded reference runs are computed deterministically on the server."
         actions={
@@ -66,7 +66,7 @@ export default function ExperimentsPage() {
           <div className="overflow-x-auto border border-line">
             <table className="w-full border-collapse text-sm">
               <thead>
-                <tr className="border-b border-ink">
+                <tr className="border-b border-line-strong">
                   {["Experiment", "Date", "Dataset", "Best model", "AUC", "Sharpe", "Critique", "Source"].map((h) => (
                     <th key={h} className="px-3 py-3 text-left font-normal uppercase tracking-[0.1em] text-faint">{h}</th>
                   ))}

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { PageHeader, PageBody, Section } from "@/components/layout/PageHeader";
 import { Badge, Card, CardBody, CardHeader, Eyebrow, KeyValue } from "@/components/ui/primitives";
 import { Tabs } from "@/components/ui/Tabs";
-import { MultiLineChart, ReliabilityChart } from "@/components/charts/AiCharts";
+import { MultiLineChart, ReliabilityChart, SERIES_STYLE } from "@/components/charts/AiCharts";
 import { FEATURES, SCENARIOS, TIP_FEATURE } from "@/core/ai/bundles";
 import { MODEL_IDS, MODEL_NAMES, logit, type ModelId } from "@/core/ai/models";
 import { minTipForTarget, shapExact } from "@/core/ai/explain";
@@ -34,14 +34,14 @@ export default function ExplainableAiPage() {
   return (
     <>
       <PageHeader
-        index="02"
+        eyebrow="Solana · Jito" accent="var(--color-mod-agents)"
         title="Explainable AI"
         lede="Will this bundle land, and why? Three models trained from scratch on a Jito bundle-auction simulator, explained with exact Shapley values, partial dependence and counterfactual tips — then checked against the true mechanism."
         actions={lab ? <Badge variant="muted">Trained in {(lab.builtMs / 1000).toFixed(1)}s</Badge> : null}
       />
       <PageBody>
         {error ? (
-          <div className="border border-ink px-4 py-3 text-sm">Could not load the AI lab: {error}</div>
+          <div className="border border-accent px-4 py-3 text-sm">Could not load the AI lab: {error}</div>
         ) : !lab ? (
           <Card>
             <CardBody>
@@ -107,7 +107,7 @@ function ExplainTab({ lab, p50Sol }: { lab: LabReport; p50Sol: number | null }) 
                 setX(s.x);
                 setScenario(s.id);
               }}
-              className={cn("border px-3 py-1 text-[0.8rem]", scenario === s.id ? "border-ink bg-ink text-paper" : "border-line text-muted hover:border-ink hover:text-ink")}
+              className={cn("border px-3 py-1 text-[0.8rem]", scenario === s.id ? "border-accent bg-accent text-on-accent" : "border-line text-muted hover:border-accent hover:text-ink")}
             >
               {s.label}
             </button>
@@ -134,7 +134,7 @@ function ExplainTab({ lab, p50Sol }: { lab: LabReport; p50Sol: number | null }) 
                   step={spec.step}
                   value={x[j]}
                   onChange={(e) => setFeature(j, Number(e.target.value))}
-                  className="w-full accent-[#0a0a0a]"
+                  className="w-full"
                   aria-label={spec.label}
                 />
               </div>
@@ -143,14 +143,14 @@ function ExplainTab({ lab, p50Sol }: { lab: LabReport; p50Sol: number | null }) 
         </Card>
 
         <div className="space-y-6 lg:col-span-3">
-          <Card className="border-ink">
+          <Card className="border-accent">
             <CardHeader
               title="Landing probability"
               eyebrow="Prediction"
               right={
-                <div className="flex border border-ink">
+                <div className="flex border border-accent">
                   {MODEL_IDS.map((id) => (
-                    <button key={id} onClick={() => setModelId(id)} className={cn("px-2 py-[3px] text-[0.75rem]", modelId === id ? "bg-ink text-paper" : "hover:bg-subtle")}>
+                    <button key={id} onClick={() => setModelId(id)} className={cn("px-2 py-[3px] text-[0.75rem]", modelId === id ? "bg-accent text-on-accent" : "hover:bg-subtle")}>
                       {id === "gbt" ? "Trees" : id === "mlp" ? "Neural net" : "Logistic"}
                     </button>
                   ))}
@@ -184,17 +184,20 @@ function ExplainTab({ lab, p50Sol }: { lab: LabReport; p50Sol: number | null }) 
                       <div className="relative h-[14px] bg-subtle">
                         <div className="absolute inset-y-0 left-1/2 w-px bg-line-strong" />
                         <div
-                          className={cn("absolute inset-y-[2px]", v >= 0 ? "bg-ink" : "border border-ink bg-paper")}
-                          style={v >= 0 ? { left: "50%", width: `${w}%` } : { right: "50%", width: `${w}%` }}
+                          className="absolute inset-y-[2px] rounded-sm"
+                          style={{
+                            background: v >= 0 ? "var(--color-chart-positive)" : "var(--color-chart-negative)",
+                            ...(v >= 0 ? { left: "50%", width: `${w}%` } : { right: "50%", width: `${w}%` }),
+                          }}
                         />
                       </div>
-                      <span className="tnum text-right">{v >= 0 ? "+" : ""}{v.toFixed(2)}</span>
+                      <span className={cn("tnum text-right", v >= 0 ? "text-positive" : "text-negative")}>{v >= 0 ? "+" : ""}{v.toFixed(2)}</span>
                     </div>
                   );
                 })}
               </div>
               <p className="mt-4 text-[0.78rem] text-faint">
-                Filled bars push toward landing, hollow bars away. Base {exp.base.toFixed(2)} + Σφ {exp.phi.reduce((a, b) => a + b, 0).toFixed(2)} ={" "}
+                Green bars push toward landing, red bars away. Base {exp.base.toFixed(2)} + Σφ {exp.phi.reduce((a, b) => a + b, 0).toFixed(2)} ={" "}
                 {exp.value.toFixed(2)} log-odds = {pct(prob)} — exact, computed over all 256 feature coalitions.
               </p>
             </CardBody>
@@ -207,7 +210,7 @@ function ExplainTab({ lab, p50Sol }: { lab: LabReport; p50Sol: number | null }) 
                 <Eyebrow>Target landing probability</Eyebrow>
                 <span className="tnum text-sm">{pct(target, 0)}</span>
               </div>
-              <input type="range" min={50} max={99} value={Math.round(target * 100)} onChange={(e) => setTarget(Number(e.target.value) / 100)} className="mt-1 w-full accent-[#0a0a0a]" aria-label="Target probability" />
+              <input type="range" min={50} max={99} value={Math.round(target * 100)} onChange={(e) => setTarget(Number(e.target.value) / 100)} className="mt-1 w-full" aria-label="Target probability" />
               <div className="mt-4">
                 {minTip === null ? (
                   <p>
@@ -259,7 +262,7 @@ function ModelsTab({ lab }: { lab: LabReport }) {
         <div className="overflow-x-auto border border-line">
           <table className="w-full border-collapse text-left text-sm">
             <thead>
-              <tr className="border-b border-ink">
+              <tr className="border-b border-line-strong">
                 {["Model", "AUC", "Log loss", "Brier", "Accuracy", "ECE", "Gap to oracle closed"].map((h) => (
                   <th key={h} className="px-4 py-3 font-normal uppercase tracking-[0.1em] text-[0.68rem] text-faint">{h}</th>
                 ))}
@@ -340,7 +343,7 @@ function GlobalTab({ lab }: { lab: LabReport }) {
           On real data you can never check an explanation. Here the true mechanism is known, so each model&rsquo;s Shapley values are compared
           with the ground truth&rsquo;s Shapley values on the same bundles.
         </p>
-        <div className="grid grid-cols-1 gap-px border border-line bg-line md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-line bg-line md:grid-cols-3">
           {MODEL_IDS.map((id) => {
             const fa = lab.faithfulness[id];
             return (
@@ -367,8 +370,8 @@ function GlobalTab({ lab }: { lab: LabReport }) {
                 {keys.map((k) => (
                   <div key={k} className="flex items-center gap-2">
                     <div
-                      className={cn("h-[7px]", k === "truth" ? "bg-ink" : k === "gbt" ? "bg-muted" : k === "mlp" ? "bg-faint" : "bg-line-strong")}
-                      style={{ width: `${(lab.importance[k][j] / max) * 85}%` }}
+                      className="h-[7px] rounded-sm"
+                      style={{ width: `${(lab.importance[k][j] / max) * 85}%`, background: SERIES_STYLE[k].stroke }}
                     />
                     <span className="tnum text-[0.68rem] text-faint">{lab.importance[k][j].toFixed(2)}</span>
                   </div>
@@ -378,10 +381,12 @@ function GlobalTab({ lab }: { lab: LabReport }) {
           ))}
         </div>
         <div className="mt-3 flex flex-wrap gap-4 text-[0.75rem] text-muted">
-          <span>■ Ground truth</span>
-          <span className="text-muted">■ Boosted trees</span>
-          <span className="text-faint">■ Neural net</span>
-          <span className="text-line-strong">■ Logistic</span>
+          {keys.map((k) => (
+            <span key={k} className="inline-flex items-center gap-2">
+              <span className="h-[8px] w-[14px] rounded-sm" style={{ background: SERIES_STYLE[k].stroke }} />
+              {SERIES_STYLE[k].label}
+            </span>
+          ))}
         </div>
         <p className="mt-3 max-w-3xl text-[0.8rem] text-faint">
           Note the hour-of-day row: its true effect is cyclical, so a linear model nearly ignores it, while trees and the network recover it.
@@ -446,7 +451,7 @@ function MethodTab({ lab }: { lab: LabReport }) {
         </div>
       </div>
       <div className="space-y-6">
-        <Card className="border-ink">
+        <Card className="border-accent">
           <CardHeader title="Taking it to mainnet" eyebrow="What this could become with Jito data" />
           <CardBody>
             <ol className="list-decimal space-y-3 pl-5 text-sm text-muted">

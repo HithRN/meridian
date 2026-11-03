@@ -2,17 +2,17 @@
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
-const AXIS = { fontFamily: '"Times New Roman", Times, serif', fontSize: 11, fill: "#8c8c8c" };
+const AXIS = { fontFamily: '"Times New Roman", Times, serif', fontSize: 11, fill: "var(--color-muted)" };
 
 /** Monochrome series styles, distinguishable without colour. */
 export const SERIES_STYLE: Record<string, { stroke: string; dash?: string; width: number; label: string }> = {
-  truth: { stroke: "#0a0a0a", width: 2.2, label: "Ground truth" },
-  gbt: { stroke: "#0a0a0a", dash: "6 3", width: 1.4, label: "Boosted trees" },
-  mlp: { stroke: "#595959", dash: "2 3", width: 1.4, label: "Neural net" },
-  logistic: { stroke: "#a6a6a6", width: 1.4, label: "Logistic" },
-  ideal: { stroke: "#c8c8c8", dash: "1 4", width: 1, label: "Perfect calibration" },
-  train: { stroke: "#a6a6a6", width: 1.2, label: "Train" },
-  valid: { stroke: "#0a0a0a", width: 1.6, label: "Validation" },
+  truth: { stroke: "var(--color-heading)", width: 2.2, label: "Ground truth" },
+  gbt: { stroke: "var(--color-chart-tertiary)", dash: "6 3", width: 1.8, label: "Boosted trees" },
+  mlp: { stroke: "var(--color-chart-secondary)", dash: "2 3", width: 1.8, label: "Neural net" },
+  logistic: { stroke: "var(--color-chart-benchmark)", width: 1.4, label: "Logistic" },
+  ideal: { stroke: "var(--color-chart-benchmark)", dash: "1 4", width: 1, label: "Perfect calibration" },
+  train: { stroke: "var(--color-chart-benchmark)", width: 1.2, label: "Train" },
+  valid: { stroke: "var(--color-chart-primary)", width: 1.8, label: "Validation" },
 };
 
 function Legend({ keys }: { keys: string[] }) {
@@ -55,13 +55,13 @@ export function MultiLineChart({
     <>
       <ResponsiveContainer width="100%" height={height}>
         <LineChart data={data} margin={{ top: 8, right: 8, bottom: 4, left: 0 }}>
-          <CartesianGrid stroke="#ececec" vertical={false} />
-          <XAxis dataKey="x" type="number" domain={["dataMin", "dataMax"]} tickFormatter={xLabel} tick={AXIS} stroke="#c8c8c8" />
-          <YAxis domain={yDomain} tickFormatter={yFormat} tick={AXIS} stroke="#c8c8c8" width={44} />
+          <CartesianGrid stroke="var(--color-chart-grid)" vertical={false} />
+          <XAxis dataKey="x" type="number" domain={["dataMin", "dataMax"]} tickFormatter={xLabel} tick={AXIS} stroke="var(--color-divider)" />
+          <YAxis domain={yDomain} tickFormatter={yFormat} tick={AXIS} stroke="var(--color-divider)" width={44} />
           <Tooltip
             content={({ active, payload, label }) =>
               active && payload?.length ? (
-                <div className="border border-ink bg-paper px-3 py-2 text-xs">
+                <div className="border border-accent bg-paper px-3 py-2 text-xs">
                   <div className="text-muted">{xLabel(Number(label))}</div>
                   {payload.map((p) => (
                     <div key={String(p.dataKey)} className="tnum">
@@ -73,7 +73,7 @@ export function MultiLineChart({
             }
           />
           {keys.map((k) => {
-            const s = SERIES_STYLE[k] ?? { stroke: "#0a0a0a", width: 1.2 };
+            const s = SERIES_STYLE[k] ?? { stroke: "var(--color-ink)", width: 1.2 };
             return (
               <Line key={k} type="monotone" dataKey={k} stroke={s.stroke} strokeWidth={s.width} strokeDasharray={s.dash} dot={false} isAnimationActive={false} />
             );
@@ -92,9 +92,9 @@ export function ReliabilityChart({ bins }: { bins: Record<string, Array<{ predic
     <>
       <ResponsiveContainer width="100%" height={240}>
         <LineChart margin={{ top: 8, right: 8, bottom: 4, left: 0 }}>
-          <CartesianGrid stroke="#ececec" />
-          <XAxis dataKey="predicted" type="number" domain={[0, 1]} tickFormatter={(v) => `${Math.round(v * 100)}%`} tick={AXIS} stroke="#c8c8c8" />
-          <YAxis dataKey="observed" type="number" domain={[0, 1]} tickFormatter={(v) => `${Math.round(v * 100)}%`} tick={AXIS} stroke="#c8c8c8" width={44} />
+          <CartesianGrid stroke="var(--color-chart-grid)" />
+          <XAxis dataKey="predicted" type="number" domain={[0, 1]} tickFormatter={(v) => `${Math.round(v * 100)}%`} tick={AXIS} stroke="var(--color-divider)" />
+          <YAxis dataKey="observed" type="number" domain={[0, 1]} tickFormatter={(v) => `${Math.round(v * 100)}%`} tick={AXIS} stroke="var(--color-divider)" width={44} />
           <Line data={[{ predicted: 0, observed: 0 }, { predicted: 1, observed: 1 }]} dataKey="observed" stroke={SERIES_STYLE.ideal.stroke} strokeDasharray={SERIES_STYLE.ideal.dash} dot={false} isAnimationActive={false} />
           {keys.map((k) => {
             const s = SERIES_STYLE[k];

@@ -95,7 +95,7 @@ export class DeterministicReasoner implements Reasoner {
     });
     const strategyConfig = StrategyConfigSchema.parse({ allowShort });
     const costConfig = CostConfigSchema.parse(
-      includeCosts ? {} : { costBps: 0, slippageBps: 0 },
+      includeCosts ? {} : { costBps: 0, slippageBps: 0, volSlippage: 0, impactCoef: 0, borrowBpsAnnual: 0 },
     );
 
     const models = parseModels(question);
@@ -105,7 +105,7 @@ export class DeterministicReasoner implements Reasoner {
       `Momentum lookback set to ${momentumPeriod} bars; forward horizon ${featureConfig.horizon} bar(s).`,
       `Validation: ${windowConfig.folds}-fold ${windowConfig.mode} walk-forward with embargo ${windowConfig.embargo}.`,
       includeCosts
-        ? `Transaction costs enabled (${costConfig.costBps}bps + ${costConfig.slippageBps}bps slippage).`
+        ? `Costs enabled: ${costConfig.costBps}bps fees + ${costConfig.slippageBps}bps half-spread + volatility slippage + square-root impact + short borrow.`
         : "No transaction costs requested; backtest reports gross of costs.",
       `Models under comparison: ${models.join(", ")} (baseline always included).`,
     ];

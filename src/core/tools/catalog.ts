@@ -472,6 +472,12 @@ registerTool({
         hitRate: bt.hitRate,
         exposure: bt.exposure,
         benchmarkReturn: bt.benchmarkReturn,
+        trades: bt.trades,
+        periods: bt.periods,
+        periodsPerYear: bt.periodsPerYear,
+        executionLag: bt.executionLag,
+        sharpeStdErr: bt.sharpeStdErr,
+        costBreakdownBps: bt.costBreakdownBps,
       },
       equityCurve: curve,
     };

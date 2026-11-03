@@ -1,34 +1,97 @@
 @import "tailwindcss";
 
 /*
- * Meridian design system — strict monochrome, Times New Roman throughout.
+ * Meridian design system — "Trust & Clarity".
  *
- * The entire interface is black on white with a neutral grey ramp for
- * structure. No hue is used anywhere; hierarchy is carried by type, weight,
- * rule-lines and whitespace in the manner of a printed research journal.
+ * Navy establishes trust, white establishes clarity, teal marks successful
+ * activity and steel blue gives the technical identity. The whole product is
+ * light-themed: a soft blue-white canvas, white cards, 1px blue-grey borders
+ * and very subtle shadows. Colour is used only to carry meaning — module
+ * identity, status, and data series.
  */
 
 @theme {
+  /* Backgrounds and surfaces */
+  --color-canvas: #f5f8fa;
+  --color-sidebar: #eff3f7;
   --color-paper: #ffffff;
-  --color-ink: #0a0a0a;
-  --color-muted: #595959;
-  --color-faint: #8c8c8c;
-  --color-line: #e2e2e2;
-  --color-line-strong: #c8c8c8;
-  --color-subtle: #f7f7f7;
-  --color-panel: #fbfbfb;
-  --color-inverse: #0a0a0a;
+  --color-panel: #f8fafc;
+  --color-selected: #edf4f8;
+  --color-subtle: #eaf1f6;
 
-  --font-sans: "Times New Roman", Times, Georgia, serif;
-  --font-serif: "Times New Roman", Times, Georgia, serif;
-  --font-mono: "Times New Roman", Times, Georgia, serif;
+  /* Borders */
+  --color-line: #dce5ec;
+  --color-line-strong: #c9d6e0;
+  --color-divider: #e8eef2;
 
-  --radius-none: 0px;
+  /* Text */
+  --color-heading: #183650;
+  --color-ink: #263c50;
+  --color-muted: #526579;
+  --color-faint: #5b7083;
+  --color-disabled: #8493a1;
+  --color-link: #276b96;
+  --color-inverse: #183650;
+
+  /* Brand and actions (accent = primary action: navy) */
+  --color-brand: #183650;
+  --color-accent: #214e70;
+  --color-accent-strong: #183c59;
+  --color-accent-soft: #edf4f8;
+  --color-on-accent: #ffffff;
+  --color-teal: #347f78;
+  --color-teal-soft: #e6f2f0;
+  --color-ai: #7770a6;
+  --color-focus: #4d86b2;
+
+  /* Module identities */
+  --color-mod-overview: #183650;
+  --color-mod-research: #347f78;
+  --color-mod-experiments: #477ba5;
+  --color-mod-agents: #7770a6;
+  --color-mod-models: #428365;
+  --color-mod-monitoring: #aa7a35;
+  --color-mod-tools: #477b96;
+  --color-mod-jito: #347da6;
+  --color-mod-resources: #687b8c;
+
+  /* Status (text / background) */
+  --color-positive: #287a57;
+  --color-positive-bg: #eaf4ee;
+  --color-running: #286e9b;
+  --color-running-bg: #eaf2f8;
+  --color-warning: #a36d22;
+  --color-warning-bg: #fbf3e6;
+  --color-negative: #b34d4d;
+  --color-negative-bg: #faecec;
+  --color-info: #477ba5;
+  --color-info-bg: #eaf1f8;
+  --color-neutral: #687b8c;
+  --color-neutral-bg: #eff2f5;
+
+  /* Charts */
+  --color-chart-primary: #347da6;
+  --color-chart-secondary: #8176a9;
+  --color-chart-tertiary: #347f78;
+  --color-chart-benchmark: #8798a6;
+  --color-chart-actual: #d49a50;
+  --color-chart-positive: #32815d;
+  --color-chart-negative: #c15c5c;
+  --color-chart-risk: #c18a3e;
+  --color-chart-grid: #e8eef2;
+
+  /* Shape */
+  --radius-md: 8px;
+  --radius-lg: 11px;
+
+  /* Type */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-serif: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --font-numeric: var(--font-plex-mono), ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
 
 :root {
-  --background: #ffffff;
-  --foreground: #0a0a0a;
   color-scheme: light;
 }
 
@@ -42,53 +105,77 @@ html {
 }
 
 body {
-  background: var(--color-paper);
+  background: var(--color-canvas);
   color: var(--color-ink);
-  font-family: "Times New Roman", Times, Georgia, serif;
-  font-size: 17px;
+  font-family: var(--font-sans);
+  font-size: 14.5px;
   line-height: 1.55;
-  letter-spacing: 0.005em;
 }
 
-/* Tabular figures keep numeric columns aligned even in a proportional serif. */
-.tnum {
+h1,
+h2,
+h3 {
+  color: var(--color-heading);
+}
+
+code,
+pre,
+kbd {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+}
+
+/* Numeric metrics: tabular IBM Plex Mono. Declared as a utility so size
+   utilities (text-6xl, …) on the same element still win. */
+@utility tnum {
+  font-family: var(--font-numeric);
   font-variant-numeric: tabular-nums lining-nums;
 }
 
-/* Editorial eyebrow label: small, uppercase, letter-spaced. */
+/* Section label: small, uppercase, letter-spaced, still readable. */
 .eyebrow {
   text-transform: uppercase;
-  letter-spacing: 0.18em;
-  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  font-size: 0.68rem;
+  font-weight: 600;
   color: var(--color-faint);
 }
 
 .rule {
-  border-top: 1px solid var(--color-line);
+  border-top: 1px solid var(--color-divider);
 }
 .rule-strong {
-  border-top: 2px solid var(--color-ink);
+  border-top: 2px solid var(--color-heading);
 }
 
-/* Links inside prose get a classic underline. */
 .prose-serif a {
+  color: var(--color-link);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
 
-/* Thin custom scrollbar in greyscale. */
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 ::-webkit-scrollbar-thumb {
   background: var(--color-line-strong);
+  border-radius: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: var(--color-paper);
+  background: transparent;
 }
 
 ::selection {
-  background: var(--color-ink);
-  color: var(--color-paper);
+  background: var(--color-selected);
+  color: var(--color-heading);
+}
+
+input[type="range"] {
+  accent-color: var(--color-accent);
 }

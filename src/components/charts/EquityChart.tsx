@@ -18,7 +18,7 @@ export interface EquityPointLite {
   drawdown: number;
 }
 
-const AXIS = { fontFamily: '"Times New Roman", Times, serif', fontSize: 11, fill: "#8c8c8c" };
+const AXIS = { fontFamily: '"Times New Roman", Times, serif', fontSize: 11, fill: "var(--color-muted)" };
 
 export function EquityChart({ data, height = 280 }: { data: EquityPointLite[]; height?: number }) {
   if (!data || data.length === 0) {
@@ -27,25 +27,25 @@ export function EquityChart({ data, height = 280 }: { data: EquityPointLite[]; h
   return (
     <ResponsiveContainer width="100%" height={height}>
       <ComposedChart data={data} margin={{ top: 8, right: 8, bottom: 4, left: 4 }}>
-        <CartesianGrid stroke="#ececec" vertical={false} />
+        <CartesianGrid stroke="var(--color-chart-grid)" vertical={false} />
         <defs>
           <pattern id="ddhatch" width="4" height="4" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
-            <rect width="4" height="4" fill="#f2f2f2" />
-            <line x1="0" y1="0" x2="0" y2="4" stroke="#dcdcdc" strokeWidth="1" />
+            <rect width="4" height="4" fill="var(--color-negative-bg)" />
+            <line x1="0" y1="0" x2="0" y2="4" stroke="var(--color-chart-negative)" strokeOpacity="0.35" strokeWidth="1" />
           </pattern>
         </defs>
         <XAxis
           dataKey="t"
           tickFormatter={(t) => dateShort(t).slice(5)}
           tick={AXIS}
-          stroke="#c8c8c8"
+          stroke="var(--color-divider)"
           minTickGap={48}
         />
         <YAxis
           yAxisId="equity"
           tickFormatter={(v) => v.toFixed(2)}
           tick={AXIS}
-          stroke="#c8c8c8"
+          stroke="var(--color-divider)"
           width={44}
           domain={["auto", "auto"]}
         />
@@ -63,7 +63,7 @@ export function EquityChart({ data, height = 280 }: { data: EquityPointLite[]; h
           yAxisId="equity"
           type="monotone"
           dataKey="equity"
-          stroke="#0a0a0a"
+          stroke="var(--color-chart-tertiary)"
           strokeWidth={1.5}
           dot={false}
           isAnimationActive={false}
@@ -82,7 +82,7 @@ function EquityTooltip({ active, payload }: TooltipProps) {
   if (!active || !payload?.length) return null;
   const p = payload[0].payload;
   return (
-    <div className="border border-ink bg-paper px-3 py-2 text-xs">
+    <div className="border border-accent bg-paper px-3 py-2 text-xs">
       <div className="tnum text-muted">{dateShort(p.t)}</div>
       <div className="tnum">Equity {p.equity.toFixed(4)}</div>
       <div className="tnum text-muted">Drawdown {pct(p.drawdown)}</div>

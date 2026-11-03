@@ -29,7 +29,7 @@ const GUARANTEES: Array<{ k: string; v: string }> = [
   { k: "Calibrated, not asserted", v: "The tip advisor's coverage claim is measured out of sample with walk-forward validation, including in congested regimes." },
   { k: "Leakage-safe by construction", v: "Features use only information available at prediction time; walk-forward splits are embargoed; a scan flags future-derived columns." },
   { k: "Reproducible", v: "Every run pins dataset version, content hash, seed and kernel version. The same inputs yield byte-identical outputs." },
-  { k: "MCP-compatible tools", v: "Tools are discovered by name with strict JSON Schemas and executed over a stateless HTTP layer, for agents and Claude alike." },
+  { k: "A real MCP server", v: "Tools are served over the Model Context Protocol (JSON-RPC, Streamable HTTP) and REST, with strict JSON Schemas, for agents and Claude alike." },
   { k: "Never breaks on stage", v: "Live Jito data degrades to bundled snapshots; Claude degrades to a deterministic engine. Every path is labelled." },
 ];
 
@@ -38,10 +38,10 @@ const LAYERS: Array<[string, string, string]> = [
   ["Machine learning", "Logistic · boosted trees · MLP (from scratch)", "Bundle-landing prediction, trained and evaluated in TypeScript"],
   ["Explainability", "Exact Shapley · PDP · counterfactuals", "Why a prediction was made, verified against ground truth"],
   ["LLM", "Claude (tool use) · WebLLM", "Copilot reasoning and tool selection; browser-local planning"],
-  ["Fallback", "Deterministic policies", "Bilingual intent router and rule-based planner — zero cost"],
+  ["Fallback", "Deterministic policies", "Bilingual intent router and rule-based planner — no external inference"],
   ["Network data", "Jito public APIs", "Tip floor and stake-pool stats, cached, with bundled fallback"],
   ["Orchestration", "Typed state machine", "Planner → workers → critic → reporter"],
-  ["Tools", "MCP-compatible schemas", "Strictly typed, audited execution"],
+  ["Tools", "MCP server + REST", "Strictly typed, audited, read-only execution"],
   ["Compute", "Route handlers · Web Workers", "Conformal forecasting, ML, backtest and profiling kernels"],
 ];
 
@@ -72,7 +72,7 @@ export default function AboutPage() {
         trace, so a reviewer can see exactly what happened — and the reporter cannot mark an experiment complete
         until the critic has run.
       </p>
-      <ol className="grid grid-cols-1 gap-px border border-line bg-line sm:grid-cols-3 lg:grid-cols-9">
+      <ol className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-3 lg:grid-cols-9">
         {WORKFLOW_STATES.map((s, i) => (
           <li key={s} className="bg-paper px-3 py-4">
             <div className="tnum text-[0.68rem] text-faint">{String(i + 1).padStart(2, "0")}</div>
@@ -84,7 +84,7 @@ export default function AboutPage() {
   );
 
   const agents = (
-    <div className="grid grid-cols-1 gap-px border border-line bg-line md:grid-cols-2">
+    <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-line bg-line md:grid-cols-2">
       {AGENTS.map((a) => (
         <div key={a.name} className="bg-paper px-5 py-5">
           <h3 className="text-lg">{a.name}</h3>
@@ -96,7 +96,7 @@ export default function AboutPage() {
   );
 
   const guarantees = (
-    <div className="grid grid-cols-1 gap-px border border-line bg-line md:grid-cols-3">
+    <div className="grid grid-cols-1 gap-px overflow-hidden rounded-lg border border-line bg-line md:grid-cols-3">
       {GUARANTEES.map((g) => (
         <Card key={g.k} className="border-0 bg-paper px-5 py-5">
           <h3 className="text-base">{g.k}</h3>
@@ -110,7 +110,7 @@ export default function AboutPage() {
     <div className="overflow-x-auto border border-line">
       <table className="w-full border-collapse text-left text-sm">
         <thead>
-          <tr className="border-b border-ink">
+          <tr className="border-b border-line-strong">
             {["Layer", "Technology", "Purpose"].map((h) => (
               <th key={h} className="px-4 py-3 font-normal uppercase tracking-[0.12em] text-faint">{h}</th>
             ))}
@@ -139,7 +139,7 @@ export default function AboutPage() {
       <div className="overflow-x-auto border border-line">
         <table className="w-full border-collapse text-left text-sm">
           <thead>
-            <tr className="border-b border-ink">
+            <tr className="border-b border-line-strong">
               {["Dataset", "Symbol", "Rows", "Span", "Content hash", "Role"].map((h) => (
                 <th key={h} className="px-4 py-3 font-normal uppercase tracking-[0.12em] text-faint">{h}</th>
               ))}
@@ -198,7 +198,7 @@ export default function AboutPage() {
   return (
     <>
       <PageHeader
-        index="10"
+        eyebrow="Resources" accent="var(--color-mod-resources)"
         title="How it works"
         lede="The agents, the guardrails, where the data comes from — and what the platform deliberately refuses to do."
       />

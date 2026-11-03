@@ -1,9 +1,10 @@
-/** Primary navigation model (§14). Single source of truth for routes/labels. */
+/** Primary navigation model. Single source of truth for routes and labels. */
 export interface NavItem {
   href: string;
   label: string;
-  index: string;
   description: string;
+  /** Module identity colour (CSS variable). */
+  accent: string;
 }
 
 export interface NavGroup {
@@ -13,32 +14,37 @@ export interface NavGroup {
 
 export const NAV_GROUPS: NavGroup[] = [
   {
-    label: "Start",
-    items: [{ href: "/", label: "Overview", index: "00", description: "What Meridian is, in one screen" }],
+    label: "Workspace",
+    items: [
+      { href: "/", label: "Overview", description: "What Meridian does", accent: "var(--color-mod-overview)" },
+      { href: "/research", label: "Research", description: "Run a hypothesis end to end", accent: "var(--color-mod-research)" },
+      { href: "/experiments", label: "Experiments", description: "History and comparison", accent: "var(--color-mod-experiments)" },
+      { href: "/models", label: "Models", description: "Registry and lifecycle", accent: "var(--color-mod-models)" },
+      { href: "/monitoring", label: "Monitoring", description: "Drift and telemetry", accent: "var(--color-mod-monitoring)" },
+    ],
   },
   {
     label: "Solana · Jito",
     items: [
-      { href: "/jito", label: "Jito Lab", index: "01", description: "Live tip floor, tip advisor, JitoSOL yield" },
-      { href: "/ai", label: "Explainable AI", index: "02", description: "Will a bundle land — and why?" },
-      { href: "/copilot", label: "AI Copilot", index: "03", description: "Ask in English or 日本語" },
+      { href: "/jito", label: "Jito Lab", description: "Tip floor, tip advisor, JitoSOL", accent: "var(--color-mod-jito)" },
+      { href: "/ai", label: "Explainable AI", description: "Will a bundle land — and why?", accent: "var(--color-mod-agents)" },
+      { href: "/copilot", label: "AI Copilot", description: "Ask in English or 日本語", accent: "var(--color-mod-agents)" },
     ],
   },
   {
-    label: "Quant research",
+    label: "Developer",
     items: [
-      { href: "/research", label: "Research", index: "04", description: "Question, plan and live agent trace" },
-      { href: "/experiments", label: "Experiments", index: "05", description: "History and metric comparison" },
-      { href: "/models", label: "Models", index: "06", description: "Versions and evaluation status" },
+      { href: "/tools", label: "Tool registry", description: "Schemas and permissions", accent: "var(--color-mod-tools)" },
+      { href: "/developers", label: "MCP & API", description: "Connect an MCP client", accent: "var(--color-mod-tools)" },
+      { href: "/coding-agent", label: "Coding sandbox", description: "Restricted agent demo", accent: "var(--color-mod-tools)" },
     ],
   },
   {
-    label: "Platform",
+    label: "Resources",
     items: [
-      { href: "/monitoring", label: "Monitoring", index: "07", description: "Drift, performance and system health" },
-      { href: "/tools", label: "Tools", index: "08", description: "MCP-compatible tool schemas" },
-      { href: "/coding-agent", label: "Coding Agent", index: "09", description: "Safe repository-task demonstration" },
-      { href: "/about", label: "How it works", index: "10", description: "Architecture, agents, guarantees, safety" },
+      { href: "/about", label: "How it works", description: "Architecture and methodology", accent: "var(--color-mod-resources)" },
+      { href: "/security", label: "Security", description: "Boundaries and threat model", accent: "var(--color-mod-resources)" },
+      { href: "/contact", label: "About & contact", description: "Who builds Meridian", accent: "var(--color-mod-resources)" },
     ],
   },
 ];

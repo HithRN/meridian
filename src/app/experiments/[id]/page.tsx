@@ -13,6 +13,9 @@ import {
   MetaStrip,
 } from "@/components/experiment/parts";
 import { ReportView } from "@/components/experiment/ReportView";
+import { SyntheticNotice } from "@/components/experiment/SyntheticNotice";
+import { BacktestContext } from "@/components/experiment/BacktestContext";
+import { modelStatus } from "@/core/experiments/lifecycle";
 import { EquityChart } from "@/components/charts/EquityChart";
 import { useExperiments } from "@/store/experiments";
 import type { ExperimentRecord, Critique } from "@/core/schemas/experiment";
@@ -85,7 +88,7 @@ export default function ExperimentDetailPage() {
   if (status === "loading") {
     return (
       <>
-        <PageHeader index="05" title="Experiment" />
+        <PageHeader eyebrow="Workspace" accent="var(--color-mod-experiments)" title="Experiment" />
         <PageBody><div className="h-48 border border-dashed border-line" /></PageBody>
       </>
     );
@@ -93,7 +96,7 @@ export default function ExperimentDetailPage() {
   if (status === "missing" || !detail) {
     return (
       <>
-        <PageHeader index="05" title="Experiment not found" lede={`No experiment with id ${id}.`} actions={<Link href="/experiments"><Button variant="secondary">Back to experiments</Button></Link>} />
+        <PageHeader eyebrow="Workspace" accent="var(--color-mod-experiments)" title="Experiment not found" lede={`No experiment with id ${id}.`} actions={<Link href="/experiments"><Button variant="secondary">Back to experiments</Button></Link>} />
         <PageBody><div /></PageBody>
       </>
     );
@@ -106,17 +109,18 @@ export default function ExperimentDetailPage() {
   return (
     <>
       <PageHeader
-        index="05"
+        eyebrow="Workspace" accent="var(--color-mod-experiments)"
         title={experimentTitle(record)}
         lede={record.question}
         actions={
           <div className="flex items-center gap-2">
-            <Badge variant="muted">{record.status}</Badge>
+            {best ? <Badge variant="muted">Selected model: {modelStatus(record, best)}</Badge> : null}
             <Link href="/experiments"><Button variant="secondary">All experiments</Button></Link>
           </div>
         }
       />
       <PageBody>
+        <SyntheticNotice />
         <div className="mb-8">
           <MetaStrip
             items={[
@@ -137,6 +141,7 @@ export default function ExperimentDetailPage() {
 
         <Section eyebrow="Results" title="Model comparison">
           <MetricsTable models={record.models} bestModelId={record.bestModelId} baselineModelId={record.baselineModelId} />
+          {best ? <BacktestContext model={best} /> : null}
         </Section>
 
         {best ? (

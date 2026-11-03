@@ -76,7 +76,7 @@ export default function CodingAgentPage() {
   return (
     <>
       <PageHeader
-        index="09"
+        eyebrow="Developer" accent="var(--color-mod-tools)"
         title="Coding agent"
         lede="A safe agentic-coding demonstration. The agent inspects a whitelisted in-memory repository, runs its tests, proposes a bounded patch, and re-runs the tests — with no shell, no network, and no write path to disk."
         actions={<Button onClick={run} disabled={running}>{running ? "Running…" : done ? "Run again" : "Run coding agent →"}</Button>}
@@ -142,7 +142,7 @@ export default function CodingAgentPage() {
 
         {done && afterStep?.output ? (
           <Section eyebrow="Result" title="Test outcome">
-            <div className="border border-ink px-5 py-4">
+            <div className="border border-accent px-5 py-4">
               <Eyebrow>Summary</Eyebrow>
               <p className="mt-2 text-lg">
                 {(afterStep.output as { allPassed: boolean }).allPassed

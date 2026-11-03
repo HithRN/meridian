@@ -46,6 +46,15 @@ export const BacktestSummarySchema = z.object({
   hitRate: z.number(),
   exposure: z.number(),
   benchmarkReturn: z.number(),
+  // Execution and statistical context (optional so older records stay valid).
+  trades: z.number().optional(),
+  periods: z.number().optional(),
+  periodsPerYear: z.number().optional(),
+  executionLag: z.number().optional(),
+  sharpeStdErr: z.number().optional(),
+  costBreakdownBps: z
+    .object({ fees: z.number(), spread: z.number(), slippage: z.number(), impact: z.number(), borrow: z.number() })
+    .optional(),
 });
 
 export const ModelResultSchema = z.object({

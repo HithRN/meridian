@@ -13,6 +13,8 @@ import {
 import { ReportView } from "@/components/experiment/ReportView";
 import { EquityChart } from "@/components/charts/EquityChart";
 import { Tabs } from "@/components/ui/Tabs";
+import { SyntheticNotice } from "@/components/experiment/SyntheticNotice";
+import { BacktestContext } from "@/components/experiment/BacktestContext";
 import { useResearchRunner } from "@/hooks/useResearchRunner";
 import { useSession } from "@/store/session";
 import { type WorkflowState } from "@/core/orchestrator/states";
@@ -48,7 +50,7 @@ export default function ResearchPage() {
   return (
     <>
       <PageHeader
-        index="04"
+        eyebrow="Workspace" accent="var(--color-mod-research)"
         title="Research workspace"
         lede="Pose a quantitative hypothesis. The orchestrator plans it, specialised agents execute it through deterministic tools, a critic tries to break it, and a reporter writes it up — live."
         actions={
@@ -70,7 +72,7 @@ export default function ResearchPage() {
                 onChange={(e) => setQuestion(e.target.value)}
                 rows={3}
                 disabled={busy}
-                className="w-full resize-y border border-line bg-paper px-4 py-3 text-[1.02rem] leading-relaxed outline-none focus:border-ink disabled:opacity-60"
+                className="w-full resize-y border border-line bg-paper px-4 py-3 text-[1.02rem] leading-relaxed outline-none focus:border-accent disabled:opacity-60"
                 placeholder="e.g. Test whether a 20-period momentum signal has predictive value…"
               />
               <div className="flex flex-wrap gap-2">
@@ -79,7 +81,7 @@ export default function ResearchPage() {
                     key={i}
                     disabled={busy}
                     onClick={() => setQuestion(ex)}
-                    className="border border-line px-3 py-1 text-left text-[0.78rem] text-muted hover:border-ink hover:text-ink disabled:opacity-50"
+                    className="border border-line px-3 py-1 text-left text-[0.78rem] text-muted hover:border-accent hover:text-ink disabled:opacity-50"
                   >
                     Example {i + 1}
                   </button>
@@ -91,7 +93,7 @@ export default function ResearchPage() {
                   {/* Reasoner mode */}
                   <div>
                     <Eyebrow>Reasoner</Eyebrow>
-                    <div className="mt-1 flex border border-ink">
+                    <div className="mt-1 flex border border-accent">
                       <ModeButton label="Deterministic" active={mode === "deterministic"} onClick={() => setMode("deterministic")} disabled={busy} />
                       <ModeButton
                         label="WebLLM"
@@ -110,7 +112,7 @@ export default function ResearchPage() {
                       value={seed}
                       disabled={busy}
                       onChange={(e) => setSeed(Number(e.target.value) || 0)}
-                      className="mt-1 w-28 border border-line bg-paper px-3 py-[6px] text-sm tnum outline-none focus:border-ink disabled:opacity-60"
+                      className="mt-1 w-28 border border-line bg-paper px-3 py-[6px] text-sm tnum outline-none focus:border-accent disabled:opacity-60"
                     />
                   </div>
                 </div>
@@ -121,8 +123,15 @@ export default function ResearchPage() {
 
               {mode === "webllm" && webgpuSupported === false ? (
                 <p className="text-sm text-muted">
-                  This browser does not expose WebGPU. The run will use the deterministic reasoner —
+                  No usable WebGPU adapter in this browser. The run will use the deterministic reasoner —
                   identical guarantees, no model download.
+                </p>
+              ) : null}
+              {mode === "webllm" && webgpuSupported ? (
+                <p className="text-[0.8rem] text-faint">
+                  WebLLM downloads Llama-3.2-1B (about 0.9 GB, cached by your browser after the first run) and runs it on your GPU;
+                  nothing is sent to a server. If the download or GPU memory fails, the run falls back to the deterministic reasoner,
+                  and you can select WebLLM again to retry.
                 </p>
               ) : null}
 
@@ -163,7 +172,7 @@ export default function ResearchPage() {
         ) : null}
 
         {runner.status === "error" ? (
-          <Card className="border-ink">
+          <Card className="border-accent">
             <CardBody>
               <Eyebrow>Run failed</Eyebrow>
               <p className="mt-2 text-sm">{runner.error}</p>
@@ -198,7 +207,7 @@ function ModeButton({
       title={title}
       className={
         "px-3 py-[6px] text-sm transition-colors disabled:opacity-40 " +
-        (active ? "bg-ink text-paper" : "bg-paper text-ink hover:bg-subtle")
+        (active ? "bg-accent text-on-accent" : "bg-paper text-ink hover:bg-subtle")
       }
     >
       {label}
@@ -259,6 +268,7 @@ function Results({
         bestModelId={result.record.bestModelId}
         baselineModelId={result.record.baselineModelId}
       />
+      {best ? <BacktestContext model={best} /> : null}
     </>
   );
 
@@ -297,6 +307,7 @@ function Results({
 
   return (
     <Section eyebrow="Results" title="Run complete" right={`${result.reasoner} · seed ${result.seed}`}>
+      <SyntheticNotice />
       <Tabs
         tabs={[
           { id: "comparison", label: "Model comparison", content: comparison },

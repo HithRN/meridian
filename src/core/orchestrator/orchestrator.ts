@@ -208,7 +208,7 @@ export async function runResearch(opts: RunOptions): Promise<OrchestrationResult
     const btGross = await call<{ summary: { sharpe: number } }>("quant-agent", "backtest", {
       ...base,
       strategyConfig: plan.strategyConfig,
-      costConfig: { costBps: 0, slippageBps: 0 },
+      costConfig: { costBps: 0, slippageBps: 0, volSlippage: 0, impactCoef: 0, borrowBpsAnnual: 0 },
     });
 
     foldAucsByModel[trained.modelId] = evaluated.folds.map((f) => f.metrics.auc);

@@ -1,10 +1,13 @@
 /**
  * Monitoring metrics for the /monitoring page and /api/monitoring.
  *
- * Composes three views (§12): distributional drift (real PSI on the bundled
- * data), model-performance history (from the seed experiments), and system
- * health (latency/throughput/errors derived deterministically from the audited
- * tool calls plus a seeded synthetic history). Everything is reproducible.
+ * Composes three views, each labelled with where its numbers come from:
+ *   - drift: PSI computed on the bundled dataset (reference = first half of the
+ *     feature rows, current = second half) — measured, on synthetic data;
+ *   - system health: latency quantiles and error rate *measured* from the audit
+ *     log of the seeded reference runs executed on this server instance;
+ *   - latency history: a *simulated* 30-hour series, for layout only.
+ * There is no uptime figure: the demo has no external uptime monitor.
  */
 
 import { getSeedResults } from "@/core/experiments/seed";
@@ -13,6 +16,7 @@ import { buildFeatures, DEFAULT_FEATURE_CONFIG } from "@/core/ml/features";
 import { driftCheck, type DriftReport } from "@/core/monitoring/drift";
 import { Rng } from "@/core/ml/rng";
 import { quantile } from "@/core/ml/stats";
+import { modelStatus } from "@/core/experiments/lifecycle";
 
 export interface LatencyPoint {
   t: number;
@@ -38,9 +42,23 @@ export interface MonitoringSnapshot {
   system: {
     p50Ms: number;
     p95Ms: number;
+    p99Ms: number;
     totalToolCalls: number;
+    errorCount: number;
     errorRate: number;
-    uptimePct: number;
+    runs: number;
+    /** Where these numbers were measured. */
+    environment: string;
+    windowStart: number;
+    windowEnd: number;
+  };
+  driftContext: {
+    dataset: string;
+    referenceRows: number;
+    currentRows: number;
+    referenceSpan: [number, number];
+    currentSpan: [number, number];
+    thresholds: { watch: number; act: number };
   };
   performance: ModelPerformance[];
   lifecycle: Record<string, number>;
@@ -67,6 +85,8 @@ export async function getMonitoringSnapshot(): Promise<MonitoringSnapshot> {
   const errors = results.flatMap((r) => r.audit).filter((a) => a.status === "error").length;
   const p50 = durations.length ? quantile(durations, 0.5) : 0;
   const p95 = durations.length ? quantile(durations, 0.95) : 0;
+  const p99 = durations.length ? quantile(durations, 0.99) : 0;
+  const stamps = results.flatMap((r) => r.audit.map((a) => a.timestamp));
 
   // --- Seeded synthetic latency/throughput history (30 hourly points). ---
   const rng = new Rng(20240808);
@@ -92,7 +112,7 @@ export async function getMonitoringSnapshot(): Promise<MonitoringSnapshot> {
         modelType: m.modelType,
         auc: m.metrics.auc,
         sharpe: m.backtest?.sharpe ?? null,
-        status: m.modelId === r.record.bestModelId ? r.record.status : "candidate",
+        status: modelStatus(r.record, m),
         createdAt: r.record.createdAt,
       });
     }
@@ -114,9 +134,22 @@ export async function getMonitoringSnapshot(): Promise<MonitoringSnapshot> {
     system: {
       p50Ms: round1(p50),
       p95Ms: round1(p95),
+      p99Ms: round1(p99),
       totalToolCalls,
+      errorCount: errors,
       errorRate: round4(totalToolCalls ? errors / totalToolCalls : 0),
-      uptimePct: 99.95,
+      runs: results.length,
+      environment: process.env.VERCEL_ENV ? `Vercel ${process.env.VERCEL_ENV}` : "local server",
+      windowStart: stamps.length ? Math.min(...stamps) : now,
+      windowEnd: stamps.length ? Math.max(...stamps) : now,
+    },
+    driftContext: {
+      dataset: `${ds.id}@${ds.version}`,
+      referenceRows: cut,
+      currentRows: fs.rows.length - cut,
+      referenceSpan: [fs.rows[0].t, fs.rows[cut - 1].t],
+      currentSpan: [fs.rows[cut].t, fs.rows[fs.rows.length - 1].t],
+      thresholds: { watch: 0.1, act: 0.25 },
     },
     performance,
     lifecycle,

@@ -12,7 +12,7 @@ export function ReasonerBadge() {
   }, [detectWebGpu]);
 
   const gpu =
-    webgpuSupported === null ? "checking…" : webgpuSupported ? "available" : "unavailable";
+    webgpuSupported === null ? "checking…" : webgpuSupported ? "available" : "not available";
 
   const reasoner =
     mode === "webllm"

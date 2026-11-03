@@ -27,14 +27,14 @@ export function ReportView({ markdown }: { markdown: string }) {
           ),
           hr: () => <hr className="my-6 border-t border-line" />,
           blockquote: ({ children }) => (
-            <blockquote className="my-4 border-l-2 border-ink pl-4 text-muted">{children}</blockquote>
+            <blockquote className="my-4 border-l-2 border-accent pl-4 text-muted">{children}</blockquote>
           ),
           table: ({ children }) => (
             <div className="my-4 overflow-x-auto border border-line">
               <table className="w-full border-collapse text-sm">{children}</table>
             </div>
           ),
-          thead: ({ children }) => <thead className="border-b border-ink">{children}</thead>,
+          thead: ({ children }) => <thead className="border-b border-line-strong">{children}</thead>,
           th: ({ children }) => (
             <th className="px-3 py-2 text-left font-normal uppercase tracking-[0.1em] text-faint">{children}</th>
           ),

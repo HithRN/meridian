@@ -3,6 +3,7 @@ import { z } from "zod";
 import Anthropic from "@anthropic-ai/sdk";
 import { claudeConfigured, runClaudeCopilot } from "@/core/copilot/claude";
 import { runDeterministicCopilot } from "@/core/copilot/deterministic";
+import { clientKey, rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -27,6 +28,13 @@ export function GET() {
  * on any Claude failure — a question always gets an evidence-backed answer.
  */
 export async function POST(req: NextRequest) {
+  const limit = rateLimit(clientKey(req, "copilot"), 20, 60_000);
+  if (!limit.ok) {
+    return NextResponse.json(
+      { error: "Too many requests — please wait a moment." },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfterS) } },
+    );
+  }
   let body: unknown;
   try {
     body = await req.json();

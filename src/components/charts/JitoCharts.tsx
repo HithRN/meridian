@@ -12,7 +12,7 @@ import {
 import type { TipBar } from "@/core/solana/tips";
 import { dateTime } from "@/lib/format";
 
-const AXIS = { fontFamily: '"Times New Roman", Times, serif', fontSize: 11, fill: "#8c8c8c" };
+const AXIS = { fontFamily: '"Times New Roman", Times, serif', fontSize: 11, fill: "var(--color-muted)" };
 
 const lamports = (sol: number) => Math.round(sol * 1e9);
 const compactLamports = (v: number) =>
@@ -24,15 +24,15 @@ export function TipHistoryChart({ bars, height = 280 }: { bars: TipBar[]; height
   return (
     <ResponsiveContainer width="100%" height={height}>
       <LineChart data={data} margin={{ top: 8, right: 8, bottom: 4, left: 4 }}>
-        <CartesianGrid stroke="#ececec" vertical={false} />
-        <XAxis dataKey="t" tickFormatter={(t) => dateTime(t).slice(5, 10)} tick={AXIS} stroke="#c8c8c8" minTickGap={56} />
-        <YAxis scale="log" domain={["auto", "auto"]} tickFormatter={compactLamports} tick={AXIS} stroke="#c8c8c8" width={48} allowDataOverflow />
+        <CartesianGrid stroke="var(--color-chart-grid)" vertical={false} />
+        <XAxis dataKey="t" tickFormatter={(t) => dateTime(t).slice(5, 10)} tick={AXIS} stroke="var(--color-divider)" minTickGap={56} />
+        <YAxis scale="log" domain={["auto", "auto"]} tickFormatter={compactLamports} tick={AXIS} stroke="var(--color-divider)" width={48} allowDataOverflow />
         <Tooltip
           content={({ active, payload }) => {
             if (!active || !payload?.length) return null;
             const p = payload[0].payload as (typeof data)[number];
             return (
-              <div className="border border-ink bg-paper px-3 py-2 text-xs">
+              <div className="border border-accent bg-paper px-3 py-2 text-xs">
                 <div className="tnum text-muted">{dateTime(p.t)}</div>
                 <div className="tnum">p95 {p.p95.toLocaleString("en-US")}</div>
                 <div className="tnum">p75 {p.p75.toLocaleString("en-US")}</div>
@@ -41,9 +41,9 @@ export function TipHistoryChart({ bars, height = 280 }: { bars: TipBar[]; height
             );
           }}
         />
-        <Line type="monotone" dataKey="p95" stroke="#0a0a0a" strokeWidth={1.4} dot={false} isAnimationActive={false} />
-        <Line type="monotone" dataKey="p75" stroke="#595959" strokeWidth={1.1} strokeDasharray="4 3" dot={false} isAnimationActive={false} />
-        <Line type="monotone" dataKey="p50" stroke="#8c8c8c" strokeWidth={1} strokeDasharray="1 3" dot={false} isAnimationActive={false} />
+        <Line type="monotone" dataKey="p95" stroke="var(--color-chart-primary)" strokeWidth={1.6} dot={false} isAnimationActive={false} />
+        <Line type="monotone" dataKey="p75" stroke="var(--color-chart-tertiary)" strokeWidth={1.3} strokeDasharray="4 3" dot={false} isAnimationActive={false} />
+        <Line type="monotone" dataKey="p50" stroke="var(--color-chart-benchmark)" strokeWidth={1.2} strokeDasharray="1 3" dot={false} isAnimationActive={false} />
       </LineChart>
     </ResponsiveContainer>
   );
@@ -60,15 +60,15 @@ export function YieldPathChart({
   return (
     <ResponsiveContainer width="100%" height={height}>
       <LineChart data={path} margin={{ top: 8, right: 8, bottom: 4, left: 4 }}>
-        <CartesianGrid stroke="#ececec" vertical={false} />
-        <XAxis dataKey="day" tickFormatter={(d) => `d${d}`} tick={AXIS} stroke="#c8c8c8" minTickGap={40} />
-        <YAxis domain={["auto", "auto"]} tickFormatter={(v) => Number(v).toFixed(2)} tick={AXIS} stroke="#c8c8c8" width={64} />
+        <CartesianGrid stroke="var(--color-chart-grid)" vertical={false} />
+        <XAxis dataKey="day" tickFormatter={(d) => `d${d}`} tick={AXIS} stroke="var(--color-divider)" minTickGap={40} />
+        <YAxis domain={["auto", "auto"]} tickFormatter={(v) => Number(v).toFixed(2)} tick={AXIS} stroke="var(--color-divider)" width={64} />
         <Tooltip
           content={({ active, payload }) => {
             if (!active || !payload?.length) return null;
             const p = payload[0].payload as { day: number; jitoSol: number; noMev: number };
             return (
-              <div className="border border-ink bg-paper px-3 py-2 text-xs">
+              <div className="border border-accent bg-paper px-3 py-2 text-xs">
                 <div className="tnum text-muted">Day {p.day}</div>
                 <div className="tnum">JitoSOL {p.jitoSol.toFixed(4)} SOL</div>
                 <div className="tnum text-muted">Without MEV {p.noMev.toFixed(4)} SOL</div>
@@ -76,8 +76,8 @@ export function YieldPathChart({
             );
           }}
         />
-        <Line type="monotone" dataKey="jitoSol" stroke="#0a0a0a" strokeWidth={1.5} dot={false} isAnimationActive={false} />
-        <Line type="monotone" dataKey="noMev" stroke="#8c8c8c" strokeWidth={1.1} strokeDasharray="4 3" dot={false} isAnimationActive={false} />
+        <Line type="monotone" dataKey="jitoSol" stroke="var(--color-chart-tertiary)" strokeWidth={1.8} dot={false} isAnimationActive={false} />
+        <Line type="monotone" dataKey="noMev" stroke="var(--color-chart-benchmark)" strokeWidth={1.3} strokeDasharray="4 3" dot={false} isAnimationActive={false} />
       </LineChart>
     </ResponsiveContainer>
   );

@@ -36,7 +36,7 @@ export function Tabs({ tabs, className }: { tabs: TabItem[]; className?: string 
 
   return (
     <div className={className}>
-      <div role="tablist" className="mb-8 flex gap-x-1 overflow-x-auto border-b border-ink">
+      <div role="tablist" className="mb-8 flex gap-x-1 overflow-x-auto border-b border-line">
         {tabs.map((t) => {
           const on = t.id === current?.id;
           return (
@@ -46,8 +46,8 @@ export function Tabs({ tabs, className }: { tabs: TabItem[]; className?: string 
               aria-selected={on}
               onClick={() => select(t.id)}
               className={cn(
-                "shrink-0 whitespace-nowrap border border-b-0 px-4 py-2 text-[0.95rem] transition-colors",
-                on ? "border-ink bg-ink text-paper" : "border-transparent text-muted hover:text-ink",
+                "-mb-px shrink-0 whitespace-nowrap border-b-2 px-4 py-2 text-[0.92rem] font-medium transition-colors",
+                on ? "border-accent text-ink" : "border-transparent text-muted hover:text-ink",
               )}
             >
               {t.label}

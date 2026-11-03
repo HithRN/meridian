@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { PageHeader, PageBody, Section } from "@/components/layout/PageHeader";
 import { Badge } from "@/components/ui/primitives";
 import { getToolManifest } from "@/core/tools";
 
 export const metadata: Metadata = {
   title: "Tools",
-  description: "MCP-compatible tool catalog with strict input and output JSON Schemas.",
+  description: "Tool registry with strict input and output JSON Schemas, served over MCP and REST.",
 };
 
 const PERMISSION_LABEL: Record<string, string> = {
@@ -25,14 +26,15 @@ export default function ToolsPage() {
   return (
     <>
       <PageHeader
-        index="08"
-        title="Tool catalog"
+        eyebrow="Developer" accent="var(--color-mod-tools)"
+        title="Tool registry"
         lede={
           <>
-            Every capability the agents can call is a named tool with a strict Zod contract, surfaced
-            here as MCP-compatible JSON Schemas. Discovery is available at{" "}
-            <code className="border border-line px-1">GET /api/tools</code>; single-tool execution at{" "}
-            <code className="border border-line px-1">POST /api/tool/&#123;name&#125;</code>.
+            Every capability the agents can call is a named tool with a strict Zod contract and a permission class. The same tools are
+            served over the Model Context Protocol at{" "}
+            <code className="rounded border border-line px-1">/api/mcp</code> and over REST at{" "}
+            <code className="rounded border border-line px-1">POST /api/tool/&#123;name&#125;</code>. See{" "}
+            <Link href="/developers" className="text-accent-strong underline underline-offset-2">MCP &amp; API</Link> to connect a client.
           </>
         }
         actions={<Badge variant="outline">{tools.length} tools</Badge>}
@@ -41,7 +43,7 @@ export default function ToolsPage() {
       <PageBody>
         {Object.entries(groups).map(([permission, group]) => (
           <Section key={permission} eyebrow={PERMISSION_LABEL[permission] ?? permission} title={`${group.length} tool${group.length === 1 ? "" : "s"}`}>
-            <div className="border border-line">
+            <div className="overflow-hidden rounded-lg border border-line bg-paper">
               {group.map((tool) => (
                 <details key={tool.name} className="border-b border-line last:border-b-0">
                   <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 hover:bg-subtle">

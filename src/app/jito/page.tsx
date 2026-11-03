@@ -55,7 +55,7 @@ export default function JitoLabPage() {
   return (
     <>
       <PageHeader
-        index="01"
+        eyebrow="Solana · Jito" accent="var(--color-mod-jito)"
         title="Jito Lab"
         lede="Live signals from Jito's block engine and stake pool, turned into decisions: what to tip a bundle, and what JitoSOL actually earns."
         actions={
@@ -97,12 +97,12 @@ function AdvisorTab({ advisor, live }: { advisor: ReturnType<typeof getTipAdviso
           <CardBody className="space-y-5">
             <div>
               <Eyebrow>Outbid this share of landed bundles</Eyebrow>
-              <div className="mt-2 flex border border-ink">
+              <div className="mt-2 flex border border-accent">
                 {TIP_LEVELS.filter((l) => l !== 25).map((l) => (
                   <button
                     key={l}
                     onClick={() => setLevel(l)}
-                    className={cn("flex-1 px-3 py-[6px] text-sm", level === l ? "bg-ink text-paper" : "hover:bg-subtle")}
+                    className={cn("flex-1 px-3 py-[6px] text-sm", level === l ? "bg-accent text-on-accent" : "hover:bg-subtle")}
                   >
                     p{l}
                   </button>
@@ -120,7 +120,7 @@ function AdvisorTab({ advisor, live }: { advisor: ReturnType<typeof getTipAdviso
                 max={99}
                 value={Math.round(confidence * 100)}
                 onChange={(e) => setConfidence(Number(e.target.value) / 100)}
-                className="mt-2 w-full accent-[#0a0a0a]"
+                className="mt-2 w-full"
                 aria-label="Confidence"
               />
               <div className="flex justify-between text-[0.7rem] text-faint">
@@ -129,13 +129,13 @@ function AdvisorTab({ advisor, live }: { advisor: ReturnType<typeof getTipAdviso
               </div>
             </div>
             <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={useLive} onChange={(e) => setUseLive(e.target.checked)} className="accent-[#0a0a0a]" />
+              <input type="checkbox" checked={useLive} onChange={(e) => setUseLive(e.target.checked)} className="" />
               Anchor on live tip floor {live ? "" : <span className="text-faint">(unavailable — using bundled history)</span>}
             </label>
           </CardBody>
         </Card>
 
-        <Card className="lg:col-span-3 border-ink">
+        <Card className="lg:col-span-3 border-accent">
           <CardHeader
             title="Recommended tip"
             eyebrow={`p${level} · ${pct(confidence, 0)} confidence`}
@@ -169,7 +169,7 @@ function AdvisorTab({ advisor, live }: { advisor: ReturnType<typeof getTipAdviso
         <div className="overflow-x-auto border border-line">
           <table className="w-full border-collapse text-left text-sm">
             <thead>
-              <tr className="border-b border-ink">
+              <tr className="border-b border-line-strong">
                 {["Target", "Meridian (regime-aware)", "Global quantile", "Naive last-hour", "Congested · Meridian", "Congested · global", "Median overpay"].map((h) => (
                   <th key={h} className="px-4 py-3 font-normal uppercase tracking-[0.1em] text-[0.68rem] text-faint">{h}</th>
                 ))}
@@ -209,7 +209,7 @@ function PulseTab({ advisor, snap }: { advisor: ReturnType<typeof getTipAdvisor>
     <>
       <Section eyebrow={snap?.tipFloor.source === "live" ? "Live · bundles.jito.wtf" : "Bundled snapshot"} title="Landed tip floor, right now">
         {tf ? (
-          <div className="grid grid-cols-2 gap-px border border-line bg-line md:grid-cols-5">
+          <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-line bg-line md:grid-cols-5">
             {TIP_LEVELS.map((l) => (
               <div key={l} className="bg-paper px-5 py-5">
                 <Eyebrow>p{l}</Eyebrow>
@@ -233,9 +233,9 @@ function PulseTab({ advisor, snap }: { advisor: ReturnType<typeof getTipAdvisor>
           <CardBody>
             <TipHistoryChart bars={week} />
             <div className="mt-3 flex flex-wrap gap-5 text-[0.75rem] text-muted">
-              <span>━ p95</span>
-              <span>╍ p75</span>
-              <span>┈ p50</span>
+<span className="inline-flex items-center gap-2"><span className="h-[3px] w-4 rounded" style={{ background: "var(--color-chart-primary)" }} />p95</span>
+              <span className="inline-flex items-center gap-2"><span className="h-[3px] w-4 rounded" style={{ background: "var(--color-chart-tertiary)" }} />p75</span>
+              <span className="inline-flex items-center gap-2"><span className="h-[3px] w-4 rounded" style={{ background: "var(--color-chart-benchmark)" }} />p50</span>
               <span className="text-faint">Log scale · lamports · synthetic history used to calibrate the advisor</span>
             </div>
           </CardBody>
@@ -256,7 +256,7 @@ function YieldTab({ pool }: { pool: StakePoolStats }) {
 
   return (
     <>
-      <div className="mb-10 grid grid-cols-2 gap-px border border-line bg-line md:grid-cols-4">
+      <div className="mb-10 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-line bg-line md:grid-cols-4">
         {[
           { k: "JitoSOL APY", v: pct(pool.apy, 2) },
           { k: "MEV share (est.)", v: pct(mevApy, 2) },
@@ -282,7 +282,7 @@ function YieldTab({ pool }: { pool: StakePoolStats }) {
                 step={10}
                 value={amount}
                 onChange={(e) => setAmount(Math.max(0.1, Number(e.target.value) || 0.1))}
-                className="mt-1 w-full border border-line bg-paper px-3 py-[6px] text-sm tnum outline-none focus:border-ink"
+                className="mt-1 w-full border border-line bg-paper px-3 py-[6px] text-sm tnum outline-none focus:border-accent"
               />
             </label>
             <div>
@@ -297,7 +297,7 @@ function YieldTab({ pool }: { pool: StakePoolStats }) {
                 step={5}
                 value={days}
                 onChange={(e) => setDays(Number(e.target.value))}
-                className="mt-2 w-full accent-[#0a0a0a]"
+                className="mt-2 w-full"
                 aria-label="Horizon in days"
               />
             </div>
@@ -313,8 +313,8 @@ function YieldTab({ pool }: { pool: StakePoolStats }) {
           <CardBody>
             <YieldPathChart path={proj.path} />
             <div className="mt-3 flex flex-wrap gap-5 text-[0.75rem] text-muted">
-              <span>━ JitoSOL</span>
-              <span>╍ same stake without MEV rewards</span>
+<span className="inline-flex items-center gap-2"><span className="h-[3px] w-4 rounded" style={{ background: "var(--color-chart-tertiary)" }} />JitoSOL</span>
+              <span className="inline-flex items-center gap-2"><span className="h-[3px] w-4 rounded" style={{ background: "var(--color-chart-benchmark)" }} />same stake without MEV rewards</span>
             </div>
           </CardBody>
         </Card>
@@ -326,7 +326,7 @@ function YieldTab({ pool }: { pool: StakePoolStats }) {
             <div key={p.date} className="flex items-center gap-4 text-sm">
               <span className="tnum w-24 text-muted">{p.date}</span>
               <div className="h-[10px] flex-1 bg-subtle">
-                <div className="h-full bg-ink" style={{ width: `${(p.value / maxMev) * 100}%` }} />
+                <div className="h-full rounded-sm bg-teal" style={{ width: `${(p.value / maxMev) * 100}%` }} />
               </div>
               <span className="tnum w-28 text-right">{Math.round(p.value).toLocaleString("en-US")} SOL</span>
             </div>

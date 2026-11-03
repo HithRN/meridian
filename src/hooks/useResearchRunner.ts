@@ -59,7 +59,7 @@ export function useResearchRunner() {
           ...s,
           status: "running",
           trace: [],
-          notice: `Browser-local model unavailable — completed with the deterministic engine. (${reason})`,
+          notice: `Browser-local model unavailable — completed with the deterministic engine. Select WebLLM again to retry. (${reason})`,
         }));
         runInWorker(question, seed, maxModels, workerRef, setState, addResult, true);
       };

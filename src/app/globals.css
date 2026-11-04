@@ -179,3 +179,21 @@ kbd {
 input[type="range"] {
   accent-color: var(--color-accent);
 }
+
+/* New trades fade in once so the tape reads as live. */
+@keyframes trade-flash {
+  from {
+    background: var(--color-selected);
+  }
+  to {
+    background: transparent;
+  }
+}
+.trade-flash {
+  animation: trade-flash 900ms ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .trade-flash {
+    animation: none;
+  }
+}

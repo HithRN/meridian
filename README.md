@@ -17,6 +17,7 @@ Created by the **SK-HRN team** · source: [HithRN/meridian](https://github.com/H
 
 | Feature | Status | Where |
 | --- | --- | --- |
+| Live market terminal: candlesticks, order book, trades, depth and large-order cost (Hyperliquid public feed) | Working, read-only | `/markets` |
 | Research runs: plan → agents → critic → evidence report | Working | `/research` |
 | Walk-forward evaluation, leakage scan, seeded reproducibility | Working | core |
 | Backtest with next-bar execution, fees, spread, vol slippage, √-impact, borrow, Sharpe SE | Working | core |

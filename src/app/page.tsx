@@ -5,10 +5,12 @@ import { LAMPORTS_PER_SOL, getTipAdvisor } from "@/core/solana/tips";
 import { mevApyEstimate } from "@/core/solana/staking";
 import { mcpTools } from "@/core/mcp/server";
 import { EcosystemFit, headlineRow } from "@/components/jito/EcosystemFit";
+import { fetchMarketSummary } from "@/core/market/summary";
+import { formatCompact, formatPrice } from "@/core/market/book";
 
 export const revalidate = 60;
 
-const CAPABILITIES = ["Multi-agent research", "Reproducible experiments", "Leakage-aware evaluation", "Auditable execution"];
+const CAPABILITIES = ["Live markets and order books", "Multi-agent research", "Reproducible experiments", "Explainable models"];
 
 const OUTCOMES: Array<{ k: string; title: string; body: string; accent: string }> = [
   {
@@ -50,7 +52,7 @@ function Band({ bg, children, className }: { bg: string; children: React.ReactNo
 }
 
 export default async function OverviewPage() {
-  const [tip, pool] = await Promise.all([fetchTipFloor(), fetchStakePoolStats()]);
+  const [tip, pool, markets] = await Promise.all([fetchTipFloor(), fetchStakePoolStats(), fetchMarketSummary(["SOL", "JTO", "BTC", "ETH"])]);
   const lamports = (sol: number) => Math.round(sol * LAMPORTS_PER_SOL).toLocaleString("en-US");
   const live = tip.source === "live" && pool.source === "live";
   const advisor = getTipAdvisor();
@@ -79,9 +81,9 @@ export default async function OverviewPage() {
             Research with clarity. Decisions with confidence.
           </h1>
           <p className="mt-5 max-w-2xl text-[1.05rem] leading-relaxed text-muted">
-            Meridian turns a research hypothesis into reproducible evidence. Agents plan the work, deterministic tools run the
-            experiments and backtests under stated execution and cost assumptions, and an independent critic reviews the result before
-            the report is written.
+            Meridian follows live markets and turns research questions into reproducible evidence. Watch prices and order books as they
+            move, then test an idea: agents plan the work, deterministic tools run the experiments under stated cost assumptions, and an
+            independent critic reviews the result.
           </p>
           <ul className="mt-6 flex flex-wrap gap-2">
             {CAPABILITIES.map((c) => (
@@ -92,10 +94,38 @@ export default async function OverviewPage() {
           </ul>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link href="/research"><Button>Explore a research run →</Button></Link>
-            <Link href="/experiments"><Button variant="secondary">Browse experiments</Button></Link>
+            <Link href="/markets"><Button variant="secondary">Open live markets</Button></Link>
           </div>
         </div>
       </header>
+
+      {/* Live markets: only shown when the feed answered, so prices are never stale */}
+      {markets ? (
+        <Band bg="#ffffff" className="border-b border-line">
+          <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <Eyebrow>Live markets</Eyebrow>
+              <h2 className="mt-1 text-[1.75rem] font-semibold tracking-tight">Watch the market, then measure it</h2>
+              <p className="mt-2 max-w-2xl text-[0.98rem] text-muted">
+                Live charts, order books and trades, with the cost of a large order worked out from the book as it stands.
+              </p>
+            </div>
+            <Link href="/markets" className="text-sm font-medium text-link underline-offset-2 hover:underline">Open the terminal →</Link>
+          </div>
+          <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-line bg-line md:grid-cols-4">
+            {markets.map((m) => (
+              <Link key={m.coin} href="/markets" className="bg-paper px-5 py-4 transition-colors hover:bg-selected">
+                <Eyebrow>{m.coin} perpetual</Eyebrow>
+                <div className="tnum mt-1 text-[1.3rem] font-semibold text-heading">{formatPrice(m.price)}</div>
+                <div className="tnum text-[0.88rem]">
+                  <span className={m.change >= 0 ? "text-positive" : "text-negative"}>{m.change >= 0 ? "+" : ""}{(m.change * 100).toFixed(2)}%</span>
+                  <span className="text-faint"> · ${formatCompact(m.volumeUsd)} 24h</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </Band>
+      ) : null}
 
       {/* Features: blue-white background, white cards */}
       <Band bg="var(--color-canvas)">

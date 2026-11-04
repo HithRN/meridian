@@ -26,6 +26,11 @@ export default function PrivacyPage() {
           </p>
           <h2>Browser-local model</h2>
           <p>If you choose the WebLLM reasoner, the model is downloaded to your device and runs entirely there.</p>
+          <h2>Live market data</h2>
+          <p>
+            The Markets and Market intelligence pages connect your browser directly to Hyperliquid&rsquo;s and Jito&rsquo;s public APIs, so
+            those services can see your IP address. Nothing else is sent.
+          </p>
           <h2>Hosting and preferences</h2>
           <p>
             The hosting provider may keep standard request logs. Meridian uses no analytics or advertising trackers.

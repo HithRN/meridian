@@ -17,6 +17,7 @@ export const NAV_GROUPS: NavGroup[] = [
     label: "Workspace",
     items: [
       { href: "/", label: "Overview", description: "What Meridian does", accent: "var(--color-mod-overview)" },
+      { href: "/markets", label: "Markets", description: "Live chart, order book and trades", accent: "var(--color-mod-research)" },
       { href: "/research", label: "Research", description: "Run a hypothesis end to end", accent: "var(--color-mod-research)" },
       { href: "/experiments", label: "Experiments", description: "History and comparison", accent: "var(--color-mod-experiments)" },
       { href: "/models", label: "Models", description: "Registry and lifecycle", accent: "var(--color-mod-models)" },

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AskTheMarket, LiveTiles, WorkflowExplorer } from "@/components/home/HomeInteractive";
 import { Eyebrow, Badge, Button } from "@/components/ui/primitives";
 import { fetchStakePoolStats, fetchTipFloor } from "@/core/solana/live";
 import { LAMPORTS_PER_SOL, getTipAdvisor } from "@/core/solana/tips";
@@ -6,7 +7,6 @@ import { mevApyEstimate } from "@/core/solana/staking";
 import { mcpTools } from "@/core/mcp/server";
 import { EcosystemFit, headlineRow } from "@/components/jito/EcosystemFit";
 import { fetchMarketSummary } from "@/core/market/summary";
-import { formatCompact, formatPrice } from "@/core/market/book";
 
 export const revalidate = 60;
 
@@ -40,7 +40,6 @@ const PRINCIPLES = [
   "Every conclusion has traceable evidence.",
 ];
 
-const WORKFLOW = ["Plan the research", "Validate the data", "Define features & hypothesis", "Train & evaluate walk-forward", "Independent critique", "Evidence report"];
 
 
 function Band({ bg, children, className }: { bg: string; children: React.ReactNode; className?: string }) {
@@ -92,9 +91,10 @@ export default async function OverviewPage() {
               </li>
             ))}
           </ul>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Link href="/research"><Button>Explore a research run →</Button></Link>
+          <AskTheMarket />
+          <div className="mt-5 flex flex-wrap items-center gap-3">
             <Link href="/markets"><Button variant="secondary">Open live markets</Button></Link>
+            <Link href="/research#lab"><Button variant="ghost">Test a hypothesis →</Button></Link>
           </div>
         </div>
       </header>
@@ -112,18 +112,7 @@ export default async function OverviewPage() {
             </div>
             <Link href="/markets" className="text-sm font-medium text-link underline-offset-2 hover:underline">Open the terminal →</Link>
           </div>
-          <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-line bg-line md:grid-cols-4">
-            {markets.map((m) => (
-              <Link key={m.coin} href="/markets" className="bg-paper px-5 py-4 transition-colors hover:bg-selected">
-                <Eyebrow>{m.coin} perpetual</Eyebrow>
-                <div className="tnum mt-1 text-[1.3rem] font-semibold text-heading">{formatPrice(m.price)}</div>
-                <div className="tnum text-[0.88rem]">
-                  <span className={m.change >= 0 ? "text-positive" : "text-negative"}>{m.change >= 0 ? "+" : ""}{(m.change * 100).toFixed(2)}%</span>
-                  <span className="text-faint"> · ${formatCompact(m.volumeUsd)} 24h</span>
-                </div>
-              </Link>
-            ))}
-          </div>
+          <LiveTiles markets={markets} />
         </Band>
       ) : null}
 
@@ -131,7 +120,7 @@ export default async function OverviewPage() {
       <Band bg="var(--color-canvas)">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {OUTCOMES.map((o) => (
-            <div key={o.k} className="rounded-lg border border-line bg-paper p-6 shadow-[0_1px_2px_rgba(24,54,80,0.04)]">
+            <div key={o.k} className="lift reveal rounded-lg border border-line bg-paper p-6 shadow-[0_1px_2px_rgba(24,54,80,0.04)]">
               <span className="block h-1 w-8 rounded-full" style={{ background: o.accent }} />
               <Eyebrow className="mt-4">{o.k}</Eyebrow>
               <h2 className="mt-2 text-[1.05rem] font-semibold leading-snug tracking-tight">{o.title}</h2>
@@ -162,17 +151,10 @@ export default async function OverviewPage() {
           <div>
             <Eyebrow>Research workflow</Eyebrow>
             <h2 className="mt-1 text-[1.75rem] font-semibold tracking-tight">Follow one run from plan to evidence</h2>
+            <p className="mt-2 max-w-2xl text-[0.98rem] text-muted">Point at a step to see what happens there.</p>
           </div>
-          <Link href="/research" className="text-sm font-medium text-link underline-offset-2 hover:underline">Start with a sample hypothesis →</Link>
-        </div>
-        <ol className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
-          {WORKFLOW.map((w, i) => (
-            <li key={w} className="rounded-lg border border-line bg-panel px-4 py-3">
-              <div className="tnum text-[0.75rem] font-semibold text-teal">{String(i + 1).padStart(2, "0")}</div>
-              <div className="mt-1 text-[0.88rem] font-medium leading-snug text-heading">{w}</div>
-            </li>
-          ))}
-        </ol>
+                  </div>
+        <WorkflowExplorer />
       </Band>
 
       {/* Jito ecosystem: blue-white, white analytical cards */}
@@ -212,7 +194,7 @@ export default async function OverviewPage() {
       {/* Trust & developers: light blue-grey, navy and sage */}
       <Band bg="var(--color-sidebar)" className="border-t border-line">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div className="rounded-lg border border-line bg-paper p-6">
+          <div className="lift reveal rounded-lg border border-line bg-paper p-6">
             <span className="block h-1 w-8 rounded-full bg-mod-models" />
             <Eyebrow className="mt-4">Trust & security</Eyebrow>
             <p className="mt-2 text-sm leading-relaxed text-muted">
@@ -221,7 +203,7 @@ export default async function OverviewPage() {
             </p>
             <Link href="/security" className="mt-3 inline-block text-sm font-medium text-link underline-offset-2 hover:underline">Read the threat model →</Link>
           </div>
-          <div className="rounded-lg border border-line bg-paper p-6">
+          <div className="lift reveal rounded-lg border border-line bg-paper p-6">
             <span className="block h-1 w-8 rounded-full bg-mod-tools" />
             <Eyebrow className="mt-4">For developers</Eyebrow>
             <p className="mt-2 text-sm leading-relaxed text-muted">

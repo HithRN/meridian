@@ -52,7 +52,7 @@ test.describe("public routes", () => {
 
 test.describe("deterministic research (no-WebGPU fallback path)", () => {
   test("runs a full session to a report", async ({ page }) => {
-    await page.goto("/research");
+    await page.goto("/research#lab");
     // Deterministic is the default reasoner; this is the always-on fallback.
     await page.getByRole("button", { name: /Run research/i }).click();
 

@@ -12,7 +12,7 @@ export default function TermsPage() {
         <Prose>
           <h2>Demonstration only</h2>
           <p>
-            Meridian is a research preview provided as is, without warranty. Research results are computed on synthetic data, and network
+            Meridian is a research preview provided as is, without warranty. Hypothesis lab results are computed on synthetic data and market research on live public data, and network
             figures come from third-party public APIs that may be delayed or wrong.
           </p>
           <h2>Not investment advice</h2>

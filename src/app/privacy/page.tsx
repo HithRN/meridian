@@ -18,6 +18,10 @@ export default function PrivacyPage() {
             Runs you start are computed in your browser or on the server, and your experiment history is kept in your browser&rsquo;s local
             storage. Clearing site data deletes it. It is not uploaded.
           </p>
+          <p>
+            Questions you ask about the live market go to Meridian&rsquo;s server to be answered and are not kept there. The reports are saved
+            only in your browser.
+          </p>
           <h2>Copilot messages</h2>
           <p>
             Questions sent to the copilot are processed on the server. When the operator has enabled Claude, the conversation is sent to
@@ -37,7 +41,7 @@ export default function PrivacyPage() {
           </p>
           <h2>Contact</h2>
           <p>
-            Questions: <a href={SITE.issuesUrl}>{SITE.issuesUrl.replace("https://", "")}</a>.
+            Questions go to the {SITE.author}.
           </p>
         </Prose>
       </PageBody>

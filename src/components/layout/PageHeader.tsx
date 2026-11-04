@@ -9,7 +9,7 @@ export function PageHeader({
   lede,
   actions,
 }: {
-  eyebrow: string;
+  eyebrow?: string;
   /** Module identity colour, e.g. "var(--color-mod-research)". */
   accent?: string;
   title: string;

@@ -35,12 +35,7 @@ export default function ContactPage() {
           </div>
           <div className="h-fit rounded-lg border border-line bg-paper p-5">
             <KeyValue k="Created by" v={SITE.author} />
-            <KeyValue
-              k="Source code"
-              v={<a className="underline underline-offset-2" href={SITE.repoUrl}>{SITE.repoUrl.replace("https://github.com/", "")}</a>}
-            />
             <KeyValue k="Status" v="Research preview" />
-            <KeyValue k="Contact" v={<a className="underline underline-offset-2" href={SITE.issuesUrl}>GitHub issues</a>} />
           </div>
         </div>
       </PageBody>

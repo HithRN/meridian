@@ -18,6 +18,7 @@ interface IntelPayload {
   flow: ValueFlow;
   pool: { apy: number; tvlSol: number; source: "live" | "snapshot"; mevApr: number; stakingApr: number };
   stakerMevPerEpoch: number[];
+  epochClock: { daysPerEpoch: number; epochsPerYear: number; source: "live" | "snapshot" };
 }
 
 const pct = (x: number, d = 1) => `${(x * 100).toFixed(d)}%`;
@@ -112,7 +113,7 @@ function FlowTab({ d }: { d: IntelPayload }) {
       <Card>
         <CardHeader title="MEV by epoch" eyebrow="Total tips across Jito-Solana validators" />
         <CardBody>
-          <EpochMevBars epochs={d.epochs.data} current={d.epochs.currentEpoch} />
+          <EpochMevBars epochs={d.epochs.data} current={d.epochs.currentEpoch} daysPerEpoch={d.epochClock.daysPerEpoch} />
         </CardBody>
       </Card>
     </div>
@@ -198,6 +199,7 @@ function ScenarioTab({ d }: { d: IntelPayload }) {
         stakingShock,
         stakingApr: d.pool.stakingApr,
         mevPerEpoch: d.stakerMevPerEpoch,
+        daysPerEpoch: d.epochClock.daysPerEpoch,
         paths: 500,
       }),
     [amount, days, mevShock, stakingShock, d],
@@ -284,7 +286,7 @@ const ROADMAP: Array<{ title: string; answers: string; needs: string; builds: st
     title: "Latency waterfall by region",
     answers: "Which stage of the transaction lifecycle, and which Block Engine region, adds the most delay.",
     needs: "Per-stage timestamps from each Block Engine region.",
-    builds: "Same p50 / p95 / p99 telemetry view as Monitoring.",
+    builds: "A percentile view of delay by stage and region, in the style of the tip floor.",
   },
   {
     title: "Blockspace utilisation heatmap",

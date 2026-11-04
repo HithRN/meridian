@@ -18,11 +18,12 @@ Created by the **SK-HRN team** · source: [HithRN/meridian](https://github.com/H
 | Feature | Status | Where |
 | --- | --- | --- |
 | Live market terminal: candlesticks, order book, trades, depth and large-order cost (Hyperliquid public feed) | Working, read-only | `/markets` |
-| Research runs: plan → agents → critic → evidence report | Working | `/research` |
+| Live market research: plain-language question to tested answer with charts, on live data | Working | `/research` |
+| Hypothesis lab: plan → agents → critic → evidence report | Working | `/research#lab` |
 | Walk-forward evaluation, leakage scan, seeded reproducibility | Working | core |
 | Backtest with next-bar execution, fees, spread, vol slippage, √-impact, borrow, Sharpe SE | Working | core |
 | Model registry with explicit acceptance criteria | Working | `/models` |
-| Monitoring with measured vs simulated telemetry labelled | Working | `/monitoring` |
+| Model health: drift, scores and tool telemetry | Working | `/model-health` |
 | MCP server (Streamable HTTP, JSON-RPC 2.0) + REST API | Working, tested with the official MCP TypeScript SDK client | `/api/mcp`, `/developers` |
 | Solana · Jito vertical: Jito Lab, Explainable AI, Copilot | Working (Claude copilot needs `ANTHROPIC_API_KEY`) | `/jito`, `/ai`, `/copilot` |
 | Accounts, team workspaces, RBAC | Planned | n/a |
@@ -250,6 +251,7 @@ with identical guarantees and no download.
 | `/api/experiments` | GET/POST | List / register experiment records |
 | `/api/experiments/{id}` | GET | Experiment record, trace and audit |
 | `/api/monitoring` | GET | Drift, latency, performance history |
+| `/api/research/market` | POST | Research a question on live data; streams steps, then the report |
 | `/api/research` | POST | Run a full deterministic research session server-side |
 | `/api/jito` | GET | Live tip floor + JitoSOL stake-pool stats (with fallback) |
 | `/api/ai` | GET | Trained landing models, metrics, Shapley importances, PDPs (prerendered) |

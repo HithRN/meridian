@@ -3,8 +3,6 @@ export interface NavItem {
   href: string;
   label: string;
   description: string;
-  /** Module identity colour (CSS variable). */
-  accent: string;
 }
 
 export interface NavGroup {
@@ -12,43 +10,37 @@ export interface NavGroup {
   items: NavItem[];
 }
 
-export const NAV_GROUPS: NavGroup[] = [
-  {
-    label: "Workspace",
-    items: [
-      { href: "/", label: "Overview", description: "What Meridian does", accent: "var(--color-mod-overview)" },
-      { href: "/markets", label: "Markets", description: "Live chart, order book and trades", accent: "var(--color-mod-research)" },
-      { href: "/research", label: "Research", description: "Run a hypothesis end to end", accent: "var(--color-mod-research)" },
-      { href: "/experiments", label: "Experiments", description: "History and comparison", accent: "var(--color-mod-experiments)" },
-      { href: "/models", label: "Models", description: "Registry and lifecycle", accent: "var(--color-mod-models)" },
-      { href: "/monitoring", label: "Monitoring", description: "Drift and telemetry", accent: "var(--color-mod-monitoring)" },
-    ],
-  },
-  {
-    label: "Solana · Jito",
-    items: [
-      { href: "/intel", label: "Market intelligence", description: "Live auction, MEV flow, validators", accent: "var(--color-mod-jito)" },
-      { href: "/jito", label: "Jito Lab", description: "Tip floor, tip advisor, JitoSOL", accent: "var(--color-mod-jito)" },
-      { href: "/ai", label: "Explainable AI", description: "Will a bundle land, and why?", accent: "var(--color-mod-agents)" },
-      { href: "/copilot", label: "AI Copilot", description: "Ask in English or 日本語", accent: "var(--color-mod-agents)" },
-    ],
-  },
+/** Always visible, in the order a visitor would work through them. */
+export const NAV_PRIMARY: NavItem[] = [
+  { href: "/", label: "Overview", description: "What Meridian does" },
+  { href: "/markets", label: "Markets", description: "Live chart, order book and trades" },
+  { href: "/research", label: "Research", description: "Ask about the market, or test a hypothesis" },
+  { href: "/intel", label: "Market intelligence", description: "Live auction, MEV flow, validators" },
+  { href: "/ai", label: "Explainable AI", description: "Will a bundle land, and why?" },
+  { href: "/jito", label: "Jito Lab", description: "Tip floor, tip advisor, JitoSOL" },
+  { href: "/model-health", label: "Model health", description: "Are our models still reliable?" },
+  { href: "/experiments", label: "Models & experiments", description: "Run history and model registry" },
+  { href: "/copilot", label: "AI Copilot", description: "Ask in English or 日本語" },
+];
+
+/** Slide open in the side panel. */
+export const NAV_SECTIONS: NavGroup[] = [
   {
     label: "Developer",
     items: [
-      { href: "/tools", label: "Tool registry", description: "Schemas and permissions", accent: "var(--color-mod-tools)" },
-      { href: "/developers", label: "MCP & API", description: "Connect an MCP client", accent: "var(--color-mod-tools)" },
-      { href: "/coding-agent", label: "Coding sandbox", description: "Restricted agent demo", accent: "var(--color-mod-tools)" },
+      { href: "/tools", label: "Tool registry", description: "Schemas and permissions" },
+      { href: "/developers", label: "MCP & API", description: "Connect an MCP client" },
+      { href: "/coding-agent", label: "Coding sandbox", description: "Restricted agent demo" },
     ],
   },
   {
     label: "Resources",
     items: [
-      { href: "/about", label: "How it works", description: "Architecture and methodology", accent: "var(--color-mod-resources)" },
-      { href: "/security", label: "Security", description: "Boundaries and threat model", accent: "var(--color-mod-resources)" },
-      { href: "/contact", label: "About & contact", description: "Who builds Meridian", accent: "var(--color-mod-resources)" },
+      { href: "/about", label: "How it works", description: "Architecture and methodology" },
+      { href: "/security", label: "Security", description: "Boundaries and threat model" },
+      { href: "/contact", label: "About", description: "Who builds Meridian" },
     ],
   },
 ];
 
-export const NAV_ITEMS: NavItem[] = NAV_GROUPS.flatMap((g) => g.items);
+export const NAV_ITEMS: NavItem[] = [...NAV_PRIMARY, ...NAV_SECTIONS.flatMap((g) => g.items)];

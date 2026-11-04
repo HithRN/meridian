@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { cn } from "@/lib/cn";
 import { Badge, Severity } from "@/components/ui/primitives";
-import { pct, num, duration, dateTime } from "@/lib/format";
+import { pct, num, dateTime } from "@/lib/format";
 import { modelLabel } from "@/lib/labels";
 import type { ModelResult, Critique } from "@/core/schemas/experiment";
 import type { TraceEvent } from "@/core/orchestrator/types";
@@ -187,7 +187,7 @@ function TraceRow({ event }: { event: TraceEvent }) {
             <span className="text-sm">{event.title}</span>
             {event.tool ? (
               <span className={cn("tnum text-[0.72rem]", event.kind === "error" ? "text-on-accent/75" : "text-faint")}>
-                {event.tool.inputHash}{event.tool.outputHash ? `→${event.tool.outputHash}` : ""} · {duration(event.tool.durationMs)}
+                {event.tool.inputHash}{event.tool.outputHash ? `→${event.tool.outputHash}` : ""}
               </span>
             ) : null}
           </span>

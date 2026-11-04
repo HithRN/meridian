@@ -80,6 +80,13 @@
   --color-chart-risk: #c18a3e;
   --color-chart-grid: #e8eef2;
 
+  /* Multi-series order for research charts, validated for colour-blind separation */
+  --color-series-1: #1f78b4;
+  --color-series-2: #d07a1f;
+  --color-series-3: #7d55b5;
+  --color-series-4: #23966f;
+  --color-series-5: #3f5f9f;
+
   /* Shape */
   --radius-md: 8px;
   --radius-lg: 11px;
@@ -192,8 +199,100 @@ input[type="range"] {
 .trade-flash {
   animation: trade-flash 900ms ease-out;
 }
+
+/* Pages and new content settle in; nothing here moves far or for long. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.page-enter {
+  animation: fade-in 220ms ease-out;
+}
+.fade-up {
+  animation: rise-in 240ms ease-out;
+}
+.palette-backdrop {
+  animation: fade-in 120ms ease-out;
+}
+.palette-panel {
+  animation: rise-in 160ms ease-out;
+}
+
+/* Cards answer the pointer. */
+.lift {
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+.lift:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-line-strong);
+  box-shadow: 0 6px 18px rgba(24, 54, 80, 0.09);
+}
+
+/* Prices tint in the direction they just moved. */
+@keyframes tick-up {
+  from {
+    background: var(--color-positive-bg);
+    color: var(--color-positive);
+  }
+}
+@keyframes tick-down {
+  from {
+    background: var(--color-negative-bg);
+    color: var(--color-negative);
+  }
+}
+.tick-up {
+  animation: tick-up 800ms ease-out;
+}
+.tick-down {
+  animation: tick-down 800ms ease-out;
+}
+
+/* Content rises in as it scrolls into view, where the browser supports it. */
+@supports (animation-timeline: view()) {
+  .reveal {
+    animation: rise-in linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 35%;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .trade-flash {
+  .trade-flash,
+  .page-enter,
+  .fade-up,
+  .palette-backdrop,
+  .palette-panel,
+  .tick-up,
+  .tick-down,
+  .reveal {
     animation: none;
+  }
+  .lift:hover {
+    transform: none;
+  }
+}
+
+/* A report saved as PDF carries only the report. */
+@media print {
+  .recharts-tooltip-wrapper {
+    display: none;
+  }
+  details[open] summary {
+    display: none;
   }
 }

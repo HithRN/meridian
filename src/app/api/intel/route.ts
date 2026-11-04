@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { concentration, fetchEpochHistory, fetchValidators, frontier, valueFlow } from "@/core/solana/intel";
+import { fetchEpochClock } from "@/core/solana/epochs";
 import { fetchStakePoolStats } from "@/core/solana/live";
-import { mevApyEstimate } from "@/core/solana/staking";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -13,17 +13,14 @@ export const maxDuration = 60;
  * the JitoSOL scenario simulator. Each part reports live or snapshot.
  */
 export async function GET() {
-  const [epochs, pool] = await Promise.all([fetchEpochHistory(20), fetchStakePoolStats()]);
+  const [epochs, pool, clock] = await Promise.all([fetchEpochHistory(20), fetchStakePoolStats(), fetchEpochClock()]);
   const completed = epochs.data.filter((e) => e.epoch < epochs.currentEpoch);
   const lastCompleted = completed.length ? completed[completed.length - 1].epoch : epochs.currentEpoch - 1;
   const validators = await fetchValidators(lastCompleted);
   const flow = valueFlow(validators.epoch, validators.rows, pool.data.tvlSol);
-  const stats = {
-    ...pool.data,
-    networkStakeSol: completed.length ? completed[completed.length - 1].jitoStakeSol : pool.data.networkStakeSol,
-    avgMevCommission: flow.stakeWeightedCommission,
-  };
-  const mevApr = mevApyEstimate(stats);
+  const stakerMevPerEpoch = completed.map((e) => e.rewardPerLamport * (1 - flow.stakeWeightedCommission));
+  // Annualised from the same epochs the simulator resamples, so the two always agree.
+  const mevApr = stakerMevPerEpoch.length ? (stakerMevPerEpoch.reduce((s, v) => s + v, 0) / stakerMevPerEpoch.length) * clock.epochsPerYear : 0;
 
   return NextResponse.json({
     generatedAt: Date.now(),
@@ -36,9 +33,10 @@ export async function GET() {
       directedTargets: validators.rows.filter((r) => r.directedTarget).length,
     },
     concentration: concentration(validators.rows),
-    frontier: frontier(validators.rows),
+    frontier: frontier(validators.rows, clock.epochsPerYear),
+    epochClock: clock,
     flow,
     pool: { apy: pool.data.apy, tvlSol: pool.data.tvlSol, source: pool.source, mevApr, stakingApr: Math.max(0, pool.data.apy - mevApr) },
-    stakerMevPerEpoch: completed.map((e) => e.rewardPerLamport * (1 - flow.stakeWeightedCommission)),
+    stakerMevPerEpoch,
   });
 }

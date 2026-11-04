@@ -6,8 +6,5 @@ export const SITE = {
   name: "Meridian",
   tagline: "Quantitative research platform",
   author: "SK-HRN team",
-  repoOwner: "HithRN",
-  repoUrl: "https://github.com/HithRN/meridian",
-  issuesUrl: "https://github.com/HithRN/meridian/issues",
   status: "Research preview",
 } as const;

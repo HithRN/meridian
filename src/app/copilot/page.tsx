@@ -5,7 +5,6 @@ import { PageHeader, PageBody } from "@/components/layout/PageHeader";
 import { Badge, Button, Card, CardBody, Eyebrow } from "@/components/ui/primitives";
 import { ReportView } from "@/components/experiment/ReportView";
 import type { CopilotResponse, CopilotTurn } from "@/core/copilot/types";
-import { duration } from "@/lib/format";
 import { cn } from "@/lib/cn";
 
 const SUGGESTIONS: Array<{ label: string; q: string }> = [
@@ -206,7 +205,7 @@ function AssistantTurn({ entry }: { entry: ChatEntry }) {
                       <code>{c.name}</code>
                       {!c.ok ? <Badge variant="outline">error</Badge> : null}
                     </span>
-                    <span className="tnum text-[0.75rem] text-faint">{duration(c.durationMs)} ▾</span>
+                    <span className="tnum text-[0.75rem] text-faint">▾</span>
                   </summary>
                   <div className="grid grid-cols-1 gap-3 border-t border-line px-3 py-3 md:grid-cols-2">
                     <div>

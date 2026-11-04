@@ -117,7 +117,7 @@ export function ValueFlowSankey({ flow }: { flow: ValueFlow }) {
 
 /* --------------------------------------------------------- epoch history */
 
-export function EpochMevBars({ epochs, current }: { epochs: EpochMev[]; current: number }) {
+export function EpochMevBars({ epochs, current, daysPerEpoch }: { epochs: EpochMev[]; current: number; daysPerEpoch: number }) {
   const data = epochs.map((e) => ({ epoch: e.epoch, mev: e.totalMevSol, live: e.epoch === current }));
   const done = data.filter((d) => !d.live);
   const avg = done.reduce((s, d) => s + d.mev, 0) / Math.max(1, done.length);
@@ -148,7 +148,7 @@ export function EpochMevBars({ epochs, current }: { epochs: EpochMev[]; current:
         </BarChart>
       </ResponsiveContainer>
       <ChartCaption>
-        Total MEV tips across Jito-Solana validators per epoch (about two days each). The dashed line is the average of{" "}
+        Total MEV tips across Jito-Solana validators per epoch (about {daysPerEpoch.toFixed(1)} days each at the current pace). The dashed line is the average of{" "}
         {sol(avg)} SOL; the busiest epoch was {peak?.epoch} at {sol(peak?.mev ?? 0)} SOL. The grey bar is the epoch still in progress.
       </ChartCaption>
     </div>

@@ -1,110 +1,31 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import Link from "next/link";
+import type { Metadata } from "next";
 import { PageHeader, PageBody } from "@/components/layout/PageHeader";
-import { Badge, Button, Severity } from "@/components/ui/primitives";
-import { useExperiments } from "@/store/experiments";
-import type { ExperimentSummary } from "@/core/experiments/store";
-import { summarise } from "@/core/experiments/store";
-import { num, dateShort } from "@/lib/format";
-import { datasetLabel, modelLabelShort } from "@/lib/labels";
+import { Tabs } from "@/components/ui/Tabs";
+import { ExperimentsList } from "@/components/experiment/ExperimentsList";
+import { MarketReports } from "@/components/experiment/MarketReports";
+import { ModelRegistry } from "@/components/experiment/ModelRegistry";
 
-interface Row extends ExperimentSummary {
-  source: "local" | "seed";
-}
+export const metadata: Metadata = {
+  title: "Models & experiments",
+  description: "Every research run and every model it produced, with acceptance criteria and lifecycle status.",
+};
 
-export default function ExperimentsPage() {
-  const local = useExperiments((s) => s.results);
-  const clear = useExperiments((s) => s.clear);
-  const [server, setServer] = useState<ExperimentSummary[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let active = true;
-    fetch("/api/experiments")
-      .then((r) => r.json())
-      .then((d) => {
-        if (active) setServer(d.experiments ?? []);
-      })
-      .catch(() => setServer([]))
-      .finally(() => active && setLoading(false));
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  const localRows: Row[] = local.map((r) => ({ ...summarise(r.record), source: "local" }));
-  const localIds = new Set(localRows.map((r) => r.id));
-  const serverRows: Row[] = server
-    .filter((s) => !localIds.has(s.id))
-    .map((s) => ({ ...s, source: "seed" }));
-  const rows = [...localRows, ...serverRows];
-
+export default function ModelsAndExperimentsPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Workspace" accent="var(--color-mod-experiments)"
-        title="Experiments"
-        lede="Every research run is a reproducible, versioned record. Your own runs persist in this browser; seeded reference runs are computed deterministically on the server."
-        actions={
-          local.length > 0 ? (
-            <Button variant="secondary" onClick={clear}>
-              Clear local history
-            </Button>
-          ) : (
-            <Link href="/research"><Button>New research →</Button></Link>
-          )
-        }
+        title="Models & experiments"
+        lede="Every run is a repeatable record, and every model it produced is pinned to its dataset, features and seed. Status comes from explicit acceptance criteria, so every count on this page agrees."
       />
       <PageBody>
-        {rows.length === 0 && loading ? (
-          <Empty text="Loading experiments…" />
-        ) : rows.length === 0 ? (
-          <Empty text="No experiments yet. Run one from the Research workspace." />
-        ) : (
-          <div className="overflow-x-auto border border-line">
-            <table className="w-full border-collapse text-sm">
-              <thead>
-                <tr className="border-b border-line-strong">
-                  {["Experiment", "Date", "Dataset", "Best model", "AUC", "Sharpe", "Critique", "Source"].map((h) => (
-                    <th key={h} className="px-3 py-3 text-left font-normal text-faint">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((r) => (
-                  <tr key={r.id} className="group border-b border-line last:border-b-0 hover:bg-subtle">
-                    <td className="max-w-md px-3 py-3">
-                      <Link href={`/experiments/${r.id}`} className="block leading-tight hover:underline">
-                        {r.title}
-                      </Link>
-                      <span className="mt-1 line-clamp-1 block text-[0.78rem] text-faint">{r.question}</span>
-                    </td>
-                    <td className="tnum px-3 py-3 text-muted">{dateShort(r.createdAt)}</td>
-                    <td className="px-3 py-3 text-muted">{datasetLabel(r.datasetId)}</td>
-                    <td className="px-3 py-3">{modelLabelShort(r.bestModelType)}</td>
-                    <td className="tnum px-3 py-3 text-muted">{num(r.bestAuc)}</td>
-                    <td className="tnum px-3 py-3 text-muted">{r.bestSharpe === null ? "n/a" : num(r.bestSharpe, 2)}</td>
-                    <td className="px-3 py-3"><Severity level={r.critiqueSeverity} /></td>
-                    <td className="px-3 py-3">
-                      <Badge variant={r.source === "local" ? "outline" : "muted"}>{r.source}</Badge>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <Tabs
+          tabs={[
+            { id: "experiments", label: "Experiments", content: <ExperimentsList /> },
+            { id: "models", label: "Models", content: <ModelRegistry /> },
+            { id: "market-reports", label: "Market reports", content: <MarketReports /> },
+          ]}
+        />
       </PageBody>
     </>
-  );
-}
-
-function Empty({ text }: { text: string }) {
-  return (
-    <div className="flex h-48 items-center justify-center border border-dashed border-line text-muted">
-      {text}
-    </div>
   );
 }

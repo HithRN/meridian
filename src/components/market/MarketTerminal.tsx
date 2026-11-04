@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { Area, AreaChart, CartesianGrid, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Badge, Card, CardBody, CardHeader, Eyebrow } from "@/components/ui/primitives";
 import { cn } from "@/lib/cn";
@@ -22,6 +23,13 @@ type Panel = "chart" | "book" | "trades";
 
 export function MarketTerminal() {
   const [coin, setCoin] = React.useState("SOL");
+  // Open the market named in the link, once the page has loaded in the browser.
+  React.useEffect(() => {
+    const wanted = new URLSearchParams(window.location.search).get("coin");
+    if (!wanted || !MARKETS.some((m) => m.coin === wanted)) return;
+    const timer = setTimeout(() => setCoin(wanted), 0);
+    return () => clearTimeout(timer);
+  }, []);
   const status = useFeedStatus();
   return (
     <div>
@@ -42,9 +50,17 @@ export function MarketTerminal() {
             </button>
           ))}
         </div>
-        <Badge variant={status === "open" ? "success" : status === "connecting" ? "neutral" : "warning"}>
-          {status === "open" ? "Live stream" : status === "connecting" ? "Connecting" : "Reconnecting, refreshing every 3 s"}
-        </Badge>
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            href={`/research?q=${encodeURIComponent(`How is ${coin} behaving right now: trend, volatility and funding?`)}`}
+            className="text-[0.95rem] font-medium text-link underline-offset-2 hover:underline"
+          >
+            Research {coin} now →
+          </Link>
+          <Badge variant={status === "open" ? "success" : status === "connecting" ? "neutral" : "warning"}>
+            {status === "open" ? "Live stream" : status === "connecting" ? "Connecting" : "Reconnecting, refreshing every 3 s"}
+          </Badge>
+        </div>
       </div>
       {/* Remounting on market change clears every panel, so no stale prices show. */}
       <Market key={coin} coin={coin} />

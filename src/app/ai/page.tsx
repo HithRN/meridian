@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { PageHeader, PageBody, Section } from "@/components/layout/PageHeader";
-import { Badge, Card, CardBody, CardHeader, Eyebrow, KeyValue } from "@/components/ui/primitives";
+import { Card, CardBody, CardHeader, Eyebrow, KeyValue } from "@/components/ui/primitives";
 import { Tabs } from "@/components/ui/Tabs";
 import { MultiLineChart, ReliabilityChart, SERIES_STYLE } from "@/components/charts/AiCharts";
 import { ProbabilityGauge, TipResponseCurve } from "@/components/charts/PlainCharts";
@@ -38,7 +38,6 @@ export default function ExplainableAiPage() {
         eyebrow="Solana · Jito" accent="var(--color-mod-agents)"
         title="Explainable AI"
         lede="Will this bundle land, and why? Three models trained from scratch on a Jito bundle-auction simulator, explained with exact Shapley values, partial dependence and counterfactual tips, then checked against the true mechanism."
-        actions={lab ? <Badge variant="muted">Trained in {(lab.builtMs / 1000).toFixed(1)}s</Badge> : null}
       />
       <PageBody>
         {error ? (

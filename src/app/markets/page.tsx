@@ -11,9 +11,7 @@ export default function MarketsPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Workspace"
-        accent="var(--color-mod-research)"
-        title="Markets"
+                title="Markets"
         lede="Live price, order book and trades, and what those numbers mean for anyone moving serious size."
       />
       <PageBody>

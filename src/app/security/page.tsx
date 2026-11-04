@@ -64,7 +64,7 @@ export default function SecurityPage() {
           </p>
           <h2>Reporting a vulnerability</h2>
           <p>
-            Please open a private security advisory or an issue at <a href={SITE.issuesUrl}>{SITE.issuesUrl.replace("https://", "")}</a>.
+            Please report it privately to the {SITE.author}.
           </p>
         </Prose>
       </PageBody>

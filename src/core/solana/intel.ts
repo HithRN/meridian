@@ -17,8 +17,6 @@ import epochSnapshot from "@/core/solana/snapshots/epochs.json";
 
 const KOBE = "https://kobe.mainnet.jito.network/api/v1";
 const TIMEOUT_MS = 6_000;
-/** Solana epochs are 432,000 slots, about two days at 400 ms slots. */
-export const EPOCHS_PER_YEAR = 365.25 / 2;
 
 export interface ValidatorRow {
   vote: string;
@@ -190,11 +188,11 @@ export interface FrontierPoint {
   directedTarget: boolean;
 }
 
-export function frontier(rows: ValidatorRow[]): FrontierPoint[] {
+export function frontier(rows: ValidatorRow[], epochsPerYear: number): FrontierPoint[] {
   return rows
     .filter((r) => r.stakeSol > 1_000)
     .map((r) => {
-      const apr = (r.mevRewardsSol / r.stakeSol) * EPOCHS_PER_YEAR * 100;
+      const apr = (r.mevRewardsSol / r.stakeSol) * epochsPerYear * 100;
       return {
         vote: r.vote,
         commissionPct: r.mevCommissionBps / 100,
@@ -255,6 +253,8 @@ export interface ScenarioInput {
   stakingApr: number;
   /** Observed staker MEV yield per epoch (after commission), one value per epoch. */
   mevPerEpoch: number[];
+  /** Measured epoch length; see core/solana/epochs. */
+  daysPerEpoch: number;
   paths?: number;
   seed?: number;
 }
@@ -269,13 +269,13 @@ export interface ScenarioResult {
 /** Bootstrap Monte Carlo: resample observed epoch MEV yields, scaled by the shock. */
 export function simulateScenario(s: ScenarioInput): ScenarioResult {
   const paths = s.paths ?? 400;
-  const epochs = Math.max(1, Math.round(s.days / 2));
+  const epochs = Math.max(1, Math.round(s.days / s.daysPerEpoch));
   let seed = s.seed ?? 7;
   const rand = () => {
     seed = (seed * 1664525 + 1013904223) >>> 0;
     return seed / 2 ** 32;
   };
-  const staking = (s.stakingApr * (1 + s.stakingShock)) / EPOCHS_PER_YEAR;
+  const staking = (s.stakingApr * (1 + s.stakingShock)) * (s.daysPerEpoch / 365.25);
   const pool = s.mevPerEpoch.length ? s.mevPerEpoch : [0];
   const values: number[][] = Array.from({ length: epochs + 1 }, () => []);
   for (let p = 0; p < paths; p++) {
@@ -292,7 +292,7 @@ export function simulateScenario(s: ScenarioInput): ScenarioResult {
     return sorted[Math.min(sorted.length - 1, Math.floor(k * sorted.length))];
   };
   const fan = values.map((vals, e) => ({
-    day: e * 2,
+    day: Math.round(e * s.daysPerEpoch),
     p5: q(vals, 0.05),
     p25: q(vals, 0.25),
     p50: q(vals, 0.5),

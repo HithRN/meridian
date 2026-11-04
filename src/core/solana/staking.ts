@@ -6,10 +6,9 @@
  * module decomposes the pool's reported APY into an estimated MEV component and
  * projects a position forward.
  *
- * The stake-pool API's `mev_rewards` series is network-wide daily MEV, not the
- * pool's share. The MEV yield a staker earns is therefore estimated as
- * network MEV ÷ total Jito stake, annualised, after the stake-weighted average
- * MEV commission validators keep.
+ * The MEV yield a staker earns is Jito's reward per staked lamport in each finished
+ * epoch, annualised with the measured epoch length, after the stake-weighted
+ * average MEV commission validators keep. See core/solana/mevYield.
  *
  * Inputs come from Jito's public stake-pool stats API when reachable, otherwise
  * from the bundled snapshot below (captured from the same API on 2026-11-02),
@@ -17,6 +16,8 @@
  * figures. They are not a forecast or investment advice.
  */
 
+import { annualisedStakerMev, clockFromAnchors, EPOCH_ANCHORS } from "@/core/solana/epochs";
+import epochSnapshot from "@/core/solana/snapshots/epochs.json";
 import { LAMPORTS_PER_SOL } from "@/core/solana/tips";
 
 export interface DatedValue {
@@ -32,15 +33,20 @@ export interface StakePoolStats {
   numValidators: number;
   /** Network-wide daily MEV rewards across Jito-Solana validators, in SOL. */
   mevRewardsSol: DatedValue[];
-  /** Total stake on Jito-Solana validators (SOL). */
-  networkStakeSol?: number;
-  /** Stake-weighted share of MEV that validators keep as commission. */
-  avgMevCommission?: number;
+  /** Yearly MEV yield to a staker, measured from finished epochs. */
+  mevApyMeasured?: number;
   source: "live" | "snapshot";
   asOf: string;
 }
 
 /** Captured from kobe.mainnet.jito.network/api/v1/stake_pool_stats on 2026-11-02. */
+/** From the bundled epochs and the stake-weighted commission measured at epoch 1074. */
+const SNAPSHOT_MEV_APY = annualisedStakerMev(
+  epochSnapshot.map((e) => e.rewardPerLamport),
+  0.3254,
+  clockFromAnchors(EPOCH_ANCHORS, "snapshot").epochsPerYear,
+);
+
 export const BUNDLED_STAKE_POOL: StakePoolStats = {
   apy: 0.0472825597519011,
   apySeries: [
@@ -64,15 +70,10 @@ export const BUNDLED_STAKE_POOL: StakePoolStats = {
     { date: "2026-10-31", value: 643.31 },
     { date: "2026-11-01", value: 674.82 },
   ],
-  networkStakeSol: 426_497_145,
-  avgMevCommission: 0.3254,
+  mevApyMeasured: SNAPSHOT_MEV_APY,
   source: "snapshot",
   asOf: "2026-11-02T16:21:33Z",
 };
-
-/** Measured from Jito's validator and epoch MEV APIs (epoch 1074). */
-export const DEFAULT_NETWORK_STAKE_SOL = 426_497_145;
-export const DEFAULT_AVG_MEV_COMMISSION = 0.3254;
 
 /** Parse the raw stake_pool_stats payload (lamport-denominated) into SOL units. */
 export function parseStakePoolStats(raw: unknown): StakePoolStats | null {
@@ -96,16 +97,9 @@ export function parseStakePoolStats(raw: unknown): StakePoolStats | null {
   };
 }
 
-/**
- * Annualised MEV yield to a staker: mean daily network MEV × 365 ÷ total Jito
- * stake, less the average validator MEV commission.
- */
+/** Yearly MEV yield to a staker. Every page reads it here, so they cannot disagree. */
 export function mevApyEstimate(stats: StakePoolStats): number {
-  if (!stats.mevRewardsSol.length) return 0;
-  const mean = stats.mevRewardsSol.reduce((s, p) => s + p.value, 0) / stats.mevRewardsSol.length;
-  const stake = stats.networkStakeSol ?? DEFAULT_NETWORK_STAKE_SOL;
-  const commission = stats.avgMevCommission ?? DEFAULT_AVG_MEV_COMMISSION;
-  return Math.min(stats.apy, ((mean * 365) / stake) * (1 - commission));
+  return Math.min(stats.apy, stats.mevApyMeasured ?? SNAPSHOT_MEV_APY);
 }
 
 export interface YieldProjection {

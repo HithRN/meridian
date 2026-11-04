@@ -70,6 +70,13 @@ export async function liveEpochAnchors(oldest: number | null, step = 5): Promise
   }
 }
 
+/** A staker's yearly MEV yield from each finished epoch's reward per staked lamport. */
+export function annualisedStakerMev(rewardPerLamport: readonly number[], commission: number, epochsPerYear: number): number {
+  if (!rewardPerLamport.length) return 0;
+  const mean = rewardPerLamport.reduce((s, v) => s + v, 0) / rewardPerLamport.length;
+  return mean * (1 - commission) * epochsPerYear;
+}
+
 export interface EpochClock {
   daysPerEpoch: number;
   epochsPerYear: number;

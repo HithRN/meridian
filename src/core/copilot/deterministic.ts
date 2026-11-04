@@ -174,13 +174,13 @@ export async function runDeterministicCopilot(history: CopilotTurn[]): Promise<C
     reply =
       lang === "ja"
         ? `**JitoSOLの現在のAPYは ${pc(s.apy, 2)}** (jitosol_stats, ${src(s.source, lang)})\n\n` +
-          `- MEV由来の推定APY: ${pc(s.mevApyEstimate, 2)}（ネットワークMEV ÷ Jitoの総ステーク、年率換算、バリデーター手数料控除後）\n` +
+          `- MEV由来の推定APY: ${pc(s.mevApyEstimate, 2)}（各エポックのステーク当たりMEV報酬を実測のエポック長で年率換算、バリデーター手数料控除後）\n` +
           `- TVL: ${Math.round(s.tvlSol).toLocaleString("en-US")} SOL、バリデーター数: ${s.numValidators}\n` +
           `- 直近${s.mevRewardsSol.length}日間のMEV報酬合計: ${Math.round(mev7).toLocaleString("en-US")} SOL` +
           projection +
           `\n\n報告値に基づく計算であり、予測や投資助言ではありません。`
         : `**JitoSOL APY is ${pc(s.apy, 2)}** (jitosol_stats, ${src(s.source, lang)})\n\n` +
-          `- Estimated MEV component: ${pc(s.mevApyEstimate, 2)} (network MEV ÷ total Jito stake, annualised, after validator commission)\n` +
+          `- Estimated MEV component: ${pc(s.mevApyEstimate, 2)} (MEV reward per staked SOL each epoch, annualised with the measured epoch length, after validator commission)\n` +
           `- TVL: ${Math.round(s.tvlSol).toLocaleString("en-US")} SOL across ${s.numValidators} validators\n` +
           `- MEV rewards over the last ${s.mevRewardsSol.length} days: ${Math.round(mev7).toLocaleString("en-US")} SOL` +
           projection +

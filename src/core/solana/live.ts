@@ -86,7 +86,12 @@ export function fetchTipFloor(): Promise<Sourced<TipFloorSnapshot>> {
 export function fetchStakePoolStats(): Promise<Sourced<StakePoolStats>> {
   return cachedFetch(
     "stake_pool",
-    async () => parseStakePoolStats(await getJson(JITO_STAKE_POOL_URL)),
+    async () => {
+      // Loaded on demand: the browser also imports this file, and must not pull in the validator set.
+      const { fetchMeasuredMevApy } = await import("@/core/solana/mevYield");
+      const [stats, mevApyMeasured] = await Promise.all([getJson(JITO_STAKE_POOL_URL).then(parseStakePoolStats), fetchMeasuredMevApy()]);
+      return stats && mevApyMeasured !== null ? { ...stats, mevApyMeasured } : stats;
+    },
     BUNDLED_STAKE_POOL,
   );
 }

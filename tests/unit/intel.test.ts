@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { concentration, frontier, simulateScenario, valueFlow, type ValidatorRow } from "@/core/solana/intel";
-import { clockFromAnchors, EPOCH_ANCHORS } from "@/core/solana/epochs";
+import { annualisedStakerMev, clockFromAnchors, EPOCH_ANCHORS } from "@/core/solana/epochs";
 import { BUNDLED_STAKE_POOL, mevApyEstimate } from "@/core/solana/staking";
 import snapshot from "@/core/solana/snapshots/validators.json";
 
@@ -39,10 +39,16 @@ describe("Jito market intelligence", () => {
     for (const p of frontier(rows, 340)) expect(p.stakerMevAprPct).toBeLessThanOrEqual(p.mevAprPct + 1e-12);
   });
 
-  it("estimates MEV yield from network MEV over total Jito stake, not pool TVL", () => {
-    const mev = mevApyEstimate(BUNDLED_STAKE_POOL);
-    expect(mev).toBeGreaterThan(0);
-    expect(mev).toBeLessThan(0.005);
+  it("uses one measured MEV yield, capped by the pool's APY", () => {
+    expect(mevApyEstimate(BUNDLED_STAKE_POOL)).toBeGreaterThan(0);
+    expect(mevApyEstimate(BUNDLED_STAKE_POOL)).toBeLessThan(0.005);
+    expect(mevApyEstimate({ ...BUNDLED_STAKE_POOL, mevApyMeasured: 0.0007 })).toBe(0.0007);
+    expect(mevApyEstimate({ ...BUNDLED_STAKE_POOL, apy: 0.0001, mevApyMeasured: 0.0007 })).toBe(0.0001);
+  });
+
+  it("annualises per-epoch rewards after commission", () => {
+    expect(annualisedStakerMev([2e-6, 4e-6], 0.25, 340)).toBeCloseTo(3e-6 * 0.75 * 340, 12);
+    expect(annualisedStakerMev([], 0.25, 340)).toBe(0);
   });
 
   it("orders scenario percentiles and reacts to an MEV shock", () => {

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { concentration, fetchEpochHistory, fetchValidators, frontier, valueFlow } from "@/core/solana/intel";
 import { fetchEpochClock } from "@/core/solana/epochs";
 import { fetchStakePoolStats } from "@/core/solana/live";
+import { mevApyEstimate } from "@/core/solana/staking";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -19,8 +20,7 @@ export async function GET() {
   const validators = await fetchValidators(lastCompleted);
   const flow = valueFlow(validators.epoch, validators.rows, pool.data.tvlSol);
   const stakerMevPerEpoch = completed.map((e) => e.rewardPerLamport * (1 - flow.stakeWeightedCommission));
-  // Annualised from the same epochs the simulator resamples, so the two always agree.
-  const mevApr = stakerMevPerEpoch.length ? (stakerMevPerEpoch.reduce((s, v) => s + v, 0) / stakerMevPerEpoch.length) * clock.epochsPerYear : 0;
+  const mevApr = mevApyEstimate(pool.data);
 
   return NextResponse.json({
     generatedAt: Date.now(),
